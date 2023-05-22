@@ -1,0 +1,19 @@
+<!--
+TODO: file description
+
+2023-05-19 - Nathaniel mason : added HTML code for basic home page that has button to go to create user account
+
+-->
+
+
+<h1>Click button to test create user</h1>
+
+{% if messages %}
+{% for message in messages %}
+    <p><b>{{ message }}</b></p>
+{% endfor %}
+{% endif %}
+
+<form action="/users/create_user">
+    <input type="submit" value="create user account" />
+</form>

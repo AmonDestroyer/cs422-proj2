@@ -1,0 +1,22 @@
+<!--
+TODO: file description
+
+2023-05-19 - Nathaniel mason : added HTML code to pull any messages and the create user form from views.py
+
+-->
+
+<h2>Please fill out the following information, then click Submit to create an account</h2>
+<!-- ModelForm will go here, Django will make sure it is valid -->
+
+{% if messages %}
+{% for message in messages %}
+    <p><b>{{ message }}</b></p>
+{% endfor %}
+{% endif %}
+
+<form method="POST" action="">
+    {% csrf_token %}
+    {{userform.as_p}}
+
+    <input type="submit" name="Submit">
+</form>
