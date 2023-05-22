@@ -2,6 +2,7 @@
 TODO: file description
 
 2023-05-19 - Nathaniel mason : add create_user url path
+2023-05-22 - Josh Sawyer     : add login url path
 
 """
 
@@ -14,6 +15,8 @@ urlpatterns = [
     # ex: /users/
     path("", views.index, name="index"),
     # ex: /users/createuser/
-    path("create_user/", views.create_user, name="create_user"),
+    path("create-user/", views.create_user, name="create_user"),
+    # ex: /users/login/
+    path("login/", views.login, name="login"),
 ]
 

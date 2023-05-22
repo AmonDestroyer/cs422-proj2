@@ -2,11 +2,13 @@
 TODO: file description
 
 2023-05-19 - Nathaniel mason : add JEANZUserCreationForm
+2023-05-22 - Josh Sawyer     : add JEANZUserLoginForm
 
 """
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
@@ -69,3 +71,8 @@ class JEANZUserCreationForm(UserCreationForm):
             user.save()
 
         return user
+      
+
+class JEANZUserLoginForm(AuthenticationForm):
+    username = forms.CharField(max_length=50) # max_length matches length of username field given for account creation
+    password = forms.CharField(widget=forms.PasswordInput) # widget=forms.PasswordInput hides password as it is typed
