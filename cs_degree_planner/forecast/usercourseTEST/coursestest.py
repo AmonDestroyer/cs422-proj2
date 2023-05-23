@@ -22,9 +22,32 @@ class Course:
         self.annual = annual  # note: True = annual course    False = biennial course
 
     def is_offered(self, target_term, target_year):
+        '''
+
+        :param target_term: char 'F' or 'W' or 'S' or 'U'
+        :param target_year: int
+        :return: bool
+        '''
         return self.term == target_term and (target_year % 2 == 1 or self.annual)
 
 
+def get_prereq(course): # get course prereq ignoring Course object
+    '''
+    return prerequisite courses associated with a course
+    :param course: course id int
+    :return: set of course id ints
+    '''
+    return {df['prereq'].loc[course]}
+
+def get_credits(course): # get course credits ignoring Course object
+    '''
+    return number of credits a course is worth
+    :param course: course id int
+    :return: int credits
+        '''
+    return int(df['credits'].loc[course])
+
+def id_to_title(course)
 
 
 class User:
@@ -58,27 +81,27 @@ class User:
         science_done = 1 #TODO
         writing_done = 1 #TODO WR320 or WR321
 
-        remaining = {}
+        remaining = set()
         # UNUSED if not all((arts_and_letters_done, social_science_done, calc_done, math1_done, cs_electives_done, math2_done, science_done, writing_done)):
         # TODO gen ed checks
 
         #CS checks
-        remaining.add({2100, 2110, 2120, 3130, 3140, 3150, 3300, 2311, 2321, 4220, 4150, 4250}.difference(course_history)) # cs core
+        remaining.update({2100, 2110, 2120, 3130, 3140, 3150, 3300, 2311, 2321, 4220, 4150, 4250}.difference(course_history)) # cs core
 
         if not calc_done:
-            if {2511} in course_history:
+            if 2511 in course_history:
                 remaining.add(2521)
-            elif {2611} in course_history:
+            elif 2611 in course_history:
                 remaining.add(2621)
-            elif {2461} in course_history:
+            elif 2461 in course_history:
                 remaining.add(2471)
             else:
                 remaining.add("One from (2511 and 2521), (2611 and 2621), (2461 and 2471)")
         if not math1_done:
             math1_req = {2531, 2631, 3471, 3511, 3911, 3411, 3431, 4251}
-            if {2531} in math1 or {2631} in math1:
+            if 2531 in math1 or 2631 in math1:
                 remaining.add("One from " + str(math1_req.difference({2531, 2631})))
-            if {3431} in math1 or {4251} in math1:
+            if 3431 in math1 or 4251 in math1:
                 remaining.add("One from " + str(math1_req.difference({3431, 4251})))
         #TODO all other checks
 
@@ -107,11 +130,12 @@ class User:
         while self.has_remaining_requirements(course_hist):  # runs each term
             term_forecast = {}  # single term
             for course in remaining: #TODO course methods/attributes will not work since courses have not been defined as Course objects. they are just in the .xlsx
-                if course.is_offered(this_term, this_year) and course.prereq in self.course_history and credits + course.credits <= self.max_credits_per_term:
+                if course.is_offered(this_term, this_year) and get_prereq(course) in self.course_history and credits + course.credits <= self.max_credits_per_term:
                     course_hist.add(course)
                     term_forecast.add(course)
             this_term = terms[terms.index(this_term)+1]
             forecast.append(term_forecast)
+
 
 def __main__():
     start_term = 'F'
@@ -119,12 +143,11 @@ def __main__():
     max_credits_per_term = 16
     course_history = {2100, 2110, 2511}
     rupert = User(start_term, start_year, max_credits_per_term, course_history)
-
-    print(df['prereq'].loc[2110])
-    for index, row in df.iterrows():
-        print(row['number'], row['prereq'])
+    print("Rupert's remaining courses: ", rupert.remaining_requirements(rupert.course_history))
+    print({df['prereq'].loc[3130]})
+    #for index, row in df.iterrows():
+        #print(df[2100]['prereq'])
     print(2100 in course_history)
-    print("HIII".index('I'))
 
 
 if __name__ == '__main__':
