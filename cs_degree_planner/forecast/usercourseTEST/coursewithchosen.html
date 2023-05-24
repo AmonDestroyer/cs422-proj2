@@ -7,56 +7,40 @@
 <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">
+	<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="chosencopy.css">
+
 	<style>
-		* {
-  box-sizing: border-box;
-  
-		}
 
-	.input-number {
-	  width: 40px;
-	  padding: 0 12px;
-	  vertical-align: top;
-	  text-align: center;
-	  outline: none;
-		border-radius: 40px;
-	}
-
-.input-number,
-.input-number-decrement,
-		.input-number-increment {
-  border: 1px solid #ccc;
-  height: 40px;
-  user-select: none;
-		}
-
-.input-number-decrement,
-		.input-number-increment {
-  display: inline-block;
-  width: 30px;
-  line-height: 38px;
-  background: #f1f1f1;
-  color: #444;
-  text-align: center;
-  font-weight: bold;
-  cursor: pointer;
-		}
-
-  
-    
-
-		.input-number-decrement {
-  border-right: none;
-  border-radius: 40px 0 0 40px;
-		}
-		.input-number-increment {
-  border-left: none;
-  border-radius: 0 40px 40px 0;
-		}
 	</style>
 </head>
 <body>
+	
+	<nav>
+  <ul class="navul"> 
+    <li onMouseOver="document.getElementById('hicon').style='filter: invert(1);';" onMouseOut="document.getElementById('hicon').style='filter: invert(0.5);';"><a href="#"><img alt="home" id="hicon" src="homeicon.png" width="30px" style="filter: invert(0.5);" ></a></li>
+
+    <li><a href="#">JEANZ</a></li>
+	      <li class="drop" onMouseOver="document.getElementById('uicon').style='filter: invert(1);';" onMouseOut="document.getElementById('uicon').style='filter: invert(0.5);';">
+      <a href="#"><img alt="user" id="uicon" src="usericon.png" width="20px" style=" filter: invert(0.5);" ></a>
+
+      <div class="dropdownContain">
+        <div class="dropOut">
+          <div class="triangle"></div>
+          <ul>
+            <li style="pointer-events: none; cursor: default;"><img alt="name" src="usericon.png" width="20px" style="cursor: default;">  Name</li>
+            <li>Edit Courses</li>
+            <li>Edit Interests</li>
+			 <li>My Account</li>
+            <li>Log Out</li>
+          </ul>
+        </div>
+      </div>
+
+    </li>
+  </ul>
+</nav>
+	
 <form>
 <table>
 	<tr>
@@ -70,23 +54,23 @@
 	<tr>
 	<td>
 <select class="chzn-select" multiple="true" name="faculty" style="width:200px;">
-        <option value="AC">A</option>
-        <option value="AD">B</option>
-        <option value="AM">C</option>
-        <option value="AP">D</option>
+        <option value="AC">CS 422</option>
+        <option value="AD">MATH 232</option>
+        <option value="AM">MATH 252</option>
+        <option value="AP">CS 415</option>
 </select>
 		</td>
 	
 	
-	<td><h5>Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n1" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+	<td><h5>Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n1" type="text" value="0" min="0" max="10"><span class="input-number-increment">+</span></td>
 		</tr>
 		<tr>
 		<td></td>
-					<td><h5>Social Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n2" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+					<td><h5>Social Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n2" type="text" value="0" min="0"><span class="input-number-increment">+</span></td>
 		</tr>
 		<tr>
 		<td></td>
-					<td><h5>Arts and Letters</h5><span class="input-number-decrement">–</span><input class="input-number" id="n3" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+					<td><h5>Arts and Letters</h5><span class="input-number-decrement">–</span><input class="input-number" id="n3" type="text" value="0" min="0"><span class="input-number-increment">+</span></td>
 		
 		</tr>
 
