@@ -19,40 +19,48 @@ class Keyword(models.Model):
     tailor a schedule to their interests.
     """
     # attributes
-    kw_name = models.CharField(max_length=100)
-    kw_desc = models.CharField(max_length=100)
+    keyword = models.CharField(max_length=100)  # the name of the keyword
+    desc = models.CharField(max_length=100)     # the description of the keyword 
 
     def __str__(self):
         return self.kw_name
 
 
 class Course(models.Model):
-    # TODO: docstring
     """
+    A Course is defined by its subject and number. Some (subject, number)
+    combinations are repeated, so a course_name is needed. Some courses 
+    also have a prerequisite(s), so we need a bridge table to get those
+    prerequisites.
     """
     # attributes
-    course_name = models.CharField(max_length=100)
-    credits = models.IntegerField()
+    name = models.CharField(max_length=100)     # e.g., 'Software Methodologies'
+    subject = models.CharField(max_length=10)   # e.g., 'CS' or 'MATH'
+    number = models.IntegerField(default=0)              # e.g., 415 or 422
+    credits = models.IntegerField(default=0)             # number of credits
 
     # bridge table to get course prereqs
-    has_prereq = models.ManyToManyField("self")
-    is_prereq_for = models.ManyToManyField("self")
+    has_prereq = models.ManyToManyField("self")     # prereqs that the course has
+    is_prereq_for = models.ManyToManyField("self")  # courses this course is a prereq for (NOTE: might not be necessary because it is a repetition of info?)
 
     # bridge table to get course keywords
-    has_kw = models.ManyToManyField(Keyword)
+    has_kw = models.ManyToManyField(Keyword)    # what keywords are associated with this course
 
     def __str__(self):
         return self.course_name
 
 
 class Major(models.Model):
-    # TODO: docstring
     """
+    A Major is defined by a the name of the major, as well as a the 
+    shortform subject. A minor is similar to a major, but with a reduced 
+    set of classes, and is indicated by the `is_minor` indicator.
     """
     # attributes
-    major_name = models.CharField(max_length=100)
-    major_desc = models.CharField(max_length=512)
-    is_minor = models.BooleanField(default=False)
+    name = models.CharField(max_length=100)         # e.g., 'Computer Science'
+    subject = models.CharField(max_length=10)       # e.g., 'CS' or 'MATH'
+    desc = models.CharField(max_length=512)         # a longform description of the major
+    is_minor = models.BooleanField(default=False)   # indicate if this defines a minor instead
 
     # bridge table to get the courses in a major
     has_course = models.ManyToManyField(Course)
@@ -62,8 +70,10 @@ class Major(models.Model):
 
 
 class OfferTimes(models.Model):
-    # TODO: docstring
     """
+    A table to indicate when classes are offered, whether in Fall, 
+    Winter, Spring, or Summer, and whether they are offered yearly, or 
+    every other year (odd or even years).
     """
     # the offer times are identified by the course that is offered
     course = models.OneToOneField(

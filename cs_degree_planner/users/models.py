@@ -8,6 +8,9 @@ TODO: file description
 2023-05-23 - Zane Globus-O'Harra : add Forecast model, and imports from 
     forecast.models. The Forecast model needed to be defined here to 
     avoid circular imports. 
+    Add credit counters to the Profile model... it is somewhat uncertain 
+    how the separate credit tallies will be counted (for gened courses,
+    major specific courses, etc.)
 """
 
 from django.db import models
@@ -32,6 +35,17 @@ class Profile(models.Model):
     courses_taken = models.ManyToManyField(Course)  # bridge table to courses
     interests = models.ManyToManyField(Keyword)     # bridge table to keywords
 
+    total_credits = models.IntegerField(default=0)  # user's total credits taken
+    major_credits = models.IntegerField(default=0)  # credits towards the user's major
+
+    #  FIXME: do we assume that the user is getting a BS?
+    bs_credits = models.IntegerField(default=0)     # bachelor of science credits
+
+    # area of inquiry credits: includes arts and letters, social science, and science credits
+    aoi_credits = models.IntegerField(default=0)        
+    # includes U.S. and global perspectives credits
+    cultural_credits = models.IntegerField(default=0)   
+
     def __str__(self):
         return self.user.username
 
@@ -45,7 +59,7 @@ class Forecast(models.Model):
     forecast.models, there would be circular imports. 
     """
     courses_in_fc = models.ManyToManyField(Course)  # bridge table to courses
-    user = models.ForeignKey(                       # related to a user profile
+    user = models.ForeignKey(                       # Foreign Key to a user profile
         Profile,
         on_delete=models.CASCADE
     )
