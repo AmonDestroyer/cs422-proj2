@@ -12,7 +12,10 @@ from . import views
 app_name = "forecast"
 
 urlpatterns = [
-    # ex: /dashboard/
-    path("", views.index, name="dashboard"),
+    # ex: /forecast/dashboard
+    path("dashboard", views.index, name="dashboard"),
+    # ex: /forecast/edit_courses
+    path("edit_courses", views.edit_courses, name="edit_courses"),
+    path("courses_left", views.courses_left, name="courses_left"),
 ]
 
