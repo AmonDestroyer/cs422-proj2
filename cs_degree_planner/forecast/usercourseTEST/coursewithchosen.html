@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Edit Course History</title>	
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">
+	<style>
+		* {
+  box-sizing: border-box;
+  
+		}
+
+	.input-number {
+	  width: 40px;
+	  padding: 0 12px;
+	  vertical-align: top;
+	  text-align: center;
+	  outline: none;
+		border-radius: 40px;
+	}
+
+.input-number,
+.input-number-decrement,
+		.input-number-increment {
+  border: 1px solid #ccc;
+  height: 40px;
+  user-select: none;
+		}
+
+.input-number-decrement,
+		.input-number-increment {
+  display: inline-block;
+  width: 30px;
+  line-height: 38px;
+  background: #f1f1f1;
+  color: #444;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+		}
+
+  
+    
+
+		.input-number-decrement {
+  border-right: none;
+  border-radius: 40px 0 0 40px;
+		}
+		.input-number-increment {
+  border-left: none;
+  border-radius: 0 40px 40px 0;
+		}
+	</style>
+</head>
+<body>
+<form>
+<table>
+	<tr>
+<td><h3>Your course history</h3></td>
+		<td><h3>Your general credit</h3></td>
+		</tr>
+	<tr>
+	<td><h4>Add or remove courses</h4></td>
+		<td><h4>Add or remove general credit</h4></td>
+		</tr>
+	<tr>
+	<td>
+<select class="chzn-select" multiple="true" name="faculty" style="width:200px;">
+        <option value="AC">A</option>
+        <option value="AD">B</option>
+        <option value="AM">C</option>
+        <option value="AP">D</option>
+</select>
+		</td>
+	
+	
+	<td><h5>Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n1" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+		</tr>
+		<tr>
+		<td></td>
+					<td><h5>Social Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n2" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+		</tr>
+		<tr>
+		<td></td>
+					<td><h5>Arts and Letters</h5><span class="input-number-decrement">–</span><input class="input-number" id="n3" type="text" value="1" min="0" max="10"><span class="input-number-increment">+</span></td>
+		
+		</tr>
+
+	</table>
+</form>
+
+<script type="text/javascript">
+$(function() {
+    $(".chzn-select").chosen();
+});
+	
+//https://codepen.io/djgrant/pen/rNMWQo
+(function() {
+ 
+  window.inputNumber = function(el) {
+
+    var min = el.attr('min') || false;
+    var max = el.attr('max') || false;
+
+    var els = {};
+
+    els.dec = el.prev();
+    els.inc = el.next();
+
+    el.each(function() {
+      init($(this));
+    });
+
+    function init(el) {
+
+      els.dec.on('click', decrement);
+      els.inc.on('click', increment);
+
+      function decrement() {
+        var value = el[0].value;
+        value--;
+        if(!min || value >= min) {
+          el[0].value = value;
+        }
+      }
+
+      function increment() {
+        var value = el[0].value;
+        value++;
+        if(!max || value <= max) {
+          el[0].value = value++;
+        }
+      }
+    }
+  }
+})();
+
+inputNumber($('#n1'));
+	inputNumber($('#n2'));
+		inputNumber($('#n3'));
+</script>
+</body>
+</html>
