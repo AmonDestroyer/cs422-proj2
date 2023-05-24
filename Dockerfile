@@ -10,4 +10,5 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 WORKDIR /app/cs_degree_planner
 ENTRYPOINT ["python3"]
+CMD ["manage.py", "migrate"]
 CMD ["manage.py", "runserver", "0.0.0.0:8080"]
