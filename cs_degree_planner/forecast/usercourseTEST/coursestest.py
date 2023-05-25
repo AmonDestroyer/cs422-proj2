@@ -1,6 +1,8 @@
 import pandas as pd
 df = pd.read_excel('recommendcourses.xlsx', index_col="id")
+
 REQUIRED_CREDITS = 180
+
 
 class Course:
     '''
@@ -118,7 +120,7 @@ class User:
 
         # initialize some useful variables
         math2_taken = {413000, 420000, 427000, 473000, 253001, 281001, 256001, 282001, 307001, 316001, 317001, 320001, 345001, 347001, 348001, 351001, 352001, 391001, 392001, 394001, 395001, 397001, 411001, 412001, 413001, 414001, 415001, 421001, 422001, 431001, 432001, 433001, 434001, 441001, 444001, 445001, 446001, 461001, 462001, 463001, 467001} & course_history
-        math2_shared = len(math2_taken) > 0 and len({253001, 281001, 256001, 282001, 307001, 316001, 317001, 320001, 345001, 347001, 348001, 351001, 352001, 391001, 392001, 394001, 395001, 397001, 411001, 412001, 413001, 414001, 415001, 421001, 422001, 431001, 432001, 433001, 434001, 441001, 444001, 445001, 446001, 461001, 462001, 463001, 467001} & math2_taken) == 0
+        #math2_shared = len(math2_taken) > 0 and len({253001, 281001, 256001, 282001, 307001, 316001, 317001, 320001, 345001, 347001, 348001, 351001, 352001, 391001, 392001, 394001, 395001, 397001, 411001, 412001, 413001, 414001, 415001, 421001, 422001, 431001, 432001, 433001, 434001, 441001, 444001, 445001, 446001, 461001, 462001, 463001, 467001} & math2_taken) == 0
         cs_electives_taken_under = set()
         cs_electives_taken_over = set()
         cs_electives_over = set()
@@ -233,7 +235,7 @@ class User:
                     if sciencepaths != "":
                         sciencepaths += " or "
                     sciencepaths += "Complete remainder of 2 courses from {PSY 348, PSY 301, PSY 304, PSY 305}"
-                if 111007 in course_history:  # bio
+                if 111003 in course_history:  # bio
                     if sciencepaths != "":
                         sciencepaths += " or "
                     sciencepaths += "Complete remainder of {BI 211 and one from {BI 212, BI 213}}"
@@ -298,7 +300,7 @@ def __main__():
     max_credits_per_term = 16
     course_history = {210000, 211000, 251001}
     rupert = User(start_term, start_year, max_credits_per_term, course_history)
-    barbara = User('F', 2023, 16, {210000, 211000, 314000, 212000, 330000, 341001})
+    barbara = User('F', 2023, 16, {111003, 210000, 211000, 314000, 212000, 330000, 341001})
     #print(is_offered(21000, 'F', 2023))
     #print(df['term'].loc[21100])
     #for index, row in df.iterrows():
