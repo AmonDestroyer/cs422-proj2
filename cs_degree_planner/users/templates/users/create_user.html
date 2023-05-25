@@ -2,9 +2,23 @@
 TODO: file description
 
 2023-05-19 - Nathaniel mason : added HTML code to pull any messages and the create user form from views.py
+2023-05-24 - Josh Sawyer     : added temporary css styling when errors occur
 
 -->
-
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .error-popup {
+        display: inline-block;
+        border: 1px solid red;
+        background-color: #ffcccc;
+        padding: 5px;
+        margin: 5px;
+    }
+  </style>
+</head>
+<body>
 <h2>Please fill out the following information, then click Submit to create an account</h2>
 <!-- ModelForm will go here, Django will make sure it is valid -->
 
@@ -16,7 +30,22 @@ TODO: file description
 
 <form method="POST" action="">
     {% csrf_token %}
-    {{userform.as_p}}
+    
+    {% for field in userform %}
+        <div class="form-group">
+            {% if field.errors %}
+                <div class="error-popup">
+                    {% for error in field.errors %}
+                        <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+            {% endif %}
+            <div class = "field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
 
     <input type="submit" name="Submit">
 </form>
+</body>

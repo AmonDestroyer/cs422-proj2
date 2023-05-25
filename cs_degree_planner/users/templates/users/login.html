@@ -2,6 +2,7 @@
 TODO: file description
 
 2023-05-22 - Josh Sawyer : added temporary HTML code to test login form 
+2023-05-24 - Josh Sawyer : added temporary css styling when errors occur
 
 -->
 
@@ -9,6 +10,15 @@ TODO: file description
 <html>
 <head>
     <title>Login</title>
+    <style>
+        .error-popup {
+            display: inline-block;
+            border: 1px solid red;
+            background-color: #ffcccc;
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>Login</h1>
@@ -17,10 +27,26 @@ TODO: file description
             <p><b>{{ message }}</b></p>
         {% endfor %}
     {% endif %}
+
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+
+        {% for field in form %}
+        <div class="form-group">
+            {% if field.errors %}
+                <div class="error-popup">
+                    {% for error in field.errors %}
+                        <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+            {% endif %}
+            <div class = "field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <button type="submit">Login</button>
     </form>
 </body>
 </html>

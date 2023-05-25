@@ -3,6 +3,7 @@ TODO: file description
 
 2023-05-19 - Nathaniel mason : add create_user view
 2023-05-22 - Josh Sawyer     : add login view
+2023-05-24 - Josh Sawyer     : made it so form isn't refreshed when invalid
 
 """
 
@@ -26,11 +27,9 @@ def create_user(request):
             form.save(True) # commit defined as True, so will immediately store in the DB
             return redirect('users:index')
         else:
-            for field in form:
-                if field.errors:
-                    print(field.errors) 
-            messages.error(request, "User information not valid")
-            return redirect('users:create_user')
+            if 'password2' in form.errors:
+                form.errors['password1'] = form.errors['password2']
+                del form.errors['password2']
 
     context = {'userform': form}
 
@@ -45,12 +44,14 @@ def login_user(request):
             login(request, user)
             return redirect('forecast:dashboard') # redirect to the dashboard page  
         else:
-            print(form.errors)
-            messages.error(request, "User information not valid")
-            return redirect('users:login')
+            if (form.non_field_errors()):
+                for error in form.non_field_errors():
+                    form.add_error('username', error)
+    
     else: # if the form has not been submitted, the user is requesting the page
         form = JEANZUserLoginForm() # create a blank form
-        return render(request, 'users/login.html', {'form': form})
+
+    return render(request, 'users/login.html', {'form': form})
     
     
 def logout_user(request):
