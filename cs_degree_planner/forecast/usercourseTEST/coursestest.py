@@ -1,5 +1,7 @@
 import pandas as pd
 df = pd.read_excel('recommendcourses.xlsx', index_col="id")
+REQUIRED_CREDITS = 180
+
 class Course:
     '''
     course should be identifiable by type (CS, MATH, ANTH, etc)
@@ -112,7 +114,7 @@ class User:
         '''
         ASSUMPTIONS: user will satisfy location-specific requirements and P/NP/Graded requirements on their own
         untested code below'''
-        REQUIRED_CREDITS = 180
+
 
         # initialize some useful variables
         math2_taken = {413000, 420000, 427000, 473000, 253001, 281001, 256001, 282001, 307001, 316001, 317001, 320001, 345001, 347001, 348001, 351001, 352001, 391001, 392001, 394001, 395001, 397001, 411001, 412001, 413001, 414001, 415001, 421001, 422001, 431001, 432001, 433001, 434001, 441001, 444001, 445001, 446001, 461001, 462001, 463001, 467001} & course_history
@@ -264,7 +266,7 @@ class User:
         '''
         ASSUMPTIONS: user will satisfy location-specific requirements and P/NP/Graded requirements on their own
         untested code below'''
-        return len(self.remaining_requirements(course_history)) != 0
+        return len(self.remaining_requirements(course_history)) != 0 | REQUIRED_CREDITS - total_credits(course_history) > 0
 
 
     def generate_forecast(self, target_term, target_year):
