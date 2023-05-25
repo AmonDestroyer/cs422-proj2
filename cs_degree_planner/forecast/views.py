@@ -4,6 +4,7 @@ TODO: file description
 2023-05-22 - Josh Sawyer     : add dashboard view
 2023-05-23 - Nathaniel mason : add edit_courses view and courses_left view
 2023-05-24 - Nathaniel mason : update edit_courses view
+2023-05-25 - Erin Stone      : add global perspectives and US requirements
 """
 
 from django.shortcuts import render, redirect
@@ -32,6 +33,8 @@ def edit_courses(request):
             user_sci = form.cleaned_data.get('sci_cred')
             user_soc_sci = form.cleaned_data.get('soc_sci_cred')
             user_arts_lett = form.cleaned_data.get('arts_letters_cred')
+            user_gp = form.cleaned_data.get('gp_cred')
+            user_us = form.cleaned_data.get('us_cred')
             
             # next will need to take the user_courses_taken and save them in the DB for that user
             # for now, just send messages back to notify that Django obtained the data correctly
@@ -39,6 +42,8 @@ def edit_courses(request):
             messages.info(request, user_sci)
             messages.info(request, user_soc_sci)
             messages.info(request, user_arts_lett)
+            messages.info(request, user_gp)
+            messages.info(request, user_us)
 
             messages.success(request, "Changes Saved Successfully!")
             

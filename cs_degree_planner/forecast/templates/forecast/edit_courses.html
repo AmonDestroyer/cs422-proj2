@@ -22,6 +22,7 @@ TODO: file description
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
 <link rel="stylesheet" href="{% static 'forecast/chosencopy.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 </head>
 <body>
@@ -55,26 +56,36 @@ TODO: file description
       {{ courseform.major_courses }}
       </td>
 
-      <td><h5>Science</h5>
-      <span class="input-number-decrement">–</span>
-        {{ courseform.sci_cred }}
-      <span class="input-number-increment">+</span></td>
+
+	
+	
+	
+	
+		<td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
 		</tr>
 		<tr>
-		    <td></td>
-					<td><h5>Social Science</h5>
-            <span class="input-number-decrement">–</span>
-              {{ courseform.soc_sci_cred }}
-            <span class="input-number-increment">+</span>
-        </td>
+		<td></td><td></td>
+					<td><h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span></td>
 		</tr>
 		<tr>
-		  <td></td>
-					<td><h5>Arts and Letters</h5>
-          <span class="input-number-decrement">–</span>
-            {{ courseform.arts_letters_cred }}
-          <span class="input-number-increment">+</span></td>
+		<td></td><td></td>
+					<td><h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span></td>
+		
 		</tr>
+		<tr>
+		<td></td><td></td>
+					<td><h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span></td>
+		
+		</tr>
+		<tr>
+		<td></td><td></td>
+					<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span></td>
+		
+		</tr>
+	
+	
+	
+	
 
 	</table>
   <br>
@@ -129,9 +140,11 @@ $(function() {
   }
 })();
 
-inputNumber($('#n1'));
-	inputNumber($('#n2'));
-		inputNumber($('#n3'));
+inputNumber($('#arts_letters_cred'));
+inputNumber($('#social_science_cred'));
+inputNumber($('#science_cred'));
+inputNumber($('#gp_cred'));
+inputNumber($('#us_cred'));
 </script>
 </body>
 </html>

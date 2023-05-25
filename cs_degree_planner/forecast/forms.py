@@ -2,7 +2,7 @@
 TODO: file description
 
 2023-05-24 - Nathaniel mason : add EditCoursesForm and code to pull course options
-
+2023-05-25 - Erin Stone      : add global perspectives and US requirements
 """
 
 import os
@@ -35,12 +35,20 @@ class EditCoursesForm(forms.Form):
     
     sci_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'science_cred', 'class': 'input-number', 
-                'type': 'number', 'value': '0', 'min': '0', 'max': '10'}))
+                'type': 'number', 'value': '0', 'min': '0'}))
     
     soc_sci_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'social_science_cred', 'class': 'input-number', 
-               'type': 'number', 'value': '0', 'min': '0', 'max': '10'}))
+               'type': 'number', 'value': '0', 'min': '0'}))
     
     arts_letters_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'arts_letters_cred', 'class': 'input-number', 
-               'type': 'number', 'value': '0', 'min': '0', 'max': '10'}))
+               'type': 'number', 'value': '0', 'min': '0'}))
+
+    gp_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'gp_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
+
+    us_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'us_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
