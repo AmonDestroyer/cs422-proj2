@@ -24,6 +24,26 @@ TODO: file description
 <link rel="stylesheet" href="{% static 'forecast/chosencopy.css' %}" type="text/css">
 	<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
+	<style>
+		html {
+	max-width: 100%;
+    overflow-x: hidden;
+	min-height:100%;
+      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+      background-size:cover;
+}
+
+body {
+	text-align: center;
+	
+	padding-bottom: 200px;
+	font-family: AlteHaasGrotesk, sans-serif;
+	font-style: normal;
+          font-weight: 300;
+	color: green;
+	
+}
+	</style>
 </head>
 <body>
 	{% if messages %}
