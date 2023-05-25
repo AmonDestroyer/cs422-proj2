@@ -17,13 +17,11 @@ df = pd.read_excel(file_path, index_col="id")
 COURSE_OPTIONS = []
 
 for index, row in df.iterrows():
-    required = row['required']
-    if(required):
-        list_option_display = row['subject'] + ' ' + str(row['number']) + ' ' + row['name']
-        list_option_val = str(index)
-        #print(list_option)
-        list_option = (list_option_val, list_option_display)
-        COURSE_OPTIONS.append(list_option)
+    list_option_display = str(row['subject']) + ' ' + str(row['number']) + ' ' + str(row['name'])
+    list_option_val = str(index)
+    #print(list_option)
+    list_option = (list_option_val, list_option_display)
+    COURSE_OPTIONS.append(list_option)
 
 #print(COURSE_OPTIONS)
 
