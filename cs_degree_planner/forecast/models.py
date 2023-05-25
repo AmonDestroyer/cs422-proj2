@@ -5,6 +5,11 @@ TODO: file description
     OfferTimes models. The order that the models are written in matters.
     The Forecast model is defined in users.models to avoid circular
     imports. 
+2023-05-24 - Zane Globus-O'Harra : Remove OfferedTimes table because it 
+    was unecessary, added the information it held to the Course table. 
+    Add a `Major_Has_Course` table that is bridged through, containing
+    additional info about whether a course is required or elective for a
+    Major.
 """
 
 from django.db import models
@@ -36,15 +41,23 @@ class Course(models.Model):
     # attributes
     name = models.CharField(max_length=100)     # e.g., 'Software Methodologies'
     subject = models.CharField(max_length=10)   # e.g., 'CS' or 'MATH'
-    number = models.IntegerField(default=0)              # e.g., 415 or 422
-    credits = models.IntegerField(default=0)             # number of credits
+    number = models.IntegerField(default=0)     # e.g., 415 or 422
+    credits = models.IntegerField(default=0)    # number of credits
 
     # bridge table to get course prereqs
     has_prereq = models.ManyToManyField("self")     # prereqs that the course has
-    is_prereq_for = models.ManyToManyField("self")  # courses this course is a prereq for (NOTE: might not be necessary because it is a repetition of info?)
 
     # bridge table to get course keywords
     has_kw = models.ManyToManyField(Keyword)    # what keywords are associated with this course
+
+    # information about when a course is offered.
+    fall = models.BooleanField(default=False);
+    winter = models.BooleanField(default=False);
+    spring = models.BooleanField(default=False);
+    summer = models.BooleanField(default=False);
+    every_year = models.BooleanField(default=False);
+    every_year_odd = models.BooleanField(default=False);
+    every_year_even = models.BooleanField(default=False);
 
     def __str__(self):
         return self.course_name
@@ -63,31 +76,26 @@ class Major(models.Model):
     is_minor = models.BooleanField(default=False)   # indicate if this defines a minor instead
 
     # bridge table to get the courses in a major
-    has_course = models.ManyToManyField(Course)
+    courses = models.ManyToManyField(
+        Course,
+        through="Major_Has_Course"
+    )
     
     def __str__(self):
         return self.name 
 
 
-class OfferTimes(models.Model):
+class Major_Has_Course(models.Model):
     """
-    A table to indicate when classes are offered, whether in Fall, 
-    Winter, Spring, or Summer, and whether they are offered yearly, or 
-    every other year (odd or even years).
+    Because we need to know if a course in a major is required or not 
+    (an elective), we need a bridge table to add the `is_required` info.
     """
-    # the offer times are identified by the course that is offered
-    course = models.OneToOneField(
+    course = models.ForeignKey(     # ForeighnKey to course
         Course,
         on_delete=models.CASCADE
     )
-    # attributes
-    fall = models.BooleanField(default=False);
-    winter = models.BooleanField(default=False);
-    spring = models.BooleanField(default=False);
-    summer = models.BooleanField(default=False);
-    every_year = models.BooleanField(default=False);
-    every_year_odd = models.BooleanField(default=False);
-    every_year_even = models.BooleanField(default=False);
-
-    def __str__(self):
-        return self.course
+    major = models.ForeignKey(      # ForeignKey to major
+        Major,
+        on_delete=models.CASCADE
+    )
+    is_required = models.BooleanField(default=False) # is the course required or elective?
