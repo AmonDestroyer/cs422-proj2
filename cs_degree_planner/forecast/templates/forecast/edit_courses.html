@@ -1,3 +1,12 @@
+<!--
+TODO: file description
+
+2023-05-24 - Nathaniel mason : Incorporated styling and HTML structure from Erin 
+                               and added code to pull form from Django
+
+
+-->
+
 {% extends 'forecast/base.html' %}
 {% load static %}
 
@@ -12,48 +21,67 @@
 <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
-<link rel="stylesheet" href="chosencopy.css">
+<link rel="stylesheet" href="{% static 'forecast/chosencopy.css' %}" type="text/css">
 
 </head>
 <body>
+	{% if messages %}
+        {% for message in messages %}
+            <p><b>{{ message }}</b></p>
+        {% endfor %}
+    {% endif %}
 	
-
-	
-<form>
+<form method="post">
+  {% csrf_token %}
 <table>
 	<tr>
-<td><h3>Your course history</h3></td>
-		<td><h3>Your general credit</h3></td>
-		</tr>
-	<tr>
-	<td><h4>Add or remove courses</h4></td>
-		<td><h4>Add or remove general credit</h4></td>
-		</tr>
-	<tr>
-	<td>
-<select class="chzn-select" multiple="true" name="faculty" style="width:200px;">
-        <option value="AC">CS 422</option>
-        <option value="AD">MATH 232</option>
-        <option value="AM">MATH 252</option>
-        <option value="AP">CS 415</option>
-</select>
-		</td>
-	
-	
-	<td><h5>Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n1" type="text" value="0" min="0" max="10"><span class="input-number-increment">+</span></td>
+    <td><h3>Your course history</h3></td>
+        <td><h3>Your general credit</h3></td>
+        </tr>
+      <tr>
+      <td><h4>Add or remove courses</h4></td>
+        <td><h4>Add or remove general credit</h4></td>
+        </tr>
+      <tr>
+      <td>
+      <!--
+      <select class="chzn-select" multiple="true" name="faculty" style="width:200px;">
+              <option value="AC">CS 422</option>
+              <option value="AD">MATH 232</option>
+              <option value="AM">MATH 252</option>
+              <option value="AP">CS 415</option>
+      </select>
+      -->
+      {{ courseform.major_courses }}
+      </td>
+
+      <td><h5>Science</h5>
+      <span class="input-number-decrement">–</span>
+        {{ courseform.sci_cred }}
+      <span class="input-number-increment">+</span></td>
 		</tr>
 		<tr>
-		<td></td>
-					<td><h5>Social Science</h5><span class="input-number-decrement">–</span><input class="input-number" id="n2" type="text" value="0" min="0"><span class="input-number-increment">+</span></td>
+		    <td></td>
+					<td><h5>Social Science</h5>
+            <span class="input-number-decrement">–</span>
+              {{ courseform.soc_sci_cred }}
+            <span class="input-number-increment">+</span>
+        </td>
 		</tr>
 		<tr>
-		<td></td>
-					<td><h5>Arts and Letters</h5><span class="input-number-decrement">–</span><input class="input-number" id="n3" type="text" value="0" min="0"><span class="input-number-increment">+</span></td>
-		
+		  <td></td>
+					<td><h5>Arts and Letters</h5>
+          <span class="input-number-decrement">–</span>
+            {{ courseform.arts_letters_cred }}
+          <span class="input-number-increment">+</span></td>
 		</tr>
 
 	</table>
+  <br>
+  <br>
+  <button type="submit" name="Submit">Save Changes</button>
 </form>
+
 
 <script type="text/javascript">
 $(function() {
