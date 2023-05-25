@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
 
 urlpatterns = [
+    path('', lambda request: redirect('forecast/dashboard')), # When root is given, define anonymous function to redirect to the dashboard
+    
     path('admin/', admin.site.urls),
     path("users/", include("users.urls")),
     path("forecast/", include("forecast.urls"))
