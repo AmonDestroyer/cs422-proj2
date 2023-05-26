@@ -1,7 +1,7 @@
 """
 TODO: Custom django admin command to load UO courses into the database 
 
-2023-05-25 - Josh Sawyer : Created course loading class
+2023-05-25 - Josh Sawyer : Created command to add courses to the database
 
 """
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         try:
             workbook = load_workbook(file)
             sheet = workbook.active
-            
+          
             ID = 0
             NAME = 7
             SUBJECT = 1
@@ -39,31 +39,40 @@ class Command(BaseCommand):
             
             courses = []
 
+            # Go through each row in the excel sheet and get the necessary information to add
+            # to the course object
             for row in sheet.iter_rows(min_row=2, values_only=True):
+                
+                # Check to see if the row has an ID
+                if row[ID] is not None:
+                    # Check if the course already exists
+                    if Course.objects.filter(id=row[ID]).exists():
+                        self.stdout.write(f"Course already exists, skipping.")
+                        continue
+                
                 terms = {'F': False, 'W': False, 'S': False}
-                for term in terms:
+                for term in terms: # Get all the terms the course is offered
                     if (row[TERM] is not None):
                         if term in row[TERM]:
                             terms[term] = True
                 
-                every_year = False
-                if type(row[ANNUAL]) is type(bool):
+                every_year = False 
+                if type(row[ANNUAL]) is type(bool): # Check if it's offered every year
                     every_year = True
-                
-                if row[ID] != None:
-                  course = Course(
-                      id = int(row[ID]),
-                      name = str(row[NAME]),
-                      subject = row[SUBJECT],
-                      number = row[NUMBER],
-                      credits = row[CREDITS],
-                      fall = terms['F'],
-                      winter = terms['W'],
-                      spring = terms['S'],
-                      every_year = every_year
-                  )
-                
-                  courses.append(course)
+
+                course = Course( # Create the course object
+                    id = int(row[ID]),
+                    name = str(row[NAME]),
+                    subject = row[SUBJECT],
+                    number = row[NUMBER],
+                    credits = row[CREDITS],
+                    fall = terms['F'],
+                    winter = terms['W'],
+                    spring = terms['S'],
+                    every_year = every_year
+                )
+              
+                courses.append(course) # Append it to a list that'll be used to bulk create
             
             Course.objects.bulk_create(courses)
             
@@ -74,7 +83,7 @@ class Command(BaseCommand):
                 prereqs = row[PREREQ]
                 if prereqs is not None:
                     prereq_ids = []
-                    if type(prereqs) is str:
+                    if type(prereqs) is str: # In the case of multiple prereqs
                         prereqs_list = row[PREREQ].split(', ')
                         for prereq in prereqs_list:
                             prereq_ids.append(int(prereq))
@@ -84,10 +93,13 @@ class Command(BaseCommand):
                   
                     course = Course.objects.get(id=row[ID])
                     
-                    for prereq_id in prereq_ids:
+                    for prereq_id in prereq_ids: 
                         try:
-                            prereq_course = Course.objects.get(id=prereq_id)
-                            course.has_prereq.add(prereq_course)
+                            if not course.has_prereq.filter(id=prereq_id).exists():
+                                prereq_course = Course.objects.get(id=prereq_id)
+                                course.has_prereq.add(prereq_course)
+                            else:
+                                self.stdout.write(f"Course already has this prereq, skipping.")
                             
                         except Course.DoesNotExist:
                             self.stderr.write(f"Course doesn't exist: prereq_id [{prereq_id}]")
