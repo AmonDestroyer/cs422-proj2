@@ -3,7 +3,7 @@ TODO: file description
 
 2023-05-19 - Nathaniel mason : add JEANZUserCreationForm
 2023-05-22 - Josh Sawyer     : add JEANZUserLoginForm
-2023-05-25 - Erin Stone      : minor changes to usercreationform for styling
+2023-05-25 - Erin Stone      : minor changes to usercreationform and loginform for styling
 
 """
 
@@ -75,5 +75,5 @@ class JEANZUserCreationForm(UserCreationForm):
       
 
 class JEANZUserLoginForm(AuthenticationForm):
-    username = forms.CharField(max_length=50) # max_length matches length of username field given for account creation
-    password = forms.CharField(widget=forms.PasswordInput) # widget=forms.PasswordInput hides password as it is typed
+    username = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'fld', 'id': 'username', 'placeholder': 'USERNAME', 'autofocus': 'True'})) # max_length matches length of username field given for account creation
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fld', 'id': 'password', 'placeholder': 'PASSWORD'})) # widget=forms.PasswordInput hides password as it is typed

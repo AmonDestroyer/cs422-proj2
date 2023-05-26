@@ -64,7 +64,8 @@ border-radius: 27px;
 		
 		.loginpopup {
 			margin-top: 20%;
-			border: 6px solid #95703A;
+			
+			background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='27' ry='27' stroke='%2395703AFF' stroke-width='12' stroke-dasharray='5%25%2c 3%25' stroke-dashoffset='52' stroke-linecap='butt'/%3e%3c/svg%3e");
 			border-radius: 30px;
 			font-family: AlteHaasGrotesk;
 			padding: 5%;
@@ -82,6 +83,46 @@ border-radius: 27px;
 		h3 {
 			font-size: 26pt;
 		}
+		
+		.fld {
+		  background: rgba(0,0,0,0.00);
+		  color: #d9d0c1;
+		  padding: 15px 65px 15px 30px;
+		  border-radius: 30px;
+		  border: 3px solid #95703A;
+		  margin: 6px;
+		  font-family: Lato;
+		  font-size: 12pt;
+		  transition: border 0.7s ease;
+		  width: fit-content;
+	  }
+	  
+	  .fld:hover {
+		  border: 3px solid #3A8795;
+	  }
+	  
+	  .fld:focus{
+		  border: 3px solid #3A8795;
+		  background:rgba(26,61,67,0.3);
+		  outline: none;
+	  }
+	  
+	  .form-group {
+		  
+	  }
+	  
+	  ::placeholder {
+		  letter-spacing: 2px;
+		  color: #95703A;
+		  width: fit-content;
+		  transition: color 0.7s ease;
+	  }
+	  
+	  	  ::placeholder:hover {
+		  color: #3A8795;
+		  width: fit-content;
+		  
+	  }
 
 
     </style>
@@ -118,7 +159,7 @@ border-radius: 27px;
 							</div>
 						{% endif %}
 						<div class = "field">
-							<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+							
 							{{ field }}
 						</div>
 					</div>
