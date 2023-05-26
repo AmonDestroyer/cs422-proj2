@@ -6,6 +6,7 @@ TODO: file description
 2023-05-24 - Nathaniel mason : update edit_courses view
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
 2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
+2023-05-26 - Josh Sawyer     : form now loads saved general credits
 
 """
 
@@ -37,6 +38,9 @@ def edit_courses(request):
         # just display the form for them to choose options from
         # get course selections of the user and update the list with them
         course_selections = user_profile.courses_taken.all()
+
+        general_credits = {'sci_cred': user_profile.sci_credits, 'soc_sci_cred': user_profile.ssci_credits, 'arts_letters_cred': user_profile.aal_credits, 'gp_cred': user_profile.gp_credits, 'us_cred': user_profile.us_credits}
+        
         if(course_selections is not None):
             course_options = form.fields['major_courses'].choices
 
@@ -48,8 +52,10 @@ def edit_courses(request):
                         prev_choices[str(selection_id)] = True
 
             print(prev_choices)
-            
-            
+        
+        for general in general_credits:
+            if general_credits[general] is not None:
+                form.fields[general].initial = general_credits[general]
     
     else:
         form = EditCoursesForm(request.POST)
@@ -99,11 +105,11 @@ def edit_courses(request):
             updated_total = current_total_credits + new_credits 
             user_profile.total_credits = updated_total
             #update specific credit areas
-            user_profile.aal_credits = user_profile.aal_credits + int(user_arts_lett)
-            user_profile.ssci_credits = user_profile.ssci_credits + int(user_soc_sci)
-            user_profile.sci_credits = user_profile.sci_credits + int(user_sci)
-            user_profile.gp_credits = user_profile.gp_credits + int(user_gp)
-            user_profile.us_credits = user_profile.us_credits + int(user_us)
+            user_profile.aal_credits = int(user_arts_lett)
+            user_profile.ssci_credits = int(user_soc_sci)
+            user_profile.sci_credits = int(user_sci)
+            user_profile.gp_credits = int(user_gp)
+            user_profile.us_credits = int(user_us)
             
             
             user_profile.save()
