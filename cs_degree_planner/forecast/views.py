@@ -98,6 +98,13 @@ def edit_courses(request):
             current_total_credits = user_profile.total_credits
             updated_total = current_total_credits + new_credits 
             user_profile.total_credits = updated_total
+            #update specific credit areas
+            user_profile.aal_credits = user_profile.aal_credits + int(user_arts_lett)
+            user_profile.ssci_credits = user_profile.ssci_credits + int(user_soc_sci)
+            user_profile.sci_credits = user_profile.sci_credits + int(user_sci)
+            user_profile.gp_credits = user_profile.gp_credits + int(user_gp)
+            user_profile.us_credits = user_profile.us_credits + int(user_us)
+            
             
             user_profile.save()
             print("user prof saved with new changes!")
@@ -135,6 +142,12 @@ def courses_left(request):
     courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
     courses_taken_set = set(courses_taken) # Convert query set to a regular set
 
-    remaining_courses = remaining_requirements(course_history=courses_taken_set)
+    aal_taken = int(request.user.profile.aal_credits)
+    ssci_taken = int(request.user.profile.ssci_credits)
+    sci_taken = int(request.user.profile.sci_credits)
+    gp_taken = int(request.user.profile.gp_credits)
+    us_taken = int(request.user.profile.us_credits)
+
+    remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
 
     return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})

@@ -44,7 +44,20 @@ class Profile(models.Model):
     # area of inquiry credits: includes arts and letters, social science, and science credits
     aoi_credits = models.IntegerField(default=0)        
     # includes U.S. and global perspectives credits
-    cultural_credits = models.IntegerField(default=0)   
+    cultural_credits = models.IntegerField(default=0)
+
+    #   areas of inquiry separated
+    #arts and letters
+    aal_credits = models.IntegerField(default=0)
+    #social science
+    ssci_credits = models.IntegerField(default=0)
+    #science
+    sci_credits = models.IntegerField(default=0)
+    #   cultural literacy separated
+    #global perspectives
+    gp_credits = models.IntegerField(default=0)
+    #us difference inequality agency
+    us_credits = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
