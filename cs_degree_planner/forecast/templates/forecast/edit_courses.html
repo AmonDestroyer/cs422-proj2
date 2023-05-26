@@ -101,7 +101,7 @@ body {
       -->
 
       
-      <select id="course_select" class="chzn-select" multiple="true">
+      <select id="course_select" class="chzn-select" multiple="true" name="major_courses">
           {% for list_option_val, list_option_display in course_options %}
             <option value='{{ list_option_val }}' {% if list_option_val in prev_choices %}selected="selected"{% endif %}>{{list_option_display}}
             </option>
@@ -110,10 +110,6 @@ body {
 
 
       </td>
-
-
-	
-	
 	
 	
 		<td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
@@ -137,9 +133,6 @@ body {
 					<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span></td>
 		
 		</tr>
-	
-	
-	
 	
 
 	</table>
