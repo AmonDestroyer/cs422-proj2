@@ -14,11 +14,14 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from .forms import JEANZUserCreationForm, JEANZUserLoginForm, UpdateUserNameForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from cs_degree_planner.decorators import anonymous_required
 
 # Create your views here.
+@anonymous_required
 def index(request):
     return render(request, "users/index.html")
 
+@anonymous_required
 def create_user(request):
     if request.method != 'POST':
         form = JEANZUserCreationForm()
@@ -38,6 +41,7 @@ def create_user(request):
     return render(request, 'users/create_user.html', context)
 
 
+@anonymous_required
 def login_user(request):
     if request.method == 'POST': # if the form has been submitted
         form = JEANZUserLoginForm(data=request.POST)
@@ -55,7 +59,7 @@ def login_user(request):
 
     return render(request, 'users/login.html', {'form': form})
     
-    
+
 def logout_user(request):
     logout(request)
     messages.success(request, "Logout Successful!")
