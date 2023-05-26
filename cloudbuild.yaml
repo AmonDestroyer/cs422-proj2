@@ -16,5 +16,5 @@ steps:
       - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
       - '--region'
       - 'us-central1'
-    images:
-    - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+images:
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
