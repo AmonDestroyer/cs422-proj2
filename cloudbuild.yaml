@@ -1,8 +1,20 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image',
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest',
             '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image']
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'deploy-cdp-dev'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - '--region'
+      - 'us-central1'
+    images:
+    - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
