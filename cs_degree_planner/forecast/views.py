@@ -5,6 +5,8 @@ TODO: file description
 2023-05-23 - Nathaniel mason : add edit_courses view and courses_left view
 2023-05-24 - Nathaniel mason : update edit_courses view
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
+2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
+
 """
 
 from django.shortcuts import render, redirect
@@ -18,11 +20,11 @@ from users.models import Profile
 
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
-@login_required(redirect_field_name='', login_url='users:index')
+@login_required(redirect_field_name='', login_url='users:login')
 def index(request):
     return render(request, "forecast/dashboard.html")
 
-
+@login_required(redirect_field_name='', login_url='users:login')
 def edit_courses(request):
     if request.method != 'POST':
         form = EditCoursesForm()
@@ -105,7 +107,7 @@ def edit_courses(request):
     
     return render(request, "forecast/edit_courses.html", context)
 
-
+@login_required(redirect_field_name='', login_url='users:login')
 def courses_left(request):
     user = request.user
     # values_list returns a query set, and flat=true flattens it to 1d
