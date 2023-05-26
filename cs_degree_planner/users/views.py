@@ -23,9 +23,9 @@ def create_user(request):
     else:
         form = JEANZUserCreationForm(request.POST)
         if form.is_valid():
-            messages.success(request, "Account Created Successfully!")
+            messages.success(request, "Account created successfully!", extra_tags='success')
             form.save(True) # commit defined as True, so will immediately store in the DB
-            return redirect('users:index')
+            return redirect('users:login')
         else:
             if 'password2' in form.errors:
                 form.errors['password1'] = form.errors['password2']

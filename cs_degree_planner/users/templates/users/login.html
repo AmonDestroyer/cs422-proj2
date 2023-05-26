@@ -123,6 +123,22 @@ border-radius: 27px;
 		  width: fit-content;
 		  
 	  }
+		
+			              .success {
+			font-family: AlteHaasGrotesk, bold;
+			color:#1F882F;
+            display: inline-block;
+            border: 3px solid #1F882F;
+            border-radius: 30px;
+            padding: 5px 10px;
+				font-size: 10pt;
+            margin: 3px 0px 5px 0px;
+			letter-spacing: normal;
+        }
+		
+		.indent {
+			margin-left: 5px;
+		}
 
 
     </style>
@@ -142,7 +158,7 @@ border-radius: 27px;
 				<h3>Log into your account</h3>
 				{% if messages %}
 					{% for message in messages %}
-						<p><b>{{ message }}</b></p>
+						<div class="indent"><p class="{% if message.tags %}{{ message.tags }}{% endif %}"><b>{{ message }}</b></p></div>
 					{% endfor %}
 				{% endif %}
 

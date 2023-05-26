@@ -34,6 +34,9 @@ TODO: file description
             margin: 3px 0px 5px 0px;
         }
 	  
+	  
+
+	  
     		.create {
 				position: absolute;
 				margin-left: 37.5%;
@@ -53,12 +56,13 @@ TODO: file description
 		}
 	  
 	  .containercontainer {
+		  top: 120px;
 		  position: fixed;
 		  z-index: -1;
 		  		background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='27' ry='27' stroke='%2395703AFF' stroke-width='12' stroke-dasharray='5%25%2c 3%25' stroke-dashoffset='50' stroke-linecap='butt'/%3e%3c/svg%3e");	
 		  padding: 5%;
 		  width: 400px;
-		  height: 500px;
+		  height: 450px;
 		  left: 36%;
 		  display: none;
 	  }
@@ -119,7 +123,7 @@ border: 6px solid #95703A;
 
 {% if messages %}
 {% for message in messages %}
-    <p><b>{{ message }}</b></p>
+    <div><p><b class="success-popup">{{ message }}</b></p></div>
 {% endfor %}
 {% endif %}
 <div class="containercontainer"></div>
