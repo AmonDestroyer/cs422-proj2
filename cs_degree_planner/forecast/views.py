@@ -26,10 +26,30 @@ def index(request):
 
 @login_required(redirect_field_name='', login_url='users:login')
 def edit_courses(request):
+    user_model = request.user # user that is currently logged in
+    user_profile = user_model.profile
+    prev_choices = {}
+    course_options = []
+    
     if request.method != 'POST':
         form = EditCoursesForm()
         # user is just requesting the page
         # just display the form for them to choose options from
+        # get course selections of the user and update the list with them
+        course_selections = user_profile.courses_taken.all()
+        if(course_selections is not None):
+            course_options = form.fields['major_courses'].choices
+
+            for selection in course_selections:
+                selection_id = selection.id # ex 210000
+                for option_val, option_display in course_options:
+                    if int(option_val) == selection_id: # found a match, set as selected for that list option
+                        print('found a match for: ', selection_id)
+                        prev_choices[str(selection_id)] = True
+
+            print(prev_choices)
+            
+            
     
     else:
         form = EditCoursesForm(request.POST)
@@ -45,8 +65,7 @@ def edit_courses(request):
 
             # Each course model will have an id (e.g. 210000) so need to retrieve
             # the appropriate course models, then add those to the instance of the user profile model
-            user_model = request.user # user that is currently logged in
-            user_profile = user_model.profile
+            
 
             un = user_model.username
             print(un)
@@ -103,7 +122,9 @@ def edit_courses(request):
             
             return redirect('forecast:edit_courses')
 
-    context = {'courseform': form}
+    context = {'courseform': form,
+               'course_options': course_options,
+               'prev_choices': prev_choices}
     
     return render(request, "forecast/edit_courses.html", context)
 

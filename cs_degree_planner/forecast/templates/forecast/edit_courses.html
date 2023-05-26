@@ -17,12 +17,12 @@ TODO: file description
 <head>
 <meta charset="UTF-8">
 <title>Edit Course History</title>	
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'forecast/chosencopy.css' %}" type="text/css">
-	<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 	<style>
 		html {
@@ -73,7 +73,16 @@ body {
               <option value="AP">CS 415</option>
       </select>
       -->
-      {{ courseform.major_courses }}
+
+      
+      <select id="course_select" class="chzn-select" multiple="true">
+          {% for list_option_val, list_option_display in course_options %}
+            <option value='{{ list_option_val }}' {% if list_option_val in prev_choices %}selected="selected"{% endif %}>{{list_option_display}}
+            </option>
+          {% endfor %}
+      </select>
+
+
       </td>
 
 
