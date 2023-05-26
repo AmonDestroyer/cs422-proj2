@@ -1,0 +1,8 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image', '.']
+- name: 'gcr.io/cloud-builders/docker'
+   args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
+ - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+   entrypoint: 'gcloud'
+   args: ['deploy', 'releases', 'create', 'release-#', '--project=${PROJECT_ID}', '--region=us-central1', '--delivery-pipeline=my-cs-degree-planner-1', '--images=my-app-image=us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
