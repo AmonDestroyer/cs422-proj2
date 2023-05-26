@@ -1,8 +1,57 @@
 steps:
+  # Build Image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image',
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest',
             '.']
+  # Push Image to Artifact Repository
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image']
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
+  # Development Deployment - Dev
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'deploy-cdp-dev'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - '--region'
+      - 'us-central1'
+  # Production Deployment - Prod
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'deploy-cdp-prod'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - '--region'
+      - 'us-central1'
+  # Traffic Update - Dev
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'services'
+      - 'update-traffic'
+      - 'deploy-cdp-dev'
+      - '--to-latest'
+      - '--region'
+      - 'us-central1'
+  # Traffic Update - Prod
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'services'
+      - 'update-traffic'
+      - 'deploy-cdp-prod'
+      - '--to-latest'
+      - '--region'
+      - 'us-central1'
+
+images:
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
