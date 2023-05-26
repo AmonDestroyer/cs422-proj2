@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm
 from django.contrib import messages
 from .models import Course
+from .forecast import remaining_requirements
 from users.models import Profile
 
 # login is required to see the dashboard
@@ -106,4 +107,11 @@ def edit_courses(request):
 
 
 def courses_left(request):
-    return render(request, "forecast/courses_left.html")
+    user = request.user
+    # values_list returns a query set, and flat=true flattens it to 1d
+    courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
+    courses_taken_set = set(courses_taken) # Convert query set to a regular set
+
+    remaining_courses = remaining_requirements(course_history=courses_taken_set)
+
+    return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})

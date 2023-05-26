@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand, CommandError
 from forecast.models import Course, Keyword
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
-import pandas as pd
 
 class Command(BaseCommand):
     help = """Imports courses from an Excel file.
