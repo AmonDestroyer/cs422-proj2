@@ -4,14 +4,16 @@ TODO: file description
 2023-05-19 - Nathaniel mason : add create_user view
 2023-05-22 - Josh Sawyer     : add login view
 2023-05-24 - Josh Sawyer     : made it so form isn't refreshed when invalid
+2023-05-26 - Josh Sawyer     : added update user account information (includes updating username and password)
 
 """
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, logout
-from .forms import JEANZUserCreationForm, JEANZUserLoginForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth import login, logout, update_session_auth_hash
+from .forms import JEANZUserCreationForm, JEANZUserLoginForm, UpdateUserNameForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def index(request):
@@ -58,3 +60,30 @@ def logout_user(request):
     logout(request)
     messages.success(request, "Logout Successful!")
     return redirect('users:index')
+
+
+@login_required(redirect_field_name='', login_url='users:login')
+def update_account_information(request):
+    if request.method == 'POST':
+        if 'update_username' in request.POST:
+            username_form = UpdateUserNameForm(request.POST, instance=request.user)
+            if username_form.is_valid():
+                username_form.save()
+                messages.success(request, "Username updated successfully!", extra_tags='success')
+                return redirect('users:update_account')
+   
+        if 'update_password' in request.POST:
+            password_form = PasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password updated successfully!", extra_tags='success')
+                return redirect('users:update_account')
+    
+    forms = {
+        "username_form": UpdateUserNameForm(),
+        "password_form": PasswordChangeForm(request.user),
+    }
+
+    return render(request, 'users/update_account.html', context=forms)
+

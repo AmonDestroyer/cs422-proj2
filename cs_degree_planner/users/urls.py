@@ -19,6 +19,8 @@ urlpatterns = [
     # ex: /users/login/
     path("login/", views.login_user, name="login"),
     # ex: /users/logout/
-    path("logout/", views.logout_user, name="logout")
+    path("logout/", views.logout_user, name="logout"),
+    
+    path("update-account", views.update_account_information, name='update_account'),
 ]
 

@@ -9,9 +9,10 @@ TODO: file description
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.contrib.auth.validators import UnicodeUsernameValidator
 
 # For reference: https://stackoverflow.com/questions/48049498/django-usercreationform-custom-fields
 # Ref for validating: https://www.javatpoint.com/django-usercreationform
@@ -77,3 +78,37 @@ class JEANZUserCreationForm(UserCreationForm):
 class JEANZUserLoginForm(AuthenticationForm):
     username = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'fld', 'id': 'username', 'placeholder': 'USERNAME', 'autofocus': 'True'})) # max_length matches length of username field given for account creation
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fld', 'id': 'password', 'placeholder': 'PASSWORD'})) # widget=forms.PasswordInput hides password as it is typed
+        
+
+class UpdateUserNameForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username',)
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop('password')
+        self.fields['username'].help_text = None
+        self.fields['username'].widget.attrs['placeholder'] = 'New Username'
+        
+    
+
+
+# class UpdateUserNameForm(forms.Form):
+#     new_username = forms.CharField(label='New Username', validators=[UnicodeUsernameValidator()])
+    
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         new_username = self.cleaned_data['new_username']
+#         if User.objects.filter(username=new_username).exists():
+#             raise forms.ValidationError("Username already taken")
+        
+#         return new_username
+    
+#     def save(self, user):
+#         new_username = self.cleaned_data['new_username']
+#         user.username = new_username
+#         user.save()
+    
+           
+    

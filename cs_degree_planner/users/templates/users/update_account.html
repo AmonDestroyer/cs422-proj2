@@ -1,0 +1,74 @@
+<!--
+TODO: file description
+
+2023-05-26 - Josh Sawyer     : added update user account html (includes updating username and password)
+
+-->
+
+{% if messages %}
+{% for message in messages %}
+    <p><b>{{ message }}</b></p>
+{% endfor %}
+{% endif %}
+
+<div id="go-home">
+    <a href="{% url 'forecast:dashboard' %}">go back to the dashboard... unless you want to stay here</a>
+
+<div id="username-section">
+    {% comment %} <p>Username: <span id="username">{{ request.user.username }}</span></p> {% endcomment %}
+    <button id="change-username-btn">Change Username</button>
+  </div>
+  
+  <div id="password-section">
+    <button id="change-password-btn">Change Password</button>
+  </div>
+  
+  <!-- Username Update Form -->
+  <div id="username-form" style="display: none;">
+    <form id="update-username-form" method="POST" action="{% url 'users:update_account' %}">
+      {% csrf_token %}
+      {{ username_form.as_p }}
+      <button type="submit" name="update_username">Update</button>
+    </form>
+  </div>
+  
+  <!-- Password Update Form -->
+  <div id="password-form" style="display: none;">
+    <form id="update-password-form" method="POST" action="{% url 'users:update_account' %}">
+      {% csrf_token %}
+      {{ password_form.as_p }}
+      <button type="submit" name="update_password">Update</button>
+    </form>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Change Username button click event
+      $("#change-username-btn").click(function() {
+        $("#username-section").hide();
+        $("#password-section").hide();
+        $("#username-form").show();
+      });
+  
+      // Change Password button click event
+      $("#change-password-btn").click(function() {
+        $("#password-section").hide();
+        $("#username-section").hide();
+        $("#password-form").show();
+      });
+    });
+  </script>
+  
+  
+  
+  
+  
+
+
+
+
+
+  
+
+
