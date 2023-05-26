@@ -9,8 +9,11 @@ TODO: file description
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .forms import EditCoursesForm
 from django.contrib import messages
+from .models import Course
+from users.models import Profile
 
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
@@ -30,11 +33,52 @@ def edit_courses(request):
         if form.is_valid():
             # once the form is valid, we must save their chosen courses in the DB
             user_courses_taken = form.cleaned_data.get('major_courses')
+            print(user_courses_taken)
             user_sci = form.cleaned_data.get('sci_cred')
             user_soc_sci = form.cleaned_data.get('soc_sci_cred')
             user_arts_lett = form.cleaned_data.get('arts_letters_cred')
             user_gp = form.cleaned_data.get('gp_cred')
             user_us = form.cleaned_data.get('us_cred')
+
+            # Each course model will have an id (e.g. 210000) so need to retrieve
+            # the appropriate course models, then add those to the instance of the user profile model
+            user_model = request.user # user that is currently logged in
+            user_profile = user_model.profile
+
+            un = user_model.username
+            print(un)
+
+            for course_id in user_courses_taken:
+                try:
+                    course_model = Course.objects.get(id=int(course_id))
+                    # once have course_model save in courses_taken
+                    user_profile.courses_taken.add(course_model)
+                    print("found course_model with the id!")
+                except:
+                    print("course_model not found")
+
+
+            # update area of inquiry credits, 
+            # which includes science credits, social science, arts and letters
+            new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
+            current_aoi = user_profile.aoi_credits
+            updated_aoi = current_aoi + new_aoi
+            user_profile.aoi_credits = updated_aoi
+
+            # update U.S. and global perspectives credits
+            new_cultural = int(user_gp) + int(user_us)
+            current_cultural = user_profile.cultural_credits
+            updated_cultural = current_cultural + new_cultural
+            user_profile.cultural_credits = updated_cultural
+
+            # update total amount of credits
+            new_credits = new_aoi + new_cultural
+            current_total_credits = user_profile.total_credits
+            updated_total = current_total_credits + new_credits 
+            user_profile.total_credits = updated_total
+            
+            user_profile.save()
+            print("user prof saved with new changes!")
             
             # next will need to take the user_courses_taken and save them in the DB for that user
             # for now, just send messages back to notify that Django obtained the data correctly
