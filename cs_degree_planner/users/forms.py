@@ -84,31 +84,13 @@ class UpdateUserNameForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('username',)
+        labels = { 'username': 'New Username' } # What's displayed on the form
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields.pop('password')
         self.fields['username'].help_text = None
         self.fields['username'].widget.attrs['placeholder'] = 'New Username'
-        
-    
-
-
-# class UpdateUserNameForm(forms.Form):
-#     new_username = forms.CharField(label='New Username', validators=[UnicodeUsernameValidator()])
-    
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         new_username = self.cleaned_data['new_username']
-#         if User.objects.filter(username=new_username).exists():
-#             raise forms.ValidationError("Username already taken")
-        
-#         return new_username
-    
-#     def save(self, user):
-#         new_username = self.cleaned_data['new_username']
-#         user.username = new_username
-#         user.save()
     
            
     

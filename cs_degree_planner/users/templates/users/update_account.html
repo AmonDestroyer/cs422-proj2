@@ -27,6 +27,7 @@ TODO: file description
   <div id="username-form" style="display: none;">
     <form id="update-username-form" method="POST" action="{% url 'users:update_account' %}">
       {% csrf_token %}
+      <p>Current Username: <span id="username">{{ request.user.username }}</span></p>
       {{ username_form.as_p }}
       <button type="submit" name="update_username">Update</button>
     </form>
