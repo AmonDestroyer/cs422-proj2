@@ -37,13 +37,11 @@ TODO: file description
 	  
 
 	  
-    		.create {
-				position: absolute;
-				margin-left: 37.5%;
-				margin-bottom: 15%;
-			font-size: 12pt;
-				
-		}
+.create {
+    margin: 0 auto;
+    font-size: 12pt;
+	margin-top: 25px;
+}
 		
 		.hidden {
 			display: none;
@@ -115,9 +113,22 @@ border: 6px solid #95703A;
 			padding: 5%;
 				height: fit-content;
 		}
+	  
+	  #backbutton {
+		  position: fixed;
+		  top: 20px;
+		  left: 50px;
+		  padding: 15px 20px;
+		  color:#d9d0c1;
+		  letter-spacing: 1px;
+	  }
   </style>
 </head>
 <body>
+	<form id="back" class="hidden" action="/users/login">
+    	<input id="backbuttonhidden" type="submit" value="login" />
+	</form>
+	<label id="backbutton" for="backbuttonhidden" class="homelog create">BACK</label>
 <h2>Create a new account</h2>
 <!-- ModelForm will go here, Django will make sure it is valid -->
 
