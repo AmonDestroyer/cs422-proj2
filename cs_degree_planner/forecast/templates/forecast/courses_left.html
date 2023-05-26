@@ -10,9 +10,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Courses</title>
+
+    <style>
+        .courses-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .course {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 25%;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid black;
+            border-radius: 10px;
+            color: black;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }      
+        {% comment %} GIve me a darker background (darker than #e6e6e6;) color when hovering {% endcomment %}
+        .course:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
 </head>
 <body>
-    Page that will contain the list of remaining courses that the user needs to take
+    <div class="courses-form">
+        {% for course in remaining_courses %}
+            <div class="course">
+                {{ course }} 
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
 

@@ -5,6 +5,8 @@ TODO: file description
 2023-05-23 - Nathaniel mason : add edit_courses view and courses_left view
 2023-05-24 - Nathaniel mason : update edit_courses view
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
+2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
+
 """
 
 from django.shortcuts import render, redirect
@@ -13,20 +15,41 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm
 from django.contrib import messages
 from .models import Course
+from .forecast import remaining_requirements
 from users.models import Profile
 
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
-@login_required(redirect_field_name='', login_url='users:index')
+@login_required(redirect_field_name='', login_url='users:login')
 def index(request):
     return render(request, "forecast/dashboard.html")
 
-
+@login_required(redirect_field_name='', login_url='users:login')
 def edit_courses(request):
+    user_model = request.user # user that is currently logged in
+    user_profile = user_model.profile
+    prev_choices = {}
+    course_options = []
+    
     if request.method != 'POST':
         form = EditCoursesForm()
         # user is just requesting the page
         # just display the form for them to choose options from
+        # get course selections of the user and update the list with them
+        course_selections = user_profile.courses_taken.all()
+        if(course_selections is not None):
+            course_options = form.fields['major_courses'].choices
+
+            for selection in course_selections:
+                selection_id = selection.id # ex 210000
+                for option_val, option_display in course_options:
+                    if int(option_val) == selection_id: # found a match, set as selected for that list option
+                        print('found a match for: ', selection_id)
+                        prev_choices[str(selection_id)] = True
+
+            print(prev_choices)
+            
+            
     
     else:
         form = EditCoursesForm(request.POST)
@@ -42,8 +65,7 @@ def edit_courses(request):
 
             # Each course model will have an id (e.g. 210000) so need to retrieve
             # the appropriate course models, then add those to the instance of the user profile model
-            user_model = request.user # user that is currently logged in
-            user_profile = user_model.profile
+            
 
             un = user_model.username
             print(un)
@@ -100,10 +122,19 @@ def edit_courses(request):
             
             return redirect('forecast:edit_courses')
 
-    context = {'courseform': form}
+    context = {'courseform': form,
+               'course_options': course_options,
+               'prev_choices': prev_choices}
     
     return render(request, "forecast/edit_courses.html", context)
 
-
+@login_required(redirect_field_name='', login_url='users:login')
 def courses_left(request):
-    return render(request, "forecast/courses_left.html")
+    user = request.user
+    # values_list returns a query set, and flat=true flattens it to 1d
+    courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
+    courses_taken_set = set(courses_taken) # Convert query set to a regular set
+
+    remaining_courses = remaining_requirements(course_history=courses_taken_set)
+
+    return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
