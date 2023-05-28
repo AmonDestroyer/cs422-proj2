@@ -1,9 +1,10 @@
 steps:
   # Build Image
+  # NOTE: Build path is relative to root of directory
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t',
             'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest',
-            '..']
+            '.']
   # Push Image to Artifact Repository
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',
