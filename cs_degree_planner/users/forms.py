@@ -99,5 +99,18 @@ class UserEmailChangeForm(forms.ModelForm):
         model = User
         fields = ['email']
 
-           
+class UserNameChangeForm(forms.ModelForm):
+    first_name = forms.CharField(label="First Name", widget=forms.TextInput(attrs={'class': 'fld', 'id': 'first_name', 'placeholder': 'FIRST NAME'}), max_length=50)
+    last_name = forms.CharField(label="Last Name", widget=forms.TextInput(attrs={'class': 'fld', 'id': 'last_name', 'placeholder': 'LAST NAME'}), max_length=50)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name'] 
+
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['first_name'].initial = user.first_name
+        self.fields['last_name'].initial =  user.last_name
+               
     

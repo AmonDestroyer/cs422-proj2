@@ -12,7 +12,7 @@ TODO: file description
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth import login, logout, update_session_auth_hash
-from .forms import JEANZUserCreationForm, JEANZUserLoginForm, UpdateUserNameForm
+from .forms import JEANZUserCreationForm, JEANZUserLoginForm, UpdateUserNameForm, UserEmailChangeForm, UserNameChangeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from cs_degree_planner.decorators import anonymous_required
@@ -91,10 +91,17 @@ def update_account_information(request):
                 email_form.save()
                 return redirect('users:update_account')
     
+        if 'update_name' in request.POST:
+            name_form = UserNameChangeForm(request.user, request.POST, instance=request.user)
+            if name_form.is_valid():
+                name_form.save()
+                return redirect('users:update_account')
+    
     forms = {
         "username_form": UpdateUserNameForm(),
         "password_form": PasswordChangeForm(request.user),
         "email_form": UserEmailChangeForm(),
+        "name_form": UserNameChangeForm(request.user),
     }
 
     return render(request, 'users/update_account.html', context=forms)

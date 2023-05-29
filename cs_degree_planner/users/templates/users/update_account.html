@@ -2,6 +2,7 @@
 TODO: file description
 
 2023-05-26 - Josh Sawyer     : added update user account html (includes updating username and password)
+2023-05-29 - Adam Case       : added email change section
 
 -->
 
@@ -27,6 +28,9 @@ TODO: file description
     <button id="change-email-btn">Change Email</button>
   </div>
 
+  <div id="name-section">
+    <button id="change-name-btn">Change Name</button>
+  </div>
   
   <!-- Username Update Form -->
   <div id="username-form" style="display: none;">
@@ -58,6 +62,16 @@ TODO: file description
   </div>
 
 
+  <!-- Name Update Form -->
+  <div id="name-form" style="display: none;">
+    <form id="update-name-form" method="POST" action="{% url 'users:update_account' %}">
+      {% csrf_token %}
+      <p>Current Name: <span id="fname">{{  request.user.first_name  }}</span> <span id="lname">{{request.user.last_name}}</span></p>
+      {{name_form.as_p}}
+      <button type="submit" name="update_name">Update</button>
+    </form>
+  </div>
+  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
@@ -66,6 +80,7 @@ TODO: file description
         $("#username-section").hide();
         $("#password-section").hide();
         $("#email-section").hide();
+        $("#name-section").hide();
       }
 
       // Change Username button click event
@@ -86,6 +101,11 @@ TODO: file description
         $("#email-form").show();
       });
 
+      // Change Name button click event
+      $("#change-name-btn").click(function() {
+        hideSections();
+        $("#name-form").show();
+      });
     });
   </script>
   
