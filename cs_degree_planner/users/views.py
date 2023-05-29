@@ -5,6 +5,7 @@ TODO: file description
 2023-05-22 - Josh Sawyer     : add login view
 2023-05-24 - Josh Sawyer     : made it so form isn't refreshed when invalid
 2023-05-26 - Josh Sawyer     : added update user account information (includes updating username and password)
+2023-05-29 - Adam Case       : added update user account email
 
 """
 
@@ -83,10 +84,17 @@ def update_account_information(request):
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password updated successfully!", extra_tags='success')
                 return redirect('users:update_account')
+            
+        if 'update_email' in request.POST:
+            email_form = UserEmailChangeForm(request.POST, instance=request.user)
+            if email_form.is_valid():
+                email_form.save()
+                return redirect('users:update_account')
     
     forms = {
         "username_form": UpdateUserNameForm(),
         "password_form": PasswordChangeForm(request.user),
+        "email_form": UserEmailChangeForm(),
     }
 
     return render(request, 'users/update_account.html', context=forms)

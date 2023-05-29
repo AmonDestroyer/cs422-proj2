@@ -4,6 +4,7 @@ TODO: file description
 2023-05-19 - Nathaniel mason : add JEANZUserCreationForm
 2023-05-22 - Josh Sawyer     : add JEANZUserLoginForm
 2023-05-25 - Erin Stone      : minor changes to usercreationform and loginform for styling
+2023-05-29 - Adam Case       : added email change form
 
 """
 
@@ -91,6 +92,12 @@ class UpdateUserNameForm(UserChangeForm):
         self.fields.pop('password')
         self.fields['username'].help_text = None
         self.fields['username'].widget.attrs['placeholder'] = 'New Username'
-    
+
+class UserEmailChangeForm(forms.ModelForm):
+    email = forms.EmailField(label='New Email', widget=forms.EmailInput(attrs={'class': 'fld', 'id': 'email', 'placeholder': 'NEW EMAIL'}), max_length=254)
+    class Meta:
+        model = User
+        fields = ['email']
+
            
     

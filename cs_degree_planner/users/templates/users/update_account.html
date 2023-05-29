@@ -22,6 +22,11 @@ TODO: file description
   <div id="password-section">
     <button id="change-password-btn">Change Password</button>
   </div>
+
+  <div id="email-section">
+    <button id="change-email-btn">Change Email</button>
+  </div>
+
   
   <!-- Username Update Form -->
   <div id="username-form" style="display: none;">
@@ -41,23 +46,46 @@ TODO: file description
       <button type="submit" name="update_password">Update</button>
     </form>
   </div>
-  
+
+  <!-- Email Update Form -->
+  <div id="email-form" style="display: none;">
+    <form id="update-email-form" method="POST" action="{% url 'users:update_account' %}">
+      {% csrf_token %}
+      <p>Current Email: <span id="email">{{  request.user.email  }}</span></p>
+      {{email_form.as_p}}
+      <button type="submit" name="update_email">Update</button>
+    </form>
+  </div>
+
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      // Change Username button click event
-      $("#change-username-btn").click(function() {
+      // Hide functions
+      function hideSections() {
         $("#username-section").hide();
         $("#password-section").hide();
+        $("#email-section").hide();
+      }
+
+      // Change Username button click event
+      $("#change-username-btn").click(function() {
+        hideSections();
         $("#username-form").show();
       });
   
       // Change Password button click event
       $("#change-password-btn").click(function() {
-        $("#password-section").hide();
-        $("#username-section").hide();
+        hideSections();
         $("#password-form").show();
       });
+
+      // Change Email button click event
+      $("#change-email-btn").click(function() {
+        hideSections();
+        $("#email-form").show();
+      });
+
     });
   </script>
   
