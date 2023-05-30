@@ -11,6 +11,8 @@ TODO: file description
     Add credit counters to the Profile model... it is somewhat uncertain 
     how the separate credit tallies will be counted (for gened courses,
     major specific courses, etc.)
+2023-05-29 - Zane Globus-O'Harra : Update Forecast model to have a 
+    timestamp for when that forecast was generated.
 """
 
 from django.db import models
@@ -71,11 +73,14 @@ class Forecast(models.Model):
     This model needs to be in users.models because if it were in 
     forecast.models, there would be circular imports. 
     """
-    courses_in_fc = models.ManyToManyField(Course)  # bridge table to courses
+    # bridge table to courses
+    courses_in_fc = models.ManyToManyField(Course)  
     user = models.ForeignKey(                       # Foreign Key to a user profile
         Profile,
         on_delete=models.CASCADE
     )
+    # date and time the model was created, set to now upon model creation
+    time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user
