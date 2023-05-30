@@ -12,7 +12,9 @@ TODO: file description
     how the separate credit tallies will be counted (for gened courses,
     major specific courses, etc.)
 2023-05-29 - Zane Globus-O'Harra : Update Forecast model to have a 
-    timestamp for when that forecast was generated.
+    timestamp for when that forecast was generated. Also, update the 
+    `Forecast_Has_Course` bridge table to include a year and term that 
+    the course is scheduled for.
 """
 
 from django.db import models
@@ -73,9 +75,11 @@ class Forecast(models.Model):
     This model needs to be in users.models because if it were in 
     forecast.models, there would be circular imports. 
     """
-    # bridge table to courses
-    courses_in_fc = models.ManyToManyField(Course)  
-    user = models.ForeignKey(                       # Foreign Key to a user profile
+    courses_in_fc = models.ManyToManyField( # bridge table to courses
+        Course,
+        through="Forecast_Has_Course",
+    )  
+    user = models.ForeignKey(               # Foreign Key to a user profile
         Profile,
         on_delete=models.CASCADE
     )
@@ -84,3 +88,30 @@ class Forecast(models.Model):
 
     def __str__(self):
         return self.user
+
+
+class Forecast_Has_Course(models.Model):
+    FALL = "F"
+    WINTER = "W"
+    SPRING = "S"
+    SUMMER = "U"
+    TERM_CHOICES = [        # enumeration for term choices
+        (FALL, "Fall"),
+        (WINTER, "Winter"),
+        (SPRING, "Spring"),
+        (SUMMER, "Summer"),
+    ]
+
+    forecast = models.ForeignKey(   # ForeignKey to forecast
+        Forecast,
+        on_delete=models.CASCADE
+    )
+    course = models.ForeignKey(     # ForeignKey to course
+        Course,
+        on_delete=models.CASCADE
+    )
+    year = models.IntegerField()    # year the course is planned for
+    term = models.CharField(        # term in the year the course is planned for
+        max_length=1,
+        choices=TERM_CHOICES,
+    )
