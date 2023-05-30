@@ -2,6 +2,7 @@
 TODO: file description
 
 2023-05-22 - Josh Sawyer     : add dashboard url path
+2023-05-30 - Nathaniel Mason : add edit_interests url path
 
 """
 
@@ -17,5 +18,6 @@ urlpatterns = [
     # ex: /forecast/edit_courses
     path("edit_courses", views.edit_courses, name="edit_courses"),
     path("courses_left", views.courses_left, name="courses_left"),
+    path("edit_interests", views.edit_interests, name="edit_interests"),
 ]
 

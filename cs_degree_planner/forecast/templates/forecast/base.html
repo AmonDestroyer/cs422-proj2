@@ -2,6 +2,7 @@
 TODO: file description
 
 2023-05-23 - Nathaniel mason : created initial version of Navbar with profile modal containing buttons
+2023-05-30 - Nathaniel Mason : added updates to links in navbar
 
 -->
 
@@ -19,9 +20,9 @@ TODO: file description
     <body>
         <nav>
             <ul class="navul"> 
-                <li onMouseOver="document.getElementById('hicon').style='filter: invert(1);';" onMouseOut="document.getElementById('hicon').style='filter: invert(0.5);';"><a href="dashboard"><img alt="home" id="hicon" src="{% static 'forecast/homeicon.png' %}" width="30px" style="filter: invert(0.5);" ></a></li>
+                <li onMouseOver="document.getElementById('hicon').style='filter: invert(1);';" onMouseOut="document.getElementById('hicon').style='filter: invert(0.5);';"><a href="/forecast/dashboard"><img alt="home" id="hicon" src="{% static 'forecast/homeicon.png' %}" width="30px" style="filter: invert(0.5);" ></a></li>
           
-                <li><a href="#">JEANZ</a></li>
+                <li><a href="/forecast/dashboard">JEANZ</a></li>
                 <li class="drop" onMouseOver="document.getElementById('uicon').style='filter: invert(1);';" onMouseOut="document.getElementById('uicon').style='filter: invert(0.5);';">
                 <a href="#"><img alt="user" id="uicon" src="{% static 'forecast/usericon.png' %}" width="20px" style=" filter: invert(0.5);" ></a>
           
@@ -29,9 +30,9 @@ TODO: file description
                   <div class="dropOut">
                     <div class="triangle"></div>
                     <ul>
-                      <li style="pointer-events: none; cursor: default;"><img alt="name" src="{% static 'forecast/usericon.png' %}" width="20px" style="cursor: default;">  Name</li>
-                      <li><a class="prof_dropdown" href="edit_courses">Edit Courses</a></li>
-                      <li><a class="prof_dropdown" href="#">Edit Interests</a></li>
+                      <li style="pointer-events: none; cursor: default;"><img alt="name" src="{% static 'forecast/usericon.png' %}" width="20px" style="cursor: default;">  {{ user.get_username }}</li>
+                      <li><a class="prof_dropdown" href="/forecast/edit_courses">Edit Courses</a></li>
+                      <li><a class="prof_dropdown" href="/forecast/edit_interests">Edit Interests</a></li>
                       <li><a class="prof_dropdown" href="/users/update-account">My Account</a></li>
                       <li><a class="prof_dropdown" href="/users/logout/">Log Out</a></li>
                     </ul>

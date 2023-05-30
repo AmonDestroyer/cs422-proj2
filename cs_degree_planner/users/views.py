@@ -64,7 +64,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, "Logout Successful!")
-    return redirect('users:index')
+    return redirect('users:login')
 
 
 @login_required(redirect_field_name='', login_url='users:login')

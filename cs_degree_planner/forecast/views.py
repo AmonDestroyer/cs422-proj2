@@ -7,6 +7,7 @@ TODO: file description
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
 2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
 2023-05-26 - Josh Sawyer     : form now loads saved general credits
+2023-05-30 - Nathaniel Mason : added edit_interests view
 
 """
 
@@ -157,3 +158,10 @@ def courses_left(request):
     remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
 
     return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
+
+@login_required(redirect_field_name='', login_url='users:login')
+def edit_interests(request):
+
+    context = {}
+    
+    return render(request, "forecast/edit_interests.html", context)

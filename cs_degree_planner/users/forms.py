@@ -5,6 +5,7 @@ TODO: file description
 2023-05-22 - Josh Sawyer     : add JEANZUserLoginForm
 2023-05-25 - Erin Stone      : minor changes to usercreationform and loginform for styling
 2023-05-29 - Adam Case       : added email change form
+2023-05-30 - Nathaniel Mason : made it so username must be entered as lowercase (helps prevent case of Joe vs joe vs joE etc)
 
 """
 
@@ -21,7 +22,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 # UserCreationForm is a ModelForm class that has password validation and can be saved
 # Will create a custom version of UserCreationForm to add some other fields
 class JEANZUserCreationForm(UserCreationForm):
-    username = forms.CharField(label='Username', widget=forms.TextInput(attrs={'class': 'fld', 'id': 'username', 'placeholder': 'USERNAME', 'autofocus': 'True'}), max_length=50, help_text="50 characters max and can contain letters, digits and @/./+/-/_")
+    username = forms.CharField(label='Username', widget=forms.TextInput(attrs={'class': 'fld', 'id': 'username', 'placeholder': 'USERNAME', 'autofocus': 'True', 'oninput': 'this.value=this.value.toLowerCase()'}), max_length=50, help_text="50 characters max and can contain letters, digits and @/./+/-/_")
     email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'fld', 'id': 'email', 'placeholder': 'EMAIL ADDRESS'}), max_length=254, help_text="254 characters max")
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'fld', 'id': 'password1', 'placeholder': 'PASSWORD'}), min_length=8, help_text="At least 8 characters")
     password2 = forms.CharField(label="Confirm password", widget=forms.PasswordInput(attrs={'class': 'fld', 'id': 'password2', 'placeholder': 'CONFIRM PASSWORD'}), help_text="Enter same password to confirm") # 2nd password used to check and match the 1st one

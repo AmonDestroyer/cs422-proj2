@@ -1,0 +1,85 @@
+<!--
+TODO: file description
+
+2023-05-30 - Nathaniel mason : Added initial template file for edit interests
+
+
+-->
+
+{% extends 'forecast/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Edit Course History</title>	
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/jquery-ui.js">
+<link rel="stylesheet" href="{% static 'forecast/chosencopy.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+	<style>
+		html {
+	max-width: 100%;
+    overflow-x: hidden;
+	min-height:100%;
+      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+      background-size:cover;
+}
+
+body {
+	text-align: center;
+	
+	padding-bottom: 200px;
+	font-family: AlteHaasGrotesk, sans-serif;
+	font-style: normal;
+          font-weight: 300;
+	color: green;
+	
+}
+		
+		.input-number {
+			width: 60px;
+			border-radius: 0px;
+		}
+		
+		.chosen-container-multi .chosen-choices li.search-choice { /*hi erin style deletable bubbles*/
+  position: relative;
+  margin: 3px 5px 3px 0;
+  padding: 3px 20px 3px 5px;
+  border: 3px solid #aaa;
+  max-width: 100%;
+  border-radius: 30px;
+  background-color: #eeeeee;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), to(#eee));
+  background-image: linear-gradient(#95703A 20%, #95703A 50%, #95703A 52%, #95703A 100%);
+  background-size: 100% 19px;
+  background-repeat: repeat-x;
+  background-clip: padding-box;
+  -webkit-box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+          box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+  color: #d9d0c1;
+  line-height: 13px;
+  cursor: default;
+}
+		
+	</style>
+</head>
+<body>
+	{% if messages %}
+        {% for message in messages %}
+            <p><b>{{ message }}</b></p>
+        {% endfor %}
+    {% endif %}
+	
+    <h1>Content for edit interests template will go here</h1>
+
+</body>
+</html>
+
+{% endblock %}

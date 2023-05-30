@@ -3,8 +3,21 @@ TODO: file description
 
 2023-05-26 - Josh Sawyer     : added update user account html (includes updating username and password)
 2023-05-29 - Adam Case       : added email change section
+2023-05-30 - Nathaniel Mason : added navbar at top of template and some HTML edits
 
 -->
+
+{% extends 'forecast/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update Account Information</title>	
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 {% if messages %}
 {% for message in messages %}
@@ -110,7 +123,10 @@ TODO: file description
   </script>
   
   
-  
+</body>
+</html>
+
+{% endblock %}
   
   
 
