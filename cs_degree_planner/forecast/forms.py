@@ -3,6 +3,7 @@ TODO: file description
 
 2023-05-24 - Nathaniel mason : add EditCoursesForm and code to pull course options
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
+2023-05-30 - Nathaniel Mason : added PresetForm for when a user will request a new forecast
 """
 
 import os
@@ -50,3 +51,13 @@ class EditCoursesForm(forms.Form):
     us_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'us_cred', 'class': 'input-number', 
                'type': 'number', 'value': '0', 'min': '0'}))
+    
+
+PRESET_OPTIONS = [("16_cr", "16 Credits Per Term"),
+                  ("other", "Other preset test choice")
+                  ]
+
+class PresetForm(forms.Form):
+    preset_choice = forms.ChoiceField(
+        label='', choices=PRESET_OPTIONS, widget=forms.Select(
+            attrs={'id': 'preset_choice', 'class': 'chzn-select'}))

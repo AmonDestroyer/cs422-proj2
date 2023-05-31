@@ -7,14 +7,14 @@ TODO: file description
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
 2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
 2023-05-26 - Josh Sawyer     : form now loads saved general credits
-2023-05-30 - Nathaniel Mason : added edit_interests view
+2023-05-30 - Nathaniel Mason : added edit_interests and new_forecast view
 
 """
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import EditCoursesForm
+from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
 from .forecast import remaining_requirements
@@ -165,3 +165,29 @@ def edit_interests(request):
     context = {}
     
     return render(request, "forecast/edit_interests.html", context)
+
+@login_required(redirect_field_name='', login_url='users:login')
+def new_forecast(request):
+    if request.method != 'POST':
+        form = PresetForm() 
+            
+    else:
+        form = PresetForm(request.POST)
+
+        if form.is_valid():
+            preset_choice = form.cleaned_data.get('preset_choice')
+            
+            messages.success(request, f"Got your choice: {preset_choice}")
+
+            # will need to call the function to get the forecast which is list of lists and then will send to template
+            # either need to send to redirected new_forecast template page, 
+            # or could use a separate forecast display template to show the result of the fxn
+            
+            return redirect('forecast:new_forecast')
+
+    context = {'preset_form': form}
+    
+    return render(request, "forecast/new_forecast.html", context)
+
+
+
