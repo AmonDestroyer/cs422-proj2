@@ -19,22 +19,78 @@
             justify-content: center;
             width: 100%;
         }
+
+        .option-button:hover {
+            background-color: #d9d9d9;
+        }
         
-        .course {
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .option-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        
+        .option {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            border: 1px solid black;
+            border-radius: 10px;
+            align-items: center;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .course-options {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             justify-content: center;
-            width: 25%;
-            margin: 0 auto;
+        }
+        
+        .category {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+        
+        .category:hover {
+            background-color: #555;
+        }
+        
+        .courses {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .course {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 10px;
             border: 1px solid black;
             border-radius: 10px;
             color: black;
-            margin-top: 5px;
-            margin-bottom: 5px;
+            margin-right: 5px;
+            margin-left: 5px;
         }      
-        {% comment %} GIve me a darker background (darker than #e6e6e6;) color when hovering {% endcomment %}
+
         .course:hover {
             background-color: #d9d9d9;
         }
@@ -42,12 +98,73 @@
 </head>
 <body>
     <div class="courses-form">
-        {% for course in remaining_courses %}
-            <div class="course">
-                {{ course }} 
-            </div>
+        {% for category, courses in remaining_courses.items %}
+            <button class="category">{{ category }}</button>
+            {% if category == "CS Elective Requirements" %}
+                <div class="options">
+                    {% if courses.2.0 %}
+                        <div class="option">
+                            <h2>{{ courses.2.0.0 }} Credits From</h2>
+                            <div class="course-options">
+                                {% for course in courses.0 %}
+                                    <p class="course">{{ course }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if courses.2.1 %}
+                    <div class="option-container">
+                        <h1>OR</h3>
+                    </div>
+                        <div class="option">
+                            <h2>{{ courses.2.1.0 }} Credits From</h2>
+                            <div class="course-options">
+                                {% for course in courses.1.0 %}
+                                    <p class="course">{{ course }}</p>
+                                {% endfor %}
+                            </div>
+                            {% if courses2.1.1 > 0 %}
+                                <h2>and {{ courses.2.1.1 }} Credits From</h2>
+                                <div class="course-options">
+                                    {% for course in courses.1.1 %}
+                                        <p class="course">{{ course }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="courses">
+                    {% for course in courses %}
+                        <p class="course">{{ course }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
+
+    <script>
+        // Get all buttons with class="category"
+        const class_categories = document.querySelectorAll('.category');
+
+        class_categories.forEach(button => {
+            button.addEventListener("click", hideShow);
+        });
+
+        function hideShow() {
+            const button = this;
+            const content = button.nextElementSibling;
+
+            if (content.style.display === 'none') {
+                content.style.display = 'flex';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+
+    </script>
+        
 </body>
 </html>
 

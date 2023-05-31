@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
-from .forecast import remaining_requirements
+from .forecast import remaining_requirements, categorize_courses
 from users.models import Profile
 
 # login is required to see the dashboard
@@ -156,7 +156,8 @@ def courses_left(request):
     us_taken = int(request.user.profile.us_credits)
 
     remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
-
+    remaining_courses = categorize_courses(remaining_courses)
+    
     return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
 
 @login_required(redirect_field_name='', login_url='users:login')

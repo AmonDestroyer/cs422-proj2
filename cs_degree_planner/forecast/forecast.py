@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import re
 
 current_dir = os.path.dirname(__file__)
 file_path = current_dir + '/recommendcourses.xlsx'
@@ -168,3 +169,75 @@ def id_to_title(course_set):
             title = df['subject'].loc[course] + ' ' + str(df['number'].loc[course])
         title_set.add(title)
     return title_set
+
+def categorize_courses(course_set):
+    categorized_courses = {
+        'CS Core Requirements': [],
+        'General Education Requirements': [],
+        'CS Elective Requirements': [],
+        'CS Math and Writing Requirements': [],
+        'Science Path Requirements': [],
+    }
+
+    for course in course_set:
+        if 'credits' in course:
+            if '(' in course or ')' in course: # In this case, we're checking for the CS electives (see line 98)
+                parts = re.split(r'\) or \(|\) and \(', course) # ex: "10 credits from (CS0...) or (CS1...)" split into ["10 credits from ", "CS0...", " or ", "CS1..."]
+                parts = [part.strip('()') for part in parts] # Remove () so now we have ex: ["10 credits from ", "CS0...", " or ", "CS1..."]
+                categorized_courses['CS Elective Requirements'].extend(parts) # Add each part to the list separately               
+            else:
+                categorized_courses['General Education Requirements'].append(course)
+        elif ' or ' in course:
+            categorized_courses['CS Math and Writing Requirements'].append(course)
+        elif '{' in course and '}' in course:
+            categorized_courses['Science Path Requirements'].append(course)
+        else:
+            categorized_courses['CS Core Requirements'].append(course)
+    
+    return arrange_electives(categorized_courses)
+   
+def arrange_electives(categorized_courses):
+    # Arranges the electives so that they are in the format:
+    # [
+    #    [400+ electives left list],
+    #    [
+    #     [300-399 electives left list], 
+    #     [400+ electives left list]
+    #    ],
+    #    [
+    #     [# of 300-399 credits needed]
+    #     [# of 400+ credits needed], 
+    #    ],
+    # ] 
+    
+    # Check if length > 0 (if not, then there are no elective requirements needed anymore)
+    if (len(categorized_courses['CS Elective Requirements']) > 0):
+        credit_options = [[], []]
+        credit_pattern = re.compile(r"(\d+) credits?") # ? makes the s optional
+        credits_for_option_1 = credit_pattern.findall(categorized_courses["CS Elective Requirements"][0]) # find all patterns matching the credit pattern expression
+        
+        # If categorized courses only has a length of 1, if it does then there is only one option for the CS Elective Requirements 
+        if (len(categorized_courses["CS Elective Requirements"]) > 1):
+            credits_for_option_2 = credit_pattern.findall(categorized_courses["CS Elective Requirements"][1])
+            credit_options[1] = credits_for_option_2
+            
+        credit_options[0] = credits_for_option_1
+
+        s = categorized_courses["CS Elective Requirements"][0] # 20 credits of ....
+        s = [eval(i) for i in (s[s.index("{")+1:s.index("}")]).split(", ")]
+        categorized_courses["CS Elective Requirements"][0] = s
+
+        if (len(categorized_courses["CS Elective Requirements"]) > 1):
+            s2 = categorized_courses["CS Elective Requirements"][1] # 8 credits of ....
+            s3 = [eval(i) for i in (s2[s2.index("{")+1:s2.index("}")]).split(", ")]
+            s4 = s2[s2.index("}")+1:]
+            s5 = [eval(i) for i in (s4[s4.index("{")+1:s4.index("}")]).split(", ")]
+            categorized_courses["CS Elective Requirements"][1] = [s3, s5]
+
+        else: # If there is only one option, then add a None to the list so that the template doesn't break since it checks index 2 for the credit options
+            categorized_courses["CS Elective Requirements"].append([None])
+    
+        categorized_courses["CS Elective Requirements"].append(credit_options)
+        return categorized_courses
+    
+    return categorized_courses
