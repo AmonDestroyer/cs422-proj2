@@ -19,6 +19,9 @@ TODO: file description
 
 	<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <style>
+	  @font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
+ @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
+		@font-face { font-family: Lato; src: url("{% static 'fonts/Lato-Regular.ttf' %}"); } 
 	  
 	  		html {
 	max-width: 100%;
@@ -31,12 +34,15 @@ TODO: file description
       
       margin: 0;
       padding: 0;
+		background:rgba(0,0,0,0.00);
     }
+	  
 
     .container {
       max-width: 960px;
       margin: 0 auto;
       padding: 20px;
+		
     }
 
     .header {
@@ -52,6 +58,11 @@ TODO: file description
     .content h1 {
       margin-top: 0;
     }
+	  
+	  h1 {
+		  font-size: 46pt;
+		  color: #d9d0c1;
+	  }
 
     .logout {
       text-align: right;
@@ -62,6 +73,44 @@ TODO: file description
       color: #333;
       text-decoration: none;
     }
+	  
+	  #coursesleft {
+		  padding: 10px 20px;
+		  font-family: Lato;
+		  font-size: 12pt;
+		  color: #d9d0c1;
+		  letter-spacing: 1px;
+	  }
+	  
+	  h2 {
+		  font-size: 20pt;
+		  color: #d9d0c1;
+	  }
+	  
+	  #generate {
+
+		  font-size: 80pt;
+	  }
+	  .degreeplan {
+		  padding: 30px 70px 45px 70px;
+		  border-radius: 30px;
+		  margin:8px;
+	  }
+	  a {
+		  color:#d9d0c1;
+	  }
+	  .empty{
+		  padding: 25px 65px 40px 65px;
+		  background: rgba(0,0,0,0.00);
+		  font-size: 80pt;
+		  pointer-events: none;
+		  border: 5px dashed #95703A;
+		  
+	  }
+	  
+	  .clear {
+		  color: rgba(0,0,0,0.00);
+	  }
   </style>
 </head>
 <body>
@@ -69,25 +118,80 @@ TODO: file description
     <div class="header">
       <h1>Dashboard</h1>
     </div>
-	          <a href="courses_left" role="button" 
-        class="btn btn-secondary popover-test" title="Popover title" 
+	          
+	  <a href="courses_left" role="button" id="coursesleft"
+        class="btn btn-secondary popover-test homelog" title="Popover title" 
         data-content="Popover body content is set in this attribute.">
-            Courses Left
+            VIEW YOUR REMAINING COURSES
         </a>
 
         <br>
         <br>
-        <br>
 
-        <a href="new_forecast" role="button" 
-        class="btn btn-secondary popover-test" title="Popover title" 
-        data-content="Popover body content is set in this attribute.">
-            Generate New Forecast
-        </a>
+
 
     <div class="content">
-      <h3>Your Forecasts</h3>
-
+      <h2>Your Degree Plans</h2>
+		<table>
+			<tr>
+				<td>
+					<div class="homelog degreeplan" id="generate">
+							<a href="new_forecast" role="button" 
+					class="btn btn-secondary popover-test" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&#43;
+					</a>
+					</div>
+				</td>
+				
+				<!--<td>
+					<div class="homelog degreeplan empty">
+							<a href="new_forecast" role="button"
+					class="btn btn-secondary popover-test" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&nbsp;&nbsp;
+					</a>
+					</div>
+				</td>
+				
+				<td>
+					<div class="homelog degreeplan empty">
+							<a href="new_forecast" role="button"
+					class="btn btn-secondary popover-test" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&nbsp;&nbsp;
+					</a>
+					</div>
+				</td>-->
+				<td>
+					<div class="homelog degreeplan empty">
+							<a href="new_forecast" role="button" 
+					class="btn btn-secondary popover-test clear" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&#43;
+					</a>
+					</div>
+				</td>
+				<td>
+					<div class="homelog degreeplan empty">
+							<a href="new_forecast" role="button" 
+					class="btn btn-secondary popover-test clear" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&#43;
+					</a>
+					</div>
+				</td>
+				<td>
+					<div class="homelog degreeplan empty">
+							<a href="new_forecast" role="button" 
+					class="btn btn-secondary popover-test clear" title="Popover title" 
+					data-content="Popover body content is set in this attribute.">
+						&#43;
+					</a>
+					</div>
+				</td>
+			</tr>
+		</table>
       <p>
 
     </p>
