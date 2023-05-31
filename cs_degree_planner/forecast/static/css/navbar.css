@@ -1,12 +1,4 @@
-
-		
-		
-		
-		
-		
-		
-		
-		
+/*---------- Default --------------------*/
 		
 		@font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
  @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
@@ -107,6 +99,31 @@ border-radius: 27px;
 .stitches {
 
 
+}
+
+/*---------- Field --------------------*/
+
+.fld {
+	background: rgba(0,0,0,0.00);
+	color: #d9d0c1;
+	padding: 15px 65px 15px 30px;
+	border-radius: 30px;
+	border: 3px solid #95703A;
+	margin: 6px;
+	font-family: Lato;
+	font-size: 12pt;
+	transition: border 0.7s ease;
+	width: fit-content;
+}
+
+.fld:hover {
+	border: 3px solid #3A8795;
+}
+
+.fld:focus{
+	border: 3px solid #3A8795;
+	background:rgba(26,61,67,0.3);
+	outline: none;
 }
 
 /*---------- Navbar --------------------*/
