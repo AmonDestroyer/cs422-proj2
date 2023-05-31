@@ -33,19 +33,19 @@ TODO: file description
 
 <div id="username-section">
     {% comment %} <p>Username: <span id="username">{{ request.user.username }}</span></p> {% endcomment %}
-    <button id="change-username-btn">Change Username</button>
+    <button id="change-username-btn" class="homelog">Change Username</button>
   </div>
   
   <div id="password-section">
-    <button id="change-password-btn">Change Password</button>
+    <button id="change-password-btn" class="homelog">Change Password</button>
   </div>
 
   <div id="email-section">
-    <button id="change-email-btn">Change Email</button>
+    <button id="change-email-btn" class="homelog">Change Email</button>
   </div>
 
   <div id="name-section">
-    <button id="change-name-btn">Change Name</button>
+    <button id="change-name-btn" class="homelog">Change Name</button>
   </div>
   
   <!-- Username Update Form -->
@@ -54,7 +54,7 @@ TODO: file description
       {% csrf_token %}
       <p>Current Username: <span id="username">{{ request.user.username }}</span></p>
       {{ username_form.as_p }}
-      <button type="submit" name="update_username">Update</button>
+      <button type="submit" name="update_username" class="homelog">UPDATE</button>
     </form>
   </div>
   
@@ -63,7 +63,7 @@ TODO: file description
     <form id="update-password-form" method="POST" action="{% url 'users:update_account' %}">
       {% csrf_token %}
       {{ password_form.as_p }}
-      <button type="submit" name="update_password">Update</button>
+      <button type="submit" name="update_password" class="homelog">UPDATE</button>
     </form>
   </div>
 
@@ -73,7 +73,7 @@ TODO: file description
       {% csrf_token %}
       <p>Current Email: <span id="email">{{  request.user.email  }}</span></p>
       {{email_form.as_p}}
-      <button type="submit" name="update_email">Update</button>
+      <button type="submit" name="update_email" class="homelog">UPDATE</button>
     </form>
   </div>
 
@@ -84,7 +84,7 @@ TODO: file description
       {% csrf_token %}
       <p>Current Name: <span id="fname">{{  request.user.first_name  }}</span> <span id="lname">{{request.user.last_name}}</span></p>
       {{name_form.as_p}}
-      <button type="submit" name="update_name">Update</button>
+      <button type="submit" name="update_name" class="homelog">UPDATE</button>
     </form>
   </div>
   
