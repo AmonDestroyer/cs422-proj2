@@ -25,8 +25,11 @@ TODO: file description
 {% endfor %}
 {% endif %}
 
-<div id="go-home">
-    <a href="{% url 'forecast:dashboard' %}">go back to the dashboard... unless you want to stay here</a>
+<div id="back-button" style="display: none;">
+  <form id="back" action="/users/update-account">
+    <button type="submit" id="backbutton" class="homelog">BACK</button>
+  </form>
+</div>
 
 <div id="username-section">
     {% comment %} <p>Username: <span id="username">{{ request.user.username }}</span></p> {% endcomment %}
@@ -88,12 +91,13 @@ TODO: file description
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      // Hide functions
+      // Hide function
       function hideSections() {
         $("#username-section").hide();
         $("#password-section").hide();
         $("#email-section").hide();
         $("#name-section").hide();
+        $("#back-button").show();
       }
 
       // Change Username button click event

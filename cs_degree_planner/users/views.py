@@ -96,6 +96,9 @@ def update_account_information(request):
             if name_form.is_valid():
                 name_form.save()
                 return redirect('users:update_account')
+        
+        if 'back' in request.POST:
+            return redirect('users:update_account')
     
     forms = {
         "username_form": UpdateUserNameForm(),
