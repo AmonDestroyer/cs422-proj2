@@ -8,6 +8,7 @@ TODO: file description
 2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
 2023-05-26 - Josh Sawyer     : form now loads saved general credits
 2023-05-30 - Nathaniel Mason : added edit_interests and new_forecast view
+2023-05-31 - Nathaniel Mason : edited new_forecast view
 
 """
 
@@ -194,6 +195,9 @@ def new_forecast(request):
 
         if form.is_valid():
             preset_choice = form.cleaned_data.get('preset_choice')
+            # in future version, will need to take this preset choice into account and call the fxn
+            # with the appropriate choice, but for now the default call
+            # is used to get the generated forecast
             
             messages.success(request, f"Got your choice: {preset_choice}")
 
@@ -202,15 +206,17 @@ def new_forecast(request):
             # or could use a separate forecast display template to show the result of the fxn
             courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
             courses_taken_set = set(courses_taken) # Convert query set to a regular set
-            forecast = generate_forecast(course_history=courses_taken_set)
+            forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
             
-            # forecast = list_forecast("F", 2023, forecast)
+            fcst_to_display = list_forecast("F", 2023, forecast)
+
+            context = {'forecast_result': fcst_to_display}
             
-            return redirect('forecast:new_forecast') # , forecast=forecast)
+            return render(request, "forecast/forecast_display.html", context)
 
     context = {'preset_form': form}
     
     return render(request, "forecast/new_forecast.html", context)
-
+    
 
 
