@@ -165,11 +165,15 @@ def courses_left(request):
 
     remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
     remaining_courses = categorize_courses(remaining_courses)
-    # import json
-    # print(json.dumps(remaining_courses, indent=4))
+        
+    credits_remain = False    
+
+    context = {
+        "remaining_courses": remaining_courses, 
+        "400CreditsRemaining": credits_remain
+    }
     
-    
-    return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
+    return render(request, "forecast/courses_left.html", context)
 
 @login_required(redirect_field_name='', login_url='users:login')
 def edit_interests(request):
