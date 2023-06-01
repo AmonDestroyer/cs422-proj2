@@ -54,5 +54,15 @@ steps:
       - '--region'
       - 'us-central1'
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'compute'
+      - 'instances'
+      - 'update-container'
+      - 'jeanz-app'
+      - '--container-image'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+
 images:
   - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
