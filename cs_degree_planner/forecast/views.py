@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
-from .forecast import remaining_requirements, categorize_courses
+from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast
 from users.models import Profile
 
 # login is required to see the dashboard
@@ -167,6 +167,8 @@ def courses_left(request):
     remaining_courses = categorize_courses(remaining_courses)
         
     credits_remain = False    
+    if (int(remaining_courses["CS Elective Requirements"][2][1][1]) > 0):
+        credits_remain = True
 
     context = {
         "remaining_courses": remaining_courses, 
@@ -198,8 +200,13 @@ def new_forecast(request):
             # will need to call the function to get the forecast which is list of lists and then will send to template
             # either need to send to redirected new_forecast template page, 
             # or could use a separate forecast display template to show the result of the fxn
+            courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
+            courses_taken_set = set(courses_taken) # Convert query set to a regular set
+            forecast = generate_forecast(course_history=courses_taken_set)
             
-            return redirect('forecast:new_forecast')
+            # forecast = list_forecast("F", 2023, forecast)
+            
+            return redirect('forecast:new_forecast') # , forecast=forecast)
 
     context = {'preset_form': form}
     
