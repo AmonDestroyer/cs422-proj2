@@ -7,6 +7,7 @@ TODO: Custom django admin command to load UO courses into the database
 
 from django.core.management.base import BaseCommand, CommandError
 from forecast.models import Course, Keyword
+from users.models import User
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 
@@ -107,3 +108,18 @@ class Command(BaseCommand):
             
         except InvalidFileException:
             self.stderr.write("Invalid Excel file.")
+
+
+        try:
+            user = User.objects.create_user(
+                username = "admin",
+                email = "test@test.com",
+                password = "admin",
+                first_name = "Puddles",
+                last_name = "Duck"
+            )
+            user.save()
+            self.stdout.write("Created default user")
+
+        except:
+            self.stderr.write("Unable to create default user.")
