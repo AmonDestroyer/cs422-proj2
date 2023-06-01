@@ -19,12 +19,35 @@ TODO: file description
 <title>Update Account Information</title>	
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
+<style>
+      html {
+max-width: 100%;
+  overflow-x: hidden;
+min-height:100%;
+    background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}");
+    background-size:cover;
+}
+  body {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    background:rgba(0,0,0,0.00);
+  }
+
+  .homelog {
+    margin-left: 0;
+    margin-top: 2%;
+  }
+
+</style>
+</head>
+
+<body>
 {% if messages %}
 {% for message in messages %}
     <p><b>{{ message }}</b></p>
 {% endfor %}
 {% endif %}
-
 <div id="back-button" style="display: none;">
   <form id="back" action="/users/update-account">
     <button type="submit" id="backbutton" class="homelog">BACK</button>

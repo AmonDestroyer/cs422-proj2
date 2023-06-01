@@ -55,6 +55,7 @@ body {
 	border-radius: 70px;
 	cursor: pointer;
 	transition: background 0.7s ease;
+	color: #d9d0c1;
 	
 }
 
@@ -66,7 +67,7 @@ body {
 p {
 	letter-spacing: 2px;
 	font-family: Lato;
-	color: #000000;
+	color: #d9d0c1;
 }
 
 
@@ -121,6 +122,29 @@ border-radius: 27px;
 }
 
 .fld:focus{
+	border: 3px solid #3A8795;
+	background:rgba(26,61,67,0.3);
+	outline: none;
+}
+
+input {
+	background: rgba(0,0,0,0.00);
+	color: #d9d0c1;
+	padding: 15px 65px 15px 30px;
+	border-radius: 30px;
+	border: 3px solid #95703A;
+	margin: 6px;
+	font-family: Lato;
+	font-size: 12pt;
+	transition: border 0.7s ease;
+	width: fit-content;
+}
+
+input:hover {
+	border: 3px solid #3A8795;
+}
+
+input:focus {
 	border: 3px solid #3A8795;
 	background:rgba(26,61,67,0.3);
 	outline: none;

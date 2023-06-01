@@ -8,6 +8,7 @@ TODO: file description
 2023-05-26 - Josh Sawyer     : added courses_left view and added @login_required for all views
 2023-05-26 - Josh Sawyer     : form now loads saved general credits
 2023-05-30 - Nathaniel Mason : added edit_interests and new_forecast view
+2023-05-31 - Nathaniel Mason : edited new_forecast view
 
 """
 
@@ -17,7 +18,7 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
-from .forecast import remaining_requirements, categorize_courses
+from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast
 from users.models import Profile
 
 # login is required to see the dashboard
@@ -61,73 +62,81 @@ def edit_courses(request):
     else:
         form = EditCoursesForm(request.POST)
         if form.is_valid():
-            # once the form is valid, we must save their chosen courses in the DB
+            saved_courses_taken = list(map(str, user_profile.courses_taken.values_list('id', flat=True)))
             user_courses_taken = form.cleaned_data.get('major_courses')
-            print(user_courses_taken)
-            user_sci = form.cleaned_data.get('sci_cred')
-            user_soc_sci = form.cleaned_data.get('soc_sci_cred')
-            user_arts_lett = form.cleaned_data.get('arts_letters_cred')
-            user_gp = form.cleaned_data.get('gp_cred')
-            user_us = form.cleaned_data.get('us_cred')
+            if ((len(saved_courses_taken) > 0) or (len(user_courses_taken) > 0)):
+                # once the form is valid, we must save their chosen courses in the DB
+                print(user_courses_taken)
+                user_sci = form.cleaned_data.get('sci_cred')
+                user_soc_sci = form.cleaned_data.get('soc_sci_cred')
+                user_arts_lett = form.cleaned_data.get('arts_letters_cred')
+                user_gp = form.cleaned_data.get('gp_cred')
+                user_us = form.cleaned_data.get('us_cred')
 
-            # Each course model will have an id (e.g. 210000) so need to retrieve
-            # the appropriate course models, then add those to the instance of the user profile model
+                # Each course model will have an id (e.g. 210000) so need to retrieve
+                # the appropriate course models, then add those to the instance of the user profile model
+
+                un = user_model.username
+                print(un)
+
+                for course_id in user_courses_taken:
+                    try:
+                        course_model = Course.objects.get(id=int(course_id))
+                        # once have course_model save in courses_taken
+                        user_profile.courses_taken.add(course_model) 
+                        print("found course_model with the id!")
+                    except:
+                        print("course_model not found")
+                
+                # Get courses to remove (if anything was removed from list)
+                courses_to_remove = [course for course in saved_courses_taken if course not in user_courses_taken]
+                user_profile.courses_taken.remove(*courses_to_remove)
+                
+                # update area of inquiry credits, 
+                # which includes science credits, social science, arts and letters
+                new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
+                current_aoi = user_profile.aoi_credits
+                updated_aoi = current_aoi + new_aoi
+                user_profile.aoi_credits = updated_aoi
+
+                # update U.S. and global perspectives credits
+                new_cultural = int(user_gp) + int(user_us)
+                current_cultural = user_profile.cultural_credits
+                updated_cultural = current_cultural + new_cultural
+                user_profile.cultural_credits = updated_cultural
+
+                # update total amount of credits
+                new_credits = new_aoi + new_cultural
+                current_total_credits = user_profile.total_credits
+                updated_total = current_total_credits + new_credits 
+                user_profile.total_credits = updated_total
+                #update specific credit areas
+                user_profile.aal_credits = int(user_arts_lett)
+                user_profile.ssci_credits = int(user_soc_sci)
+                user_profile.sci_credits = int(user_sci)
+                user_profile.gp_credits = int(user_gp)
+                user_profile.us_credits = int(user_us)
+
+                
+                user_profile.save()
+                print("user prof saved with new changes!")
+                
+                # next will need to take the user_courses_taken and save them in the DB for that user
+                # for now, just send messages back to notify that Django obtained the data correctly
+                messages.info(request, user_courses_taken)
+                messages.info(request, user_sci)
+                messages.info(request, user_soc_sci)
+                messages.info(request, user_arts_lett)
+                messages.info(request, user_gp)
+                messages.info(request, user_us)
+
+                messages.success(request, "Changes Saved Successfully!")
+                
+                return redirect('forecast:edit_courses')
             
-
-            un = user_model.username
-            print(un)
-
-            for course_id in user_courses_taken:
-                try:
-                    course_model = Course.objects.get(id=int(course_id))
-                    # once have course_model save in courses_taken
-                    user_profile.courses_taken.add(course_model)
-                    print("found course_model with the id!")
-                except:
-                    print("course_model not found")
-
-
-            # update area of inquiry credits, 
-            # which includes science credits, social science, arts and letters
-            new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
-            current_aoi = user_profile.aoi_credits
-            updated_aoi = current_aoi + new_aoi
-            user_profile.aoi_credits = updated_aoi
-
-            # update U.S. and global perspectives credits
-            new_cultural = int(user_gp) + int(user_us)
-            current_cultural = user_profile.cultural_credits
-            updated_cultural = current_cultural + new_cultural
-            user_profile.cultural_credits = updated_cultural
-
-            # update total amount of credits
-            new_credits = new_aoi + new_cultural
-            current_total_credits = user_profile.total_credits
-            updated_total = current_total_credits + new_credits 
-            user_profile.total_credits = updated_total
-            #update specific credit areas
-            user_profile.aal_credits = int(user_arts_lett)
-            user_profile.ssci_credits = int(user_soc_sci)
-            user_profile.sci_credits = int(user_sci)
-            user_profile.gp_credits = int(user_gp)
-            user_profile.us_credits = int(user_us)
-            
-            
-            user_profile.save()
-            print("user prof saved with new changes!")
-            
-            # next will need to take the user_courses_taken and save them in the DB for that user
-            # for now, just send messages back to notify that Django obtained the data correctly
-            messages.info(request, user_courses_taken)
-            messages.info(request, user_sci)
-            messages.info(request, user_soc_sci)
-            messages.info(request, user_arts_lett)
-            messages.info(request, user_gp)
-            messages.info(request, user_us)
-
-            messages.success(request, "Changes Saved Successfully!")
-            
-            return redirect('forecast:edit_courses')
+            else:
+                messages.error(request, "Nothing to save!")
+                return redirect('forecast:edit_courses')  
         else:
             for field in form:
                 if field.errors:
@@ -157,8 +166,17 @@ def courses_left(request):
 
     remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
     remaining_courses = categorize_courses(remaining_courses)
+        
+    credits_remain = False    
+    if (int(remaining_courses["CS Elective Requirements"][2][1][1]) > 0):
+        credits_remain = True
+
+    context = {
+        "remaining_courses": remaining_courses, 
+        "400CreditsRemaining": credits_remain
+    }
     
-    return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
+    return render(request, "forecast/courses_left.html", context)
 
 @login_required(redirect_field_name='', login_url='users:login')
 def edit_interests(request):
@@ -177,18 +195,28 @@ def new_forecast(request):
 
         if form.is_valid():
             preset_choice = form.cleaned_data.get('preset_choice')
+            # in future version, will need to take this preset choice into account and call the fxn
+            # with the appropriate choice, but for now the default call
+            # is used to get the generated forecast
             
             messages.success(request, f"Got your choice: {preset_choice}")
 
             # will need to call the function to get the forecast which is list of lists and then will send to template
             # either need to send to redirected new_forecast template page, 
             # or could use a separate forecast display template to show the result of the fxn
+            courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
+            courses_taken_set = set(courses_taken) # Convert query set to a regular set
+            forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
             
-            return redirect('forecast:new_forecast')
+            fcst_to_display = list_forecast("F", 2023, forecast)
+
+            context = {'forecast_result': fcst_to_display}
+            
+            return render(request, "forecast/forecast_display.html", context)
 
     context = {'preset_form': form}
     
     return render(request, "forecast/new_forecast.html", context)
-
+    
 
 
