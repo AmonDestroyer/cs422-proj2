@@ -496,16 +496,19 @@ def split_forecast(start_term, start_year, forecast):
                 this_term = terms[2]
         #TODO elif U
 
+        splitted = []
         splitted_labels = []     
         splitted_terms = []
         for term in forecast:
                 splitted_labels.append(f"{this_term} {this_year}")
                 splitted_terms.append(id_to_title_list(term))
+                splitted.append([f"{this_term} {this_year}", id_to_title_list(term)])
                 this_term = terms[terms.index(this_term) + 1]
                 if (this_term == 'Winter'):
                         this_year += 1
-        print(splitted_labels, splitted_terms)
-        return splitted_labels, splitted_terms
+                
+        print(splitted)
+        return splitted
                         
         
 

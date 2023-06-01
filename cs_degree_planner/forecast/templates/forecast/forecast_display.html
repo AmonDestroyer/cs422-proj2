@@ -58,6 +58,9 @@ color: green;
 		font-size: 25pt;
 		color: #d9d0c1;
 	}
+	h3 {
+		margin-bottom: 50px;
+	}
 	.category {
 			font-family: Lato;
 			letter-spacing: 1px;
@@ -66,14 +69,15 @@ color: green;
 			background: #95703A;
             color: #d9d0c1;
             cursor: default;
-            padding: 18px;
+            padding: 0px 18px 10px 28px;
             width: 100%;
             border: none;
             text-align: left;
             outline: none;
             font-size: 20px;
 			transition: background 0.5s ease;
-			margin-bottom: 25px;
+			
+			height: 60px;
         }
         
         .category:hover {
@@ -162,15 +166,18 @@ cursor: default;
 
     <h2>Degree Plan 1</h2>
 	<div class="courses-form">
-		{% for term in forecast_result.1 %}
-			{% with i=forloop.counter0 %}
+		{% for term in forecast_result %}
+			
 			<div class="category">
-				<h3>{{ forecast_result.0.i }}</h3>
+				<h3>{{ term.0 }}</h3>
+				
 			</div>
-			{% endwith %}
-			{% for course in term %}
+			<div class="courses">
+			{% for course in term.1 %}
+				
 				<p class="course">{{ course }}</p>
 			{% endfor %}
+			</div>
 		{% endfor %}
 	</div>
 	
