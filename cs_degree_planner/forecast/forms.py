@@ -30,7 +30,7 @@ for index, row in df.iterrows():
 class EditCoursesForm(forms.Form):
     major_courses = forms.MultipleChoiceField(
         label='', choices=COURSE_OPTIONS, widget=forms.SelectMultiple(
-            attrs={'id': 'course_select','class': 'chzn-select'}))
+            attrs={'id': 'course_select','class': 'chzn-select'}), required=False)
     
     sci_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'science_cred', 'class': 'input-number', 

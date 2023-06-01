@@ -60,7 +60,7 @@ class Course(models.Model):
     every_year_even = models.BooleanField(default=False);
 
     def __str__(self):
-        return self.course_name
+        return self.name
 
 
 class Major(models.Model):

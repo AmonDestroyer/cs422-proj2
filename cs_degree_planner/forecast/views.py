@@ -61,73 +61,81 @@ def edit_courses(request):
     else:
         form = EditCoursesForm(request.POST)
         if form.is_valid():
-            # once the form is valid, we must save their chosen courses in the DB
+            saved_courses_taken = list(map(str, user_profile.courses_taken.values_list('id', flat=True)))
             user_courses_taken = form.cleaned_data.get('major_courses')
-            print(user_courses_taken)
-            user_sci = form.cleaned_data.get('sci_cred')
-            user_soc_sci = form.cleaned_data.get('soc_sci_cred')
-            user_arts_lett = form.cleaned_data.get('arts_letters_cred')
-            user_gp = form.cleaned_data.get('gp_cred')
-            user_us = form.cleaned_data.get('us_cred')
+            if ((len(saved_courses_taken) > 0) or (len(user_courses_taken) > 0)):
+                # once the form is valid, we must save their chosen courses in the DB
+                print(user_courses_taken)
+                user_sci = form.cleaned_data.get('sci_cred')
+                user_soc_sci = form.cleaned_data.get('soc_sci_cred')
+                user_arts_lett = form.cleaned_data.get('arts_letters_cred')
+                user_gp = form.cleaned_data.get('gp_cred')
+                user_us = form.cleaned_data.get('us_cred')
 
-            # Each course model will have an id (e.g. 210000) so need to retrieve
-            # the appropriate course models, then add those to the instance of the user profile model
+                # Each course model will have an id (e.g. 210000) so need to retrieve
+                # the appropriate course models, then add those to the instance of the user profile model
+
+                un = user_model.username
+                print(un)
+
+                for course_id in user_courses_taken:
+                    try:
+                        course_model = Course.objects.get(id=int(course_id))
+                        # once have course_model save in courses_taken
+                        user_profile.courses_taken.add(course_model) 
+                        print("found course_model with the id!")
+                    except:
+                        print("course_model not found")
+                
+                # Get courses to remove (if anything was removed from list)
+                courses_to_remove = [course for course in saved_courses_taken if course not in user_courses_taken]
+                user_profile.courses_taken.remove(*courses_to_remove)
+                
+                # update area of inquiry credits, 
+                # which includes science credits, social science, arts and letters
+                new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
+                current_aoi = user_profile.aoi_credits
+                updated_aoi = current_aoi + new_aoi
+                user_profile.aoi_credits = updated_aoi
+
+                # update U.S. and global perspectives credits
+                new_cultural = int(user_gp) + int(user_us)
+                current_cultural = user_profile.cultural_credits
+                updated_cultural = current_cultural + new_cultural
+                user_profile.cultural_credits = updated_cultural
+
+                # update total amount of credits
+                new_credits = new_aoi + new_cultural
+                current_total_credits = user_profile.total_credits
+                updated_total = current_total_credits + new_credits 
+                user_profile.total_credits = updated_total
+                #update specific credit areas
+                user_profile.aal_credits = int(user_arts_lett)
+                user_profile.ssci_credits = int(user_soc_sci)
+                user_profile.sci_credits = int(user_sci)
+                user_profile.gp_credits = int(user_gp)
+                user_profile.us_credits = int(user_us)
+
+                
+                user_profile.save()
+                print("user prof saved with new changes!")
+                
+                # next will need to take the user_courses_taken and save them in the DB for that user
+                # for now, just send messages back to notify that Django obtained the data correctly
+                messages.info(request, user_courses_taken)
+                messages.info(request, user_sci)
+                messages.info(request, user_soc_sci)
+                messages.info(request, user_arts_lett)
+                messages.info(request, user_gp)
+                messages.info(request, user_us)
+
+                messages.success(request, "Changes Saved Successfully!")
+                
+                return redirect('forecast:edit_courses')
             
-
-            un = user_model.username
-            print(un)
-
-            for course_id in user_courses_taken:
-                try:
-                    course_model = Course.objects.get(id=int(course_id))
-                    # once have course_model save in courses_taken
-                    user_profile.courses_taken.add(course_model)
-                    print("found course_model with the id!")
-                except:
-                    print("course_model not found")
-
-
-            # update area of inquiry credits, 
-            # which includes science credits, social science, arts and letters
-            new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
-            current_aoi = user_profile.aoi_credits
-            updated_aoi = current_aoi + new_aoi
-            user_profile.aoi_credits = updated_aoi
-
-            # update U.S. and global perspectives credits
-            new_cultural = int(user_gp) + int(user_us)
-            current_cultural = user_profile.cultural_credits
-            updated_cultural = current_cultural + new_cultural
-            user_profile.cultural_credits = updated_cultural
-
-            # update total amount of credits
-            new_credits = new_aoi + new_cultural
-            current_total_credits = user_profile.total_credits
-            updated_total = current_total_credits + new_credits 
-            user_profile.total_credits = updated_total
-            #update specific credit areas
-            user_profile.aal_credits = int(user_arts_lett)
-            user_profile.ssci_credits = int(user_soc_sci)
-            user_profile.sci_credits = int(user_sci)
-            user_profile.gp_credits = int(user_gp)
-            user_profile.us_credits = int(user_us)
-            
-            
-            user_profile.save()
-            print("user prof saved with new changes!")
-            
-            # next will need to take the user_courses_taken and save them in the DB for that user
-            # for now, just send messages back to notify that Django obtained the data correctly
-            messages.info(request, user_courses_taken)
-            messages.info(request, user_sci)
-            messages.info(request, user_soc_sci)
-            messages.info(request, user_arts_lett)
-            messages.info(request, user_gp)
-            messages.info(request, user_us)
-
-            messages.success(request, "Changes Saved Successfully!")
-            
-            return redirect('forecast:edit_courses')
+            else:
+                messages.error(request, "Nothing to save!")
+                return redirect('forecast:edit_courses')  
         else:
             for field in form:
                 if field.errors:
@@ -157,6 +165,9 @@ def courses_left(request):
 
     remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
     remaining_courses = categorize_courses(remaining_courses)
+    # import json
+    # print(json.dumps(remaining_courses, indent=4))
+    
     
     return render(request, "forecast/courses_left.html", {"remaining_courses": remaining_courses})
 
