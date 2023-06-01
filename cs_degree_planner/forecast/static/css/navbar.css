@@ -129,11 +129,12 @@ border-radius: 27px;
 /*---------- Navbar --------------------*/
 
 nav {
+	border-radius: 0;
 	margin-top: -20px;
 	margin-left: -20px;
 	width: 110%;
 	height: 80px;
-	background: #d9d0c1;
+	background: rgba(58,135,149,1);
 }
 
 li {
@@ -166,24 +167,25 @@ ul.navul li a {
 	line-height: 80px;
 	padding: 0 80px;
 	height: 80px;
-	color: rgba(4, 14, 28);
+	color: #d9d0c1;
 	-webkit-transition: all .1s ease-out;
 	-moz-transition: all .1s ease-out;
 	-ms-transition: all .1s ease-out;
 	-o-transition: all .1s ease-out;
 	transition: all .1s ease-out;
+	
 }
 ul li a:hover {
-	color: #eee;
+	color: #B4935D;
 }
 
-.dropOut .triangle {
+ .dropOut .triangle {
 	width: 0;
 	height: 0;
 	position: absolute;
 	border-left: 8px solid transparent;
 	border-right: 8px solid transparent;
-	border-bottom: 8px solid white;
+	border-bottom: 8px solid rgba(58,135,149,1);
 	top: -8px;
 	left: 50%;
 	margin-left: -8px;
@@ -198,7 +200,7 @@ ul li a:hover {
 }
 .dropOut {
 	width: 160px;
-	background: white;
+	background: rgba(58,135,149,1);
 	float: left;
 	position: relative;
 	margin-top: 0px;
@@ -208,7 +210,7 @@ ul li a:hover {
 	border-radius: 20px;
 	-webkit-box-shadow: 0 1px 6px rgba(0,0,0,.15);
 	-moz-box-shadow: 0 1px 6px rgba(0,0,0,.15);
-	box-shadow: 0 1px 6px rgba(0,0,0,.15);
+	box-shadow: 0 1px 30px rgba(0,0,0,.5);
 	-webkit-transition: all .1s ease-out;
 	-moz-transition: all .1s ease-out;
 	-ms-transition: all .1s ease-out;
@@ -218,15 +220,15 @@ ul li a:hover {
 
 .dropOut ul {
 	float: left;
-	padding: 10px 0 10px 6px;
+	padding: 10px 0px 10px 20px;
 }
 .dropOut ul li {
 	text-align: left;
 	float: left;
 	width: 125px;
 	padding: 12px 0 10px 15px;
-	margin: 0px 10px;
-	color: #777;
+	margin: 5px 10px;
+	color: #d9d0c1;
 	-webkit-border-radius: 40px;
 	-moz-border-radius: 40px;
 	border-radius: 40px;
@@ -235,10 +237,11 @@ ul li a:hover {
 	-ms-transition: background .1s ease-out;
 	-o-transition: background .1s ease-out;
 	transition: background .1s ease-out;
+	background:rgba(19,51,61,0.2);
 }
 
 .dropOut ul li:hover {
-	background: lightgray;
+	background:rgba(142,100,39,1.00);
 }
 
 ul li:hover a { color: white; }
@@ -294,6 +297,22 @@ ul li:hover .dropOut { opacity: 1; margin-top: 8px; }
   border-radius: 0 40px 40px 0;
 		}
 
+#uicon {
+	background:rgba(19,51,61,0.2);
+	padding: 10px;
+	border-radius: 10px;
+}
+#hicon {
+	background:rgba(19,51,61,0.2);
+	padding: 10px;
+	border-radius: 10px;
+}
+#jeanzlogo {
+	
+	letter-spacing: 2px;
+	font-size: 20pt;
+	font-family: AlteHaasGrotesk;
+}
 
 
 /* Chrome, Safari, Edge, Opera    Hide arrows in number spinner*/

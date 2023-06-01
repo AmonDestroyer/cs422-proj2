@@ -19,12 +19,14 @@ TODO: file description
     </head>
     <body>
         <nav>
-            <ul class="navul"> 
-                <li onMouseOver="document.getElementById('hicon').style='filter: invert(1);';" onMouseOut="document.getElementById('hicon').style='filter: invert(0.5);';"><a href="/forecast/dashboard"><img alt="home" id="hicon" src="{% static 'forecast/homeicon.png' %}" width="30px" style="filter: invert(0.5);" ></a></li>
+			<table><tr><br></tr>
+				<tr>
+            <ul class="navul" style="margin-top: 0px;"> 
+                <li onMouseOver="document.getElementById('hicon').style='filter: brightness(0.8) saturate(4);';" onMouseOut="document.getElementById('hicon').style='filter: saturate(1);';"><a href="/forecast/dashboard"><img alt="home" id="hicon" src="{% static 'forecast/homeicon.png' %}" width="40px" style="filter: saturate(1);" ></a></li>
           
-                <li><a href="/forecast/dashboard">JEANZ</a></li>
-                <li class="drop" onMouseOver="document.getElementById('uicon').style='filter: invert(1);';" onMouseOut="document.getElementById('uicon').style='filter: invert(0.5);';">
-                <a href="#"><img alt="user" id="uicon" src="{% static 'forecast/usericon.png' %}" width="20px" style=" filter: invert(0.5);" ></a>
+                <li><a id="jeanzlogo" href="/forecast/dashboard"><img alt="jeanz" src="{% static 'forecast/jeanzlogo2.png' %}" width="140px" style="" ></a></li>
+                <li class="drop" onMouseOver="document.getElementById('uicon').style='filter: brightness(0.8) saturate(4);';" onMouseOut="document.getElementById('uicon').style='filter: saturate(1);';">
+                <a href="#"><img alt="user" id="uicon" src="{% static 'forecast/usericon.png' %}" width="35px" style=" filter: saturate(1);" ></a>
           
                 <div class="dropdownContain">
                   <div class="dropOut">
@@ -41,6 +43,8 @@ TODO: file description
           
                 </li>
             </ul>
+				</tr>
+			</table>
         </nav>
 
 
