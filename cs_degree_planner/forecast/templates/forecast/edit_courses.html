@@ -25,22 +25,27 @@ TODO: file description
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 	<style>
+		@font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
+ @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
+		@font-face { font-family: Lato; src: url("{% static 'fonts/Lato-Regular.ttf' %}"); } 
+
 		html {
 	max-width: 100%;
     overflow-x: hidden;
 	min-height:100%;
-      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
       background-size:cover;
 }
 
 body {
+	      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+
 	text-align: center;
 	
 	padding-bottom: 200px;
 	font-family: AlteHaasGrotesk, sans-serif;
 	font-style: normal;
           font-weight: 300;
-	color: green;
+	color: #d9d0c1;
 	
 }
 		
@@ -52,42 +57,101 @@ body {
 		.chosen-container-multi .chosen-choices li.search-choice { /*hi erin style deletable bubbles*/
   position: relative;
   margin: 3px 5px 3px 0;
-  padding: 3px 20px 3px 5px;
+  padding: 8px 20px 8px 10px;
   border: 3px solid #aaa;
   max-width: 100%;
   border-radius: 30px;
-  background-color: #eeeeee;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), to(#eee));
+	letter-spacing: 0.5px;
+	font-family: Lato;
   background-image: linear-gradient(#95703A 20%, #95703A 50%, #95703A 52%, #95703A 100%);
   background-size: 100% 19px;
   background-repeat: repeat-x;
   background-clip: padding-box;
-  -webkit-box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
-          box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: 0 0 2px transparent inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+          box-shadow: 0 0 2px transparent inset, 0 1px 0 rgba(0, 0, 0, 0.05);
   color: #d9d0c1;
   line-height: 13px;
   cursor: default;
-}
+			
+			
+	     
+            border: 4px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+            margin-right: 5px;
+            margin-left: 5px;
+			/*background:rgba(149,112,58,0.3);*/
+			background:rgba(18,42,76,0.8);
+			transition: background 1s ease;
+		}		
+		.chosen-container .chosen-container-multi {
+			border: none;
+			
+		}
+		
+		.chosen-choices {
+			transition: border-radius 2s ease;
+			border-radius: 40px;
+			
+			/*box-shadow: inset 10000px 10000px 20px #3A8795;
+			transition: all 0.5s ease;*/
+		}
+		
+		h3 {
+			font-size: 20pt;
+		}
+		
+		/*.chosen-choices:hover{
+		border-radius: 40px 40px 0px 0px;}*/
+			
+			/*box-shadow: inset 10000px 10000px 20px #95703A;*/
+		
+		#submit {
+			left: 20%;
+			display: none;
+		}
+		#savetitle{
+			margin-left:-150px;
+		}
+		#savebutton {
+			margin-left: 200px;
+			font-size: 16pt;
+			padding: 15px 30px;
+			font-family: Lato;
+			letter-spacing: 1px;
+		}
+		.msgs {
+			background:rgba(151,247,136,0.4);
+			border-radius: 40px;
+			padding: 20px -50px 30px -50px;
+			width: fit-content;
+			margin-left: 40%;
+		}
 		
 	</style>
 </head>
 <body>
+	<div class="msgs">
 	{% if messages %}
         {% for message in messages %}
             <p><b>{{ message }}</b></p>
         {% endfor %}
+		<br>
     {% endif %}
+	</div>
 	
 <form method="post">
   {% csrf_token %}
 <table>
 	<tr>
-    <td><h3>Your course history</h3></td>
-        <td><h3>Your general credit</h3></td>
+    <td><h3>Your course history</h3></td><td></td>
+        <td><h3>Your generic credits</h3></td><td></td>
+		<td><h3 id="savetitle">Save changes</h3></td>
         </tr>
       <tr>
-      <td><h4>Add or remove courses</h4></td>
+      <td><h4>Add or remove courses</h4></td><td></td>
         <td><h4>Add or remove general credit</h4></td>
+		  <td><button type="submit" name="Submit" id="submit">Save Changes</button><label class="homelog" id="savebutton" for="submit">SAVE</label></td>
         </tr>
       <tr>
       <td>
@@ -109,7 +173,7 @@ body {
       </select>
 
 
-      </td>
+      </td> 
 	
 	
 		<td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
@@ -138,7 +202,7 @@ body {
 	</table>
   <br>
   <br>
-  <button type="submit" name="Submit">Save Changes</button>
+  
 </form>
 
 
