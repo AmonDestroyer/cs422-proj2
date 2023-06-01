@@ -479,6 +479,32 @@ def list_forecast(start_term, start_year, forecast):
     
     return organized_forecast
 
+def split_forecast(start_term, start_year, forecast):
+        """
+        split a forecast (list of lists of strings) into terms to be rendered
+        ex:
+        ["Fall", ['class', 'class', 'class', 'class'], "Winter", ['class', ...]]
+        """
+        terms = ["Fall","Winter","Spring","Fall"] #TODO add "Summer" and deal w it
+        if start_term == 'F':
+                this_term = terms[0]
+        elif start_term == 'W':
+                this_term = terms[1]
+        elif start_term == 'S':
+                this_term = terms[2]
+        #TODO elif U
+                
+        splitted = []
+        for term in forecast:
+                splitted.append(f"{this_term} {this_year}")
+                splitted.append(term)
+                this_term = terms[terms.index(this_term) + 1]
+                if (this_term == 'Winter'):
+                        this_year += 1
+        return splitted
+                        
+        
+
 
 def categorize_courses(course_set):
     course_set = id_to_title(course_set)
