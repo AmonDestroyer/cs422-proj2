@@ -20,7 +20,7 @@ from cs_degree_planner.decorators import anonymous_required
 # Create your views here.
 @anonymous_required
 def index(request):
-    return render(request, "users/index.html")
+    return redirect('users:login')
 
 @anonymous_required
 def create_user(request):
