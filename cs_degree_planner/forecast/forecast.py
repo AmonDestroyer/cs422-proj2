@@ -509,27 +509,26 @@ def split_forecast(start_term, start_year, forecast):
 def categorize_courses(course_set):
     course_set = id_to_title(course_set)
     categorized_courses = {
-        'CS Core Requirements': [],
-        'General Education Requirements': [],
+        'CS Core and Math Requirements': [],
         'CS Elective Requirements': [],
-        'CS Math and Writing Requirements': [],
-        'Science Path Requirements': [],
+        'CS Science Path and Writing Requirements': [],
+        'General Education Requirements': [],
+
     }
     
     for course in course_set:
-        if 'credits' in course:
-            if '(' in course or ')' in course: # In this case, we're checking for the CS electives (see line 98)
-                parts = re.split(r'\) or \(|\) and \(', course) # ex: "10 credits from (CS0...) or (CS1...)" split into ["10 credits from ", "CS0...", " or ", "CS1..."]
-                parts = [part.strip('()') for part in parts] # Remove () so now we have ex: ["10 credits from ", "CS0...", " or ", "CS1..."]
-                categorized_courses['CS Elective Requirements'].extend(parts) # Add each part to the list separately               
-            else:
-                categorized_courses['General Education Requirements'].append(course)
-        elif ' or ' in course:
-            categorized_courses['CS Math and Writing Requirements'].append(course)
-        elif '{' in course and '}' in course:
-            categorized_courses['Science Path Requirements'].append(course)
+
+        if cs_elec_left in course: # In this case, we're checking for the CS electives (see line 98)
+            parts = re.split(r'\) or \(|\) and \(', course) # ex: "10 credits from (CS0...) or (CS1...)" split into ["10 credits from ", "CS0...", " or ", "CS1..."]
+            parts = [part.strip('()') for part in parts] # Remove () so now we have ex: ["10 credits from ", "CS0...", " or ", "CS1..."]
+            categorized_courses['CS Elective Requirements'].extend(parts) # Add each part to the list separately
+        elif aal_left in course or ssc_left in course or sc_left in course or gp_left in course or us_left in course:
+            categorized_courses['General Education Requirements'].append(course)
+        elif wr_left in course or sc_path_left in course or ph1_left in course or ph2_left in course or ch_left in course \
+                or ge_left in course or er_left in course or bi_left in course or ps_left in course:
+            categorized_courses['CS Science Path and Writing Requirements'].append(course)
         else:
-            categorized_courses['CS Core Requirements'].append(course)
+            categorized_courses['CS Core and Math Requirements'].append(course)
     
     return arrange_electives(categorized_courses)
    
