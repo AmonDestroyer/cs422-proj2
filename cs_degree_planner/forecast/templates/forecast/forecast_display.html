@@ -24,6 +24,9 @@ TODO: file description
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 <style>
+				@font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
+ @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
+		@font-face { font-family: Lato; src: url("{% static 'fonts/Lato-Regular.ttf' %}"); } 
     html {
 max-width: 100%;
 overflow-x: hidden;
@@ -34,6 +37,7 @@ min-height:100%;
 
 body {
 text-align: center;
+	      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
 
 padding-bottom: 200px;
 font-family: AlteHaasGrotesk, sans-serif;
@@ -42,6 +46,70 @@ font-style: normal;
 color: green;
 
 }
+	        .courses-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+	
+	h2 {
+		font-size: 25pt;
+		color: #d9d0c1;
+	}
+	.category {
+			font-family: Lato;
+			letter-spacing: 1px;
+			border-radius: 30px 30px 0 0;
+            /*background-image: linear-gradient(0deg, rgba(4, 14, 28, 1.0), 30%, #95703A);*/
+			background: #95703A;
+            color: #d9d0c1;
+            cursor: default;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 20px;
+			transition: background 0.5s ease;
+			margin-bottom: 25px;
+        }
+        
+        .category:hover {
+            /*background-color: #3A8795;*/
+        }
+        
+        .courses {
+			font-family: Lato;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+			margin: 5px 0 20px 0;
+			
+        }
+
+        .course {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 3px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+            margin-right: 5px;
+            margin-left: 5px;
+			/*background:rgba(149,112,58,0.3);*/
+			background: rgba(58,135,149,0.3);
+			transition: background 1s ease;
+        }      
+
+        .course:hover {
+            /*background-color: rgba(149,112,58,0.7);*/
+			background: rgba(58,135,149,0.7);
+			cursor: default;
+        }
     
     .input-number {
         width: 60px;
@@ -72,7 +140,7 @@ cursor: default;
 </head>
 
 <body>
-	{% if messages %}
+	<!--{% if messages %}
         {% for message in messages %}
             <p><b>{{ message }}</b></p>
         {% endfor %}
@@ -81,10 +149,31 @@ cursor: default;
     <h2>Forecast Result Is Displayed Below</h2>
     {% for row in forecast_result %}
         <h3>{{row}}</h3>
-    {% endfor %}
+    {% endfor %}-->
     
     <!--Will add save button here in the future so that user can 
         add forecast result to their saved forecasts-->
+	
+	{% if messages %}
+        {% for message in messages %}
+            <p><b>{{ message }}</b></p>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Degree Plan 1</h2>
+	<div class="courses-form">
+		{% for term in forecast_result.1 %}
+			{% with i=forloop.counter0 %}
+			<div class="category">
+				<h3>{{ forecast_result.0.i }}</h3>
+			</div>
+			{% endwith %}
+			{% for course in term %}
+				<p class="course">{{ course }}</p>
+			{% endfor %}
+		{% endfor %}
+	</div>
+	
 
 </body>
 </html>

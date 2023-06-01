@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
-from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast
+from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
 from users.models import Profile
 
 # login is required to see the dashboard
@@ -208,10 +208,12 @@ def new_forecast(request):
             courses_taken_set = set(courses_taken) # Convert query set to a regular set
             forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
             
-            fcst_to_display = list_forecast("F", 2023, forecast)
+            #fcst_to_display = list_forecast("F", 2023, forecast)
+            #context = {'forecast_result': fcst_to_display}
+            #return render(request, "forecast/forecast_display.html", context)
 
+            fcst_to_display = split_forecast('F', 2023, forecast) #TODO user defined target term/year
             context = {'forecast_result': fcst_to_display}
-            
             return render(request, "forecast/forecast_display.html", context)
 
     context = {'preset_form': form}

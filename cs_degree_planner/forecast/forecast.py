@@ -483,9 +483,11 @@ def split_forecast(start_term, start_year, forecast):
         """
         split a forecast (list of lists of strings) into terms to be rendered
         ex:
-        ["Fall", ['class', 'class', 'class', 'class'], "Winter", ['class', ...]]
+        ["Fall 2023", "Winter 2024", "Spring 2024", ...]
+        [['class', 'class', 'class', 'class'], "Winter", ['class', ...]]
         """
         terms = ["Fall","Winter","Spring","Fall"] #TODO add "Summer" and deal w it
+        this_year = start_year
         if start_term == 'F':
                 this_term = terms[0]
         elif start_term == 'W':
@@ -493,15 +495,17 @@ def split_forecast(start_term, start_year, forecast):
         elif start_term == 'S':
                 this_term = terms[2]
         #TODO elif U
-                
-        splitted = []
+
+        splitted_labels = []     
+        splitted_terms = []
         for term in forecast:
-                splitted.append(f"{this_term} {this_year}")
-                splitted.append(term)
+                splitted_labels.append(f"{this_term} {this_year}")
+                splitted_terms.append(id_to_title_list(term))
                 this_term = terms[terms.index(this_term) + 1]
                 if (this_term == 'Winter'):
                         this_year += 1
-        return splitted
+        print(splitted_labels, splitted_terms)
+        return splitted_labels, splitted_terms
                         
         
 
