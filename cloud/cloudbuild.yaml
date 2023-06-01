@@ -63,6 +63,8 @@ steps:
       - 'jeanz-app'
       - '--container-image'
       - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - '--zone'
+      - 'us-central1-a'
 
 images:
   - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
