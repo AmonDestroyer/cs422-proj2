@@ -20,6 +20,9 @@ TODO: file description
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 <style>
+			@font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
+ @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
+		@font-face { font-family: Lato; src: url("{% static 'fonts/Lato-Regular.ttf' %}"); } 
       html {
 max-width: 100%;
   overflow-x: hidden;
@@ -28,21 +31,35 @@ min-height:100%;
     background-size:cover;
 }
   body {
+	  
     text-align: left;
-    margin: 0;
     padding: 0;
     background:rgba(0,0,0,0.00);
   }
 
   .homelog {
-    margin-left: 0;
+	  border: none;
+	  padding: 15px 25px;
+	font-size: 16pt;
     margin-top: 2%;
+	  font-family: Lato;
+	  letter-spacing: 2px;
   }
+	h1 {
+		font-size: 30pt;
+		color: #d9d0c1;
+		padding: 80px 30px 0px 30px;
+	}
+	
+	p {
+		margin-left: 50px;
+	}
 
 </style>
 </head>
 
 <body>
+	<h1>Update Account Information</h1>
 {% if messages %}
 {% for message in messages %}
     <p><b>{{ message }}</b></p>
@@ -56,19 +73,19 @@ min-height:100%;
 
 <div id="username-section">
     {% comment %} <p>Username: <span id="username">{{ request.user.username }}</span></p> {% endcomment %}
-    <button id="change-username-btn" class="homelog">Change Username</button>
+    <button id="change-username-btn" class="homelog">CHANGE USERNAME</button>
   </div>
   
   <div id="password-section">
-    <button id="change-password-btn" class="homelog">Change Password</button>
+    <button id="change-password-btn" class="homelog">CHANGE PASSWORD</button>
   </div>
 
   <div id="email-section">
-    <button id="change-email-btn" class="homelog">Change Email</button>
+    <button id="change-email-btn" class="homelog">CHANGE EMAIL</button>
   </div>
 
   <div id="name-section">
-    <button id="change-name-btn" class="homelog">Change Name</button>
+    <button id="change-name-btn" class="homelog">CHANGE NAME</button>
   </div>
   
   <!-- Username Update Form -->
