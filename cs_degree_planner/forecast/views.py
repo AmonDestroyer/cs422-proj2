@@ -9,6 +9,7 @@ TODO: file description
 2023-05-26 - Josh Sawyer     : form now loads saved general credits
 2023-05-30 - Nathaniel Mason : added edit_interests and new_forecast view
 2023-05-31 - Nathaniel Mason : edited new_forecast view
+2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
 
 """
 
@@ -82,9 +83,22 @@ def edit_courses(request):
                 for course_id in user_courses_taken:
                     try:
                         course_model = Course.objects.get(id=int(course_id))
-                        # once have course_model save in courses_taken
-                        user_profile.courses_taken.add(course_model) 
-                        print("found course_model with the id!")
+                        
+                        # Check if this course has been added yet, if it has, no need to add it again
+                        if not course_model in user_profile.courses_taken.all():
+                            # once have course_model save in courses_taken
+                            user_profile.courses_taken.add(course_model) 
+                            print("found course_model with the id!")
+                            
+                            ## add any courses that are a prereq to this course ##
+                            prereqs = recursive_add_prereqs(course_model) # returns a list of courses
+                            
+                            user_profile.courses_taken.add(*prereqs) # add all the prereqs for this course to the user's courses_taken
+                        else:
+                            # If a user decides to delete a prereq, the prereq won't be put back in unless the 
+                            # class that has it as a prereq is removed and readded
+                            print("Course already saved in form")
+                        
                     except:
                         print("course_model not found")
                 
@@ -221,4 +235,24 @@ def new_forecast(request):
     return render(request, "forecast/new_forecast.html", context)
     
 
+def recursive_add_prereqs(course):
+    """
+    Recursive function that gets all the prereqs of a course 
+    Must return a list of courses (-> List[Course])
+    """
+    if not course.has_prereq.exists():
+        return [course] # Must return a list
+    
+    else:
+        # Get all the prereqs for this course
+        prereqs = course.has_prereq.all()
+        sub_prereqs = []
+            
+        for prereq in prereqs:
+            # Find all prereqs of this prereq
+            sub_prereqs.extend(recursive_add_prereqs(prereq)) # Extend used to add each prereq item of the list returned from recurisve call     
+            
+        sub_prereqs.append(course) # Make sure to append this course as well since it's also a prereq
+        return sub_prereqs
+        
 

@@ -45,7 +45,7 @@ class Course(models.Model):
     credits = models.IntegerField(default=0)    # number of credits
 
     # bridge table to get course prereqs
-    has_prereq = models.ManyToManyField("self")     # prereqs that the course has
+    has_prereq = models.ManyToManyField("self", symmetrical=False)     # prereqs that the course has - set symmetrical to false to avoid bidirectional relationship
 
     # bridge table to get course keywords
     has_kw = models.ManyToManyField(Keyword)    # what keywords are associated with this course
