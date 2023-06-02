@@ -80,32 +80,28 @@ def edit_courses(request):
                 un = user_model.username
                 print(un)
 
+                # Get courses to remove (if anything was removed from list)
+                courses_to_remove = [course for course in saved_courses_taken if course not in user_courses_taken]
+                user_profile.courses_taken.remove(*courses_to_remove)
+
                 for course_id in user_courses_taken:
                     try:
                         course_model = Course.objects.get(id=int(course_id))
                         
-                        # Check if this course has been added yet, if it has, no need to add it again
-                        if not course_model in user_profile.courses_taken.all():
-                            # once have course_model save in courses_taken
-                            user_profile.courses_taken.add(course_model) 
-                            print("found course_model with the id!")
-                            
-                            ## add any courses that are a prereq to this course ##
-                            prereqs = recursive_add_prereqs(course_model) # returns a list of courses
-                            
-                            user_profile.courses_taken.add(*prereqs) # add all the prereqs for this course to the user's courses_taken
-                        else:
-                            # If a user decides to delete a prereq, the prereq won't be put back in unless the 
-                            # class that has it as a prereq is removed and readded
-                            print("Course already saved in form")
+# # Check if this course has been added yet, if it has, no need to add it again
+# if not course_model in user_profile.courses_taken.all(): -- want to do something like this, but will fix later
+                      
+                        # once have course_model save in courses_taken
+                        user_profile.courses_taken.add(course_model) 
+                        print("found course_model with the id!")
+                        
+                        ## add any courses that are a prereq to this course ##
+                        prereqs = recursive_add_prereqs(course_model) # returns a list of courses
+                        user_profile.courses_taken.add(*prereqs) # add all the prereqs for this course to the user's courses_taken 
                         
                     except:
                         print("course_model not found")
-                
-                # Get courses to remove (if anything was removed from list)
-                courses_to_remove = [course for course in saved_courses_taken if course not in user_courses_taken]
-                user_profile.courses_taken.remove(*courses_to_remove)
-                
+
                 # update area of inquiry credits, 
                 # which includes science credits, social science, arts and letters
                 new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
