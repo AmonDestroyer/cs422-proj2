@@ -32,10 +32,9 @@ TODO: file description
                   <div class="dropOut">
                     <div class="triangle"></div>
                     <ul>
-                      <li style="pointer-events: none; cursor: default;"><img alt="name" src="{% static 'forecast/usericon.png' %}" width="20px" style="cursor: default;">  {{ user.get_username }}</li>
+                      <li><a class="prof_dropdown" href="/users/update-account"><img alt="name" src="{% static 'forecast/usericon.png' %}" width="20px"> {{ user.get_username }} </a></li>
                       <li><a class="prof_dropdown" href="/forecast/edit_courses">Edit Courses</a></li>
                       <li><a class="prof_dropdown" href="/forecast/edit_interests">Edit Interests</a></li>
-                      <li><a class="prof_dropdown" href="/users/update-account">My Account</a></li>
                       <li><a class="prof_dropdown" href="/users/logout/">Log Out</a></li>
                     </ul>
                   </div>
