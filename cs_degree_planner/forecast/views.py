@@ -10,7 +10,7 @@ TODO: file description
 2023-05-30 - Nathaniel Mason : added edit_interests and new_forecast view
 2023-05-31 - Nathaniel Mason : edited new_forecast view
 2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
-
+2023-06-03 - Nathaniel Mason : added save_forecast view
 """
 
 from django.shortcuts import render, redirect
@@ -21,6 +21,7 @@ from django.contrib import messages
 from .models import Course
 from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
 from users.models import Profile
+import ast
 
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
@@ -199,6 +200,10 @@ def edit_interests(request):
 def new_forecast(request):
     if request.method != 'POST':
         form = PresetForm() 
+
+        context = {'preset_form': form}
+    
+        return render(request, "forecast/new_forecast.html", context)
             
     else:
         form = PresetForm(request.POST)
@@ -225,11 +230,38 @@ def new_forecast(request):
             fcst_to_display = split_forecast('F', 2023, forecast) #TODO user defined target term/year
             context = {'forecast_result': fcst_to_display}
             return render(request, "forecast/forecast_display.html", context)
+    
+@login_required(redirect_field_name='', login_url='users:login')
+def save_forecast(request):
+    if request.method == 'POST':
+        fcst_rslt_str = request.POST['forecast_result']
+        # fcst rslt is str which is similar to: [['1','2','3'], ['4','5'], ...]
+        # use ast.literal_eval to convert to list of lists
+        
+        forecast_data = ast.literal_eval(fcst_rslt_str) # retrieve the same forecast result data that was displayed
+        # use json loads to make sure we get it as a list of lists and not a string
 
-    context = {'preset_form': form}
-    
-    return render(request, "forecast/new_forecast.html", context)
-    
+        # store as a session var in case want to show on the save confirmation template
+        request.session['forecast_data'] = forecast_data
+        ###### now save it in the DB #####
+        
+
+        return redirect('forecast:save_confirmation')
+        
+@login_required(redirect_field_name='', login_url='users:login')
+def save_confirmation(request):
+    if request.method != 'POST': #only should be getting GET requests to this view fxn
+        if 'forecast_data' in request.session:
+            forecast_data = request.session['forecast_data']
+
+            messages.success(request, f"Got the data and will save it in DB: {forecast_data}")
+            context = {'saved_forecast': forecast_data}
+            return render(request, "forecast/save_confirmation.html", context)
+        else:
+            messages.error(request, 'No forecast data found')
+            context = {'saved_forecast': [[]]}
+            return render(request, "forecast/save_confirmation.html", context)
+
 
 def recursive_add_prereqs(course):
     """

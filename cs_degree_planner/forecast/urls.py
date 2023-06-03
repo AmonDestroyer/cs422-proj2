@@ -20,5 +20,7 @@ urlpatterns = [
     path("courses_left", views.courses_left, name="courses_left"),
     path("edit_interests", views.edit_interests, name="edit_interests"),
     path("new_forecast", views.new_forecast, name="new_forecast"),
+    path("save_forecast", views.save_forecast, name="save_forecast"),
+    path("save_confirmation", views.save_confirmation, name="save_confirmation"),
 ]
 

@@ -1,7 +1,7 @@
 <!--
 TODO: file description
 
-2023-05-31 - Nathaniel Mason : Added initial version of template
+2023-06-03 - Nathaniel Mason : Added initial version of template
 
 
 -->
@@ -15,7 +15,7 @@ TODO: file description
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Forecast Display</title>
+<title>Save Confirmation</title>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.js"></script>
@@ -150,9 +150,9 @@ cursor: default;
         {% endfor %}
     {% endif %}
 
-    <h2>Degree Plan 1</h2>
+    <h2>Degree Plan 1 (Saved)</h2>
 	<div class="courses-form">
-		{% for term in forecast_result %}
+		{% for term in saved_forecast %}
 			
 			<div class="category">
 				<h3>{{ term.0 }}</h3>
@@ -166,16 +166,6 @@ cursor: default;
 			</div>
 		{% endfor %}
 	</div>
-
-
-    <div class="save_result">
-        <form action="save_forecast" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="forecast_result" value="{{ forecast_result }}">
-            <button type="submit">Save Schedule</button>
-        
-        </form>
-    </div>
 
 </body>
 </html>
