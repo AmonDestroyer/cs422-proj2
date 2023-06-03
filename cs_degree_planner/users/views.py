@@ -89,12 +89,14 @@ def update_account_information(request):
             email_form = UserEmailChangeForm(request.POST, instance=request.user)
             if email_form.is_valid():
                 email_form.save()
+                messages.success(request, "Email updated successfully!")
                 return redirect('users:update_account')
     
         if 'update_name' in request.POST:
             name_form = UserNameChangeForm(request.user, request.POST, instance=request.user)
             if name_form.is_valid():
                 name_form.save()
+                messages.success(request, "Name updated successfully!")
                 return redirect('users:update_account')
         
         if 'back' in request.POST:

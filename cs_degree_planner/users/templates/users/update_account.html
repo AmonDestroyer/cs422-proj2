@@ -52,19 +52,50 @@ min-height:100%;
 	}
 	
 	p {
-		margin-left: 50px;
+		margin-left: 5px;
+    margin-right: 5px;
 	}
+
+  .msgs {
+			background:transparent;
+			border-radius: 40px;
+			padding: 20px -50px 30px -50px;
+      text-align: center;
+      width: 400px;
+			color:rgba(59,167,0,1.00);
+			    -webkit-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+    -moz-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+    box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+			font-size: 12pt;
+			
+			animation: fadeOutAnimation ease 10s;
+			animation-iteration-count: 1;
+			animation-fill-mode: forwards;
+		}
+
+    @keyframes fadeOutAnimation {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+     }
+    }
 
 </style>
 </head>
 
 <body>
 	<h1>Update Account Information</h1>
-{% if messages %}
-{% for message in messages %}
-    <p><b>{{ message }}</b></p>
-{% endfor %}
-{% endif %}
+  <td>	<div class="msgs">
+    {% if messages %}
+      <br />
+      {% for message in messages %}
+        <p><b>{{ message }}</b></p>
+      {% endfor %}
+      <br />
+    {% endif %}
+    </div></td>
 <div id="back-button" style="display: none;">
   <form id="back" action="/users/update-account">
     <button type="submit" id="backbutton" class="homelog">BACK</button>
