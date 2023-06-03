@@ -53,7 +53,7 @@ class EditCoursesForm(forms.Form):
                'type': 'number', 'value': '0', 'min': '0'}))
     
 
-PRESET_OPTIONS = [("16_cr", "16 Credits Per Term"),
+PRESET_OPTIONS = [("16_cr", "16 credits per term"),
                   ("other", "Other preset test choice")
                   ]
 

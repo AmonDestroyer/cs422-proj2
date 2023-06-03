@@ -24,15 +24,20 @@ TODO: file description
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
 <style>
+	@font-face { font-family: AlteHaasGrotesk; src: url("{% static 'fonts/AlteHaasGroteskRegular.ttf' %}"); } 
+ @font-face { font-family: AlteHaasGrotesk; font-weight: bold; src: url("{% static 'fonts/AlteHaasGroteskBold.ttf' %}");}
+		@font-face { font-family: Lato; src: url("{% static 'fonts/Lato-Regular.ttf' %}"); } 
     html {
 max-width: 100%;
 overflow-x: hidden;
 min-height:100%;
-    background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+			    background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+
     background-size:cover;
 }
 
 body {
+	    background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
 text-align: center;
 
 padding-bottom: 200px;
@@ -43,10 +48,21 @@ color: green;
 
 }
     
-    .input-number {
-        width: 60px;
-        border-radius: 0px;
-    }
+.input-number {
+	width: 60px;
+	border-radius: 0px;
+}
+	
+	.hidden {
+		display: none;
+	}
+	#submitbutton {
+		padding: 25px 40px;
+		font-size: 14pt;
+		letter-spacing: 1px;
+		font-family: Lato;
+		margin-left: -4px;
+	}
     
     .chosen-container-multi .chosen-choices li.search-choice { /*hi erin style deletable bubbles*/
 position: relative;
@@ -67,6 +83,32 @@ color: #d9d0c1;
 line-height: 13px;
 cursor: default;
 }
+	
+	#preset_choice {
+			padding: 10px 0 10px 10px;
+            border: 4px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+			letter-spacing: 1px;
+			font-family: Lato;
+			/*background:rgba(149,112,58,0.3);*/
+			background: rgba(58,135,149,0.3);
+			transition: background 1s ease;
+	}
+	
+		#preset_choice:hover {
+			background: rgba(58,135,149,0.7);
+			cursor: default;
+	}
+	
+	.preset {
+
+	}
+	
+	h3 {
+		font-size: 23pt;
+		color: #d9d0c1;
+	}
     
 </style>
 </head>
@@ -78,12 +120,16 @@ cursor: default;
         {% endfor %}
     {% endif %}
 
-    <h3>Select a preset, then click the "Generate New Forecast" button to see the results</h3>
+    <h3><br><br>Select a preset to tailor<br> your degree plan to your learning style<br><br></h3>
     <form method="post">
         {% csrf_token %}
-        {{ preset_form.as_p }}
-
-        <button type="submit" name="Submit">Generate New Forecast</button>
+		<div class="preset">
+        	{{ preset_form.as_p }}
+		</div>
+		
+        <button class="hidden" id="generate" type="submit" name="Submit">Generate New</button>
+		<br><br><br><br>
+		<label class="homelog" for="generate" id="submitbutton">GENERATE DEGREE PLAN</label>
     </form>
 
 </body>
