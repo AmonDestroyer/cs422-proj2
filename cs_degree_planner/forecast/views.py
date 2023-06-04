@@ -11,6 +11,7 @@ TODO: file description
 2023-05-31 - Nathaniel Mason : edited new_forecast view
 2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
 2023-06-03 - Nathaniel Mason : added save_forecast view
+2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB 
 """
 
 from django.shortcuts import render, redirect
@@ -20,7 +21,7 @@ from .forms import EditCoursesForm, PresetForm
 from django.contrib import messages
 from .models import Course
 from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
-from users.models import Profile
+from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
 
 # login is required to see the dashboard
@@ -222,31 +223,104 @@ def new_forecast(request):
             courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
             courses_taken_set = set(courses_taken) # Convert query set to a regular set
             forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
+
+            request.session['forecast_raw'] = forecast # store as a session variable so it can be easily gotten if it needs to be saved
             
             #fcst_to_display = list_forecast("F", 2023, forecast)
             #context = {'forecast_result': fcst_to_display}
             #return render(request, "forecast/forecast_display.html", context)
 
             fcst_to_display = split_forecast('F', 2023, forecast) #TODO user defined target term/year
-            context = {'forecast_result': fcst_to_display}
+            context = {
+                'forecast_result': fcst_to_display,
+            }
             return render(request, "forecast/forecast_display.html", context)
     
+
 @login_required(redirect_field_name='', login_url='users:login')
 def save_forecast(request):
     if request.method == 'POST':
         fcst_rslt_str = request.POST['forecast_result']
         # fcst rslt is str which is similar to: [['1','2','3'], ['4','5'], ...]
-        # use ast.literal_eval to convert to list of lists
         
+        # use ast.literal_eval to convert to list of lists
         forecast_data = ast.literal_eval(fcst_rslt_str) # retrieve the same forecast result data that was displayed
         # use json loads to make sure we get it as a list of lists and not a string
 
         # store as a session var in case want to show on the save confirmation template
         request.session['forecast_data'] = forecast_data
+
         ###### now save it in the DB #####
+        user = request.user
+        user_profile = Profile.objects.get(user=user)
+        forecast = Forecast(user=user_profile)
+        forecast.save()
         
+        forecast_raw_data = request.session['forecast_raw']
+        
+        add_forecast_model_data(forecast_raw_data, forecast_data, forecast)
 
         return redirect('forecast:save_confirmation')
+
+
+def add_forecast_model_data(forecast_raw_data, forecast_str_data, forecast_model):
+    term_li = []
+    year = 0
+    course_in_term = []
+
+    seasons_shorthand = {
+        "Fall": 'F',
+        "Winter": 'W',
+        "Spring": 'S',
+        "Summer": 'U',
+    }
+
+    general_credits = {
+        'US': 100009,   # (US)
+        'GP': 100010,   # (GP)
+        'SCI': 100011,  # (>3)
+        'SO': 100012,   # (>2)
+        'AAL': 100013,  # (>1)
+        'CRE': 100014,  # 4 credits
+    }
+
+    for term in forecast_str_data:
+        term_li.append(term[0])
+    
+    for i, courses in enumerate(forecast_raw_data):
+        # get the year and season that the user is taking these courses
+        season = seasons_shorthand[term_li[i].split()[0]]
+        year = int(term_li[i].split()[1])
+
+        for course in courses:
+            # get the courses they are taking in that term, and make a bridge table
+            if isinstance(course, int): # the course is a int (course_id), and a valid course can be fetched from the DB
+                course_model = Course.objects.get(id=course)
+            else: # the course is a string, and needs to be parsed
+                if "(US)" in course:
+                    course_id = general_credits['US']
+                elif "(GP)" in course:
+                    course_id = general_credits['GP']
+                elif "(>3)" in course:
+                    course_id = general_credits['SCI']
+                elif "(>2)" in course:
+                    course_id = general_credits['SO']
+                elif "(>1)" in course:
+                    course_id = general_credits['AAL']
+                elif "4 credits" in course:
+                    course_id = general_credits['CRE']
+
+                course_model = Course.objects.get(id=course_id)
+            
+            through_table = Forecast_Has_Course(
+                forecast=forecast_model,
+                course=course_model,
+                year=year,
+                term=season,
+            )
+            through_table.save()
+    return
+
         
 @login_required(redirect_field_name='', login_url='users:login')
 def save_confirmation(request):
