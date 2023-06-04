@@ -9,7 +9,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',
             'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
-  # Development Deployment - Dev
+  # [Cloud Run] Development Deployment - Dev
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -20,7 +20,7 @@ steps:
       - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
       - '--region'
       - 'us-central1'
-  # Production Deployment - Prod
+  # [Cloud Run] Production Deployment - Prod
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -31,7 +31,7 @@ steps:
       - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
       - '--region'
       - 'us-central1'
-  # Traffic Update - Dev
+  # [Cloud Run] Traffic Update - Dev
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -42,7 +42,7 @@ steps:
       - '--to-latest'
       - '--region'
       - 'us-central1'
-  # Traffic Update - Prod
+  # [Cloud Run] Traffic Update - Prod
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -54,7 +54,7 @@ steps:
       - '--region'
       - 'us-central1'
 
-  # Setting Default
+  # [VM] Container Update
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -67,8 +67,10 @@ steps:
       - '--zone'
       - 'us-central1-a'
 
-images:
-  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
-
+# [VM] Options for Logging
 options:
   logging: CLOUD_LOGGING_ONLY
+
+# Image Settings
+images:
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
