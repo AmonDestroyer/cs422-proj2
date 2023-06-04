@@ -1,5 +1,16 @@
 """
-TODO: file description
+Views that are related to courses and forecast generation (a.k.a., degree plan 
+generation). There are functions that allow the user to 
+    - edit their course history (`edit_courses`),
+    - see what courses they have remaining in the CS major (`courses_left`),
+    - edit their interests (`edit_interests`),
+    - generate a new forecast (`new_forecast`),
+    - save the forecast that was generated (`save_forecast`),
+    - confirm that a forecast was saved (`save_confirmation`),
+as well as helper functions
+    - `add_forecast_model_data` creates the bridge tables between the Course
+      model and Forecast model based on the forecast that was generated, 
+    - `recursive_add_prereqs` recursively gets the prereqs of a course.
 
 2023-05-22 - Josh Sawyer     : add dashboard view
 2023-05-23 - Nathaniel mason : add edit_courses view and courses_left view
@@ -11,7 +22,7 @@ TODO: file description
 2023-05-31 - Nathaniel Mason : edited new_forecast view
 2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
 2023-06-03 - Nathaniel Mason : added save_forecast view
-2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB 
+2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB, add docstrings and file header description
 """
 
 from django.shortcuts import render, redirect
@@ -24,14 +35,20 @@ from .forecast import remaining_requirements, categorize_courses, generate_forec
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
 
+
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
 @login_required(redirect_field_name='', login_url='users:login')
 def index(request):
     return render(request, "forecast/dashboard.html")
 
+
 @login_required(redirect_field_name='', login_url='users:login')
 def edit_courses(request):
+    """View that allows the user to dynamically edit the courses that they have
+    taken, pulling their previous changes from the database and displaying
+    them, as well as updating the database based on the user's added changes
+    """
     user_model = request.user # user that is currently logged in
     user_profile = user_model.profile
     prev_choices = {}
@@ -44,7 +61,11 @@ def edit_courses(request):
         # get course selections of the user and update the list with them
         course_selections = user_profile.courses_taken.all()
 
-        general_credits = {'sci_cred': user_profile.sci_credits, 'soc_sci_cred': user_profile.ssci_credits, 'arts_letters_cred': user_profile.aal_credits, 'gp_cred': user_profile.gp_credits, 'us_cred': user_profile.us_credits}
+        general_credits = {'sci_cred': user_profile.sci_credits,
+                           'soc_sci_cred': user_profile.ssci_credits,
+                           'arts_letters_cred': user_profile.aal_credits,
+                           'gp_cred': user_profile.gp_credits, 
+                           'us_cred': user_profile.us_credits}
         
         if(course_selections is not None):
             course_options = form.fields['major_courses'].choices
@@ -90,8 +111,10 @@ def edit_courses(request):
                     try:
                         course_model = Course.objects.get(id=int(course_id))
                         
-# # Check if this course has been added yet, if it has, no need to add it again
-# if not course_model in user_profile.courses_taken.all(): -- want to do something like this, but will fix later
+                        # Check if this course has been added yet, if it has,
+                        # no need to add it again if not course_model in
+                        # user_profile.courses_taken.all(): -- want to do
+                        # something like this, but will fix later
                       
                         # once have course_model save in courses_taken
                         user_profile.courses_taken.add(course_model) 
@@ -133,8 +156,9 @@ def edit_courses(request):
                 user_profile.save()
                 print("user prof saved with new changes!")
                 
-                # next will need to take the user_courses_taken and save them in the DB for that user
-                # for now, just send messages back to notify that Django obtained the data correctly
+                # next will need to take the user_courses_taken and save them
+                # in the DB for that user. For now, just send messages back to
+                # notify that Django obtained the data correctly
                 messages.info(request, user_courses_taken)
                 messages.info(request, user_sci)
                 messages.info(request, user_soc_sci)
@@ -163,8 +187,13 @@ def edit_courses(request):
     
     return render(request, "forecast/edit_courses.html", context)
 
+
 @login_required(redirect_field_name='', login_url='users:login')
 def courses_left(request):
+    """View that displays a list of courses that the user needs to take to
+    graduate with a CS Major. This list is updated based on the courses that
+    the user has taken according to their user profile
+    """
     user = request.user
     # values_list returns a query set, and flat=true flattens it to 1d
     courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
@@ -176,7 +205,14 @@ def courses_left(request):
     gp_taken = int(request.user.profile.gp_credits)
     us_taken = int(request.user.profile.us_credits)
 
-    remaining_courses = remaining_requirements(course_history=courses_taken_set, aal=aal_taken, ssc=ssci_taken, sc=sci_taken, gp=gp_taken, us=us_taken)
+    remaining_courses = remaining_requirements(
+        course_history=courses_taken_set, 
+        aal=aal_taken,
+        ssc=ssci_taken, 
+        sc=sci_taken, 
+        gp=gp_taken,
+        us=us_taken,
+    )
     remaining_courses = categorize_courses(remaining_courses)
         
     credits_remain = False    
@@ -190,15 +226,24 @@ def courses_left(request):
     
     return render(request, "forecast/courses_left.html", context)
 
+
 @login_required(redirect_field_name='', login_url='users:login')
 def edit_interests(request):
-
+    """View to allow the user to edit their interests, allowing forecasts to be
+    tailored to fit what the user is most interested in. 
+    """
     context = {}
     
     return render(request, "forecast/edit_interests.html", context)
 
+
 @login_required(redirect_field_name='', login_url='users:login')
 def new_forecast(request):
+    """View that allows the user to generate a new forecast (called a 'degree 
+    plan' in the HTML). This forecast is displayed to the user, with an option
+    for the user to save their forecast, so that they will be able to retrieve
+    it in the future.
+    """
     if request.method != 'POST':
         form = PresetForm() 
 
@@ -239,6 +284,12 @@ def new_forecast(request):
 
 @login_required(redirect_field_name='', login_url='users:login')
 def save_forecast(request):
+    """If the user decides that they want to save their forecast, the data that
+    was generated by the forecasting algorithm must be saved. This view creates
+    a new Forecast model, attaches it to the user's Profile, and calls a
+    function, `add_forecast_model_data()`, to add the course data to the
+    forecast via bridge table
+    """
     if request.method == 'POST':
         fcst_rslt_str = request.POST['forecast_result']
         # fcst rslt is str which is similar to: [['1','2','3'], ['4','5'], ...]
@@ -252,18 +303,22 @@ def save_forecast(request):
 
         ###### now save it in the DB #####
         user = request.user
-        user_profile = Profile.objects.get(user=user)
+        user_profile = Profile.objects.get(user=user) # get the user's profile
         forecast = Forecast(user=user_profile)
-        forecast.save()
+        forecast.save() # save the forecast model linked to the user's profile
         
-        forecast_raw_data = request.session['forecast_raw']
+        forecast_raw_data = request.session['forecast_raw'] # get the session data
         
-        add_forecast_model_data(forecast_raw_data, forecast_data, forecast)
+        add_forecast_model_data(forecast_raw_data, forecast_data, forecast) # call helper function to generate the bridge tables
 
         return redirect('forecast:save_confirmation')
 
 
 def add_forecast_model_data(forecast_raw_data, forecast_str_data, forecast_model):
+    """A helper function that creates the bridge tables, `Forecast_Has_Course`,
+    attaching courses to a forecast for a given year and term. The tables are
+    saved in the database.
+    """
     term_li = []
     year = 0
     course_in_term = []
@@ -324,6 +379,9 @@ def add_forecast_model_data(forecast_raw_data, forecast_str_data, forecast_model
         
 @login_required(redirect_field_name='', login_url='users:login')
 def save_confirmation(request):
+    """View to display a confirmation page confirming that the Forecast has
+    been successfully saved in the database.
+    """
     if request.method != 'POST': #only should be getting GET requests to this view fxn
         if 'forecast_data' in request.session:
             forecast_data = request.session['forecast_data']
@@ -356,5 +414,3 @@ def recursive_add_prereqs(course):
             
         sub_prereqs.append(course) # Make sure to append this course as well since it's also a prereq
         return sub_prereqs
-        
-
