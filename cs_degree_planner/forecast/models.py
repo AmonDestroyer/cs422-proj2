@@ -1,5 +1,10 @@
 """
-TODO: file description
+forecast/models.py 
+
+Database table definitions for the Keywords, Courses, and Majors, as well as a
+bridge table between Course and Major indicating if a course is required for
+that major (e.g., CS 432 is a course in the CS major, but it is not required,
+where CS 415 is required)
 
 2023-05-23 - Zane Globus-O'Harra : Add Keyword, Course, Major, and
     OfferTimes models. The order that the models are written in matters.
@@ -60,10 +65,16 @@ class Course(models.Model):
     every_year_even = models.BooleanField(default=False);
 
     def __str__(self):
+        """:return: string identifying the course by the subject code (e.g., 
+       'CS') and the number
+        """
         return f"{self.subject} {self.number}"
 
     @property 
     def full_name(self):
+        """:return: string identifying the course by the subject code (e.g., 
+       'CS'), the number, and the full course name 
+        """
         return f"{self.subject} {self.number}: {self.name}"
 
 
@@ -86,6 +97,8 @@ class Major(models.Model):
     )
     
     def __str__(self):
+        """:return: string identifying the major by its long name
+        """
         return self.name 
 
 
@@ -103,3 +116,9 @@ class Major_Has_Course(models.Model):
         on_delete=models.CASCADE
     )
     is_required = models.BooleanField(default=False) # is the course required or elective?
+
+    def __str__(self):
+        """:return: string identifying the table row by the related major's
+        name and the course's short name
+        """
+        return f"Major {str(self.major)} Has Course {str(self.course)}"
