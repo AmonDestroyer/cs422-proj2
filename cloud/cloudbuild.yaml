@@ -54,6 +54,7 @@ steps:
       - '--region'
       - 'us-central1'
 
+  # Setting Default
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -68,3 +69,6 @@ steps:
 
 images:
   - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
