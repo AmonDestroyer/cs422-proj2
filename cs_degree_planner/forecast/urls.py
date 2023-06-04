@@ -13,6 +13,8 @@ from . import views
 app_name = "forecast"
 
 urlpatterns = [
+    # Health URL
+    path("health", views.health),
     # ex: /forecast/dashboard
     path("dashboard", views.index, name="dashboard"),
     # ex: /forecast/edit_courses

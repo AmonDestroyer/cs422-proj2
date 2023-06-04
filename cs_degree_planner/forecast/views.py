@@ -25,6 +25,7 @@ as well as helper functions
 2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB, add docstrings and file header description
 """
 
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -35,6 +36,8 @@ from .forecast import remaining_requirements, categorize_courses, generate_forec
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
 
+def health(request):
+    return HttpResponse('')
 
 # login is required to see the dashboard
 # if user is not logged in, redirect them to the index/landing page 
