@@ -60,7 +60,11 @@ class Course(models.Model):
     every_year_even = models.BooleanField(default=False);
 
     def __str__(self):
-        return self.name
+        return f"{self.subject} {self.number}"
+
+    @property 
+    def full_name(self):
+        return f"{self.subject} {self.number}: {self.name}"
 
 
 class Major(models.Model):

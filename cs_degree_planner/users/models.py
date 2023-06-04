@@ -87,7 +87,7 @@ class Forecast(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user
+        return f"Forecast id {self.id} for {str(self.user)}"
 
 
 class Forecast_Has_Course(models.Model):
@@ -115,3 +115,6 @@ class Forecast_Has_Course(models.Model):
         max_length=1,
         choices=TERM_CHOICES,
     )
+
+    def __str__(self):
+        return f"Forecast {self.forecast.id} Has Course {str(self.course)}"
