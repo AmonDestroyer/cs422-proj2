@@ -23,6 +23,7 @@ as well as helper functions
 2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
 2023-06-03 - Nathaniel Mason : added save_forecast view
 2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB, add docstrings and file header description
+2023-06-04 - Josh Sawyer     : fixed bug with cs electives
 """
 
 from django.http import HttpResponse
@@ -217,9 +218,10 @@ def courses_left(request):
         us=us_taken,
     )
     remaining_courses = categorize_courses(remaining_courses)
-        
+    
+    # Used to determine if the second CS credit option is still available
     credits_remain = False    
-    if (int(remaining_courses["CS Elective Requirements"][2][1][1]) > 0):
+    if (len(remaining_courses["CS Elective Requirements"]) > 0 and len(remaining_courses["CS Elective Requirements"][2][1]) > 0):
         credits_remain = True
 
     context = {
