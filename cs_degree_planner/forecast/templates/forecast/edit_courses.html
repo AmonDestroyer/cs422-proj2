@@ -166,7 +166,46 @@ input:focus {
 	background:rgba(26,61,67,0.3);
 	outline: revert;
 }
-		
+
+#ChangeInfoPopup {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 9999;
+}
+
+#ChangeInfoPopupInfo {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+#ClosePopupButton {
+	background-color: #f44336;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+#ClosePopupButton:hover {
+	background-color: #ff6347;
+  color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+}
+
+#ClosePopupButton:active {
+	background-color: #f44336;
+  transform: scale(1);
+}	
 	</style>
 </head>
 <body>
@@ -174,6 +213,11 @@ input:focus {
 	
 <form method="post">
   {% csrf_token %}
+
+	<div id="ChangeInfoPopup">
+		<div id="ChangeInfoPopupInfo">
+		</div>
+	</div>
 <table>
 	<tr>
     <td><h3>Your course history</h3></td><td></td>
@@ -210,12 +254,12 @@ input:focus {
 	
 		<td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
 		  <td>	<div class="msgs">
-	{% if messages %}
+	{% comment %} {% if messages %}
         {% for message in messages %}
             <p><b>{{ message }}</b></p>
         {% endfor %}
 		<br>
-    {% endif %}
+    {% endif %} {% endcomment %}
 	</div></td>
 		</tr>
 		<tr>
@@ -297,7 +341,41 @@ inputNumber($('#social_science_cred'));
 inputNumber($('#science_cred'));
 inputNumber($('#gp_cred'));
 inputNumber($('#us_cred'));
+
+// Show the popup
+function showFullscreenPopup() {
+	$('#ChangeInfoPopup').fadeIn();
+}
+
+// Close the popup
+function hideFullscreenPopup() {
+	event.preventDefault(); // Prevent page refresh
+	$('#ChangeInfoPopup').fadeOut();
+}
+
+{% if messages %}
+	{% for message in messages %}
+			var message = "{{ message }}";
+			$('#ChangeInfoPopupInfo')
+				.append($('<p>').text(message)); // Add a paragraph for each message
+	{% endfor %}
+	
+	// After all messages added as paragraphs, add the button
+	$('#ChangeInfoPopupInfo')
+		.append($('<button>').text("OK").attr("id", "ClosePopupButton"));
+	
+	// Give it a listener to close the popup
+	$('#ClosePopupButton').on('click', function() {
+		hideFullscreenPopup();
+	});
+	
+	// Show the popup now that it's set up
+	showFullscreenPopup();
+{% endif %}
+
 </script>
+
+
 </body>
 </html>
 

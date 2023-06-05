@@ -121,16 +121,36 @@ def edit_courses(request):
                         # something like this, but will fix later
                       
                         # once have course_model save in courses_taken
-                        user_profile.courses_taken.add(course_model) 
-                        print("found course_model with the id!")
+                        if (course_model not in user_profile.courses_taken.all()):
+                            user_profile.courses_taken.add(course_model)
+                            messages.info(request, "Added course: " + course_model.name)
+                            print("found course_model with the id!")
                         
                         ## add any courses that are a prereq to this course ##
                         prereqs = recursive_add_prereqs(course_model) # returns a list of courses
-                        user_profile.courses_taken.add(*prereqs) # add all the prereqs for this course to the user's courses_taken 
+                        for prereq in prereqs:
+                            if (prereq not in user_profile.courses_taken.all()):
+                                user_profile.courses_taken.add(prereq) # add all the prereqs for this course to the user's courses_taken 
+                                messages.info(request, f"Added {prereq.name} as a prerequisite for {course_model.name}")
+                            else:
+                                print("prereq: ", prereq)
+                                print("courses_taken: ", user_profile.courses_taken.all())
+                        
+                        # already_added = [str(message) for message in messages.get_messages(request)]
+                        # for prereq in prereqs:
+                        #     if prereq.name not in already_added:
+                        #         messages.info(request, f"{prereq.name} added as prereq")
+                        
                         
                     except:
                         print("course_model not found")
-
+                
+                # Add any removed courses to the messages if they were not added back (weren't a prereq for a class in course history)
+                for removed_course in courses_to_remove:
+                    removed_course = Course.objects.get(id=int(removed_course))
+                    if removed_course not in user_profile.courses_taken.all(): # If it was NOT added back (it was NOT a prereq for another course)
+                        messages.info(request, "Removed course: " + removed_course.name)
+                        
                 # update area of inquiry credits, 
                 # which includes science credits, social science, arts and letters
                 new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
@@ -149,28 +169,30 @@ def edit_courses(request):
                 current_total_credits = user_profile.total_credits
                 updated_total = current_total_credits + new_credits 
                 user_profile.total_credits = updated_total
-                #update specific credit areas
-                user_profile.aal_credits = int(user_arts_lett)
-                user_profile.ssci_credits = int(user_soc_sci)
-                user_profile.sci_credits = int(user_sci)
-                user_profile.gp_credits = int(user_gp)
-                user_profile.us_credits = int(user_us)
-
                 
+                #update specific credit areas
+                if (user_profile.aal_credits != int(user_arts_lett)):
+                    user_profile.aal_credits = int(user_arts_lett)
+                    messages.info(request, f"Updated Arts and Letters to {user_arts_lett} credits taken")
+                if (user_profile.ssci_credits != int(user_soc_sci)):
+                    user_profile.ssci_credits = int(user_soc_sci)
+                    messages.info(request, f"Updated Social Science to {user_soc_sci} credits taken")
+                if (user_profile.sci_credits != int(user_sci)):
+                    user_profile.sci_credits = int(user_sci)
+                    messages.info(request, f"Updated Science to {user_sci} credits taken")
+                if (user_profile.gp_credits != int(user_gp)):
+                    user_profile.gp_credits = int(user_gp)
+                    messages.info(request, f"Updated Global Perspectives to {user_gp} credits taken")
+                if (user_profile.us_credits != int(user_us)):
+                    user_profile.us_credits = int(user_us)
+                    messages.info(request, f"Updated US to {user_us} credits taken")
+
+                if (len(messages.get_messages(request)) == 0):
+                    messages.info(request, "No changes submitted!")
+                    messages.info(request, "Please update your course history to see saved changes.")
+
                 user_profile.save()
                 print("user prof saved with new changes!")
-                
-                # next will need to take the user_courses_taken and save them
-                # in the DB for that user. For now, just send messages back to
-                # notify that Django obtained the data correctly
-                messages.info(request, user_courses_taken)
-                messages.info(request, user_sci)
-                messages.info(request, user_soc_sci)
-                messages.info(request, user_arts_lett)
-                messages.info(request, user_gp)
-                messages.info(request, user_us)
-
-                messages.success(request, "Changes Saved Successfully!")
                 
                 return redirect('forecast:edit_courses')
             
@@ -416,6 +438,6 @@ def recursive_add_prereqs(course):
         for prereq in prereqs:
             # Find all prereqs of this prereq
             sub_prereqs.extend(recursive_add_prereqs(prereq)) # Extend used to add each prereq item of the list returned from recurisve call     
-            
+        
         sub_prereqs.append(course) # Make sure to append this course as well since it's also a prereq
         return sub_prereqs
