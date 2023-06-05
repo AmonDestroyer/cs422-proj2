@@ -1,5 +1,12 @@
 """
-TODO: file description
+users/views.py 
+
+This file contains the views that are related to the user, specifically those
+involving 
+    - login 
+    - account creation 
+    - logout 
+    - user account management 
 
 2023-05-19 - Nathaniel mason : add create_user view
 2023-05-22 - Josh Sawyer     : add login view
@@ -17,13 +24,24 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from cs_degree_planner.decorators import anonymous_required
 
-# Create your views here.
+
 @anonymous_required
 def index(request):
+    """The view for the index, or home page. The home page displays information
+    about the website, as well as a form to accept the user's login
+    information. The home page and the login page are essentially the same,
+    thus the redirection to the login view.
+    """
     return redirect('users:login')
+
 
 @anonymous_required
 def create_user(request):
+    """View to create a new user account, getting the form information from the
+    `JEANZUserCreationForm`, and saving the user information in the database.
+    This view also checks if there were any errors when the user created their
+    account (e.g., invalid password, etc.), and handles those errors correctly.
+    """
     if request.method != 'POST':
         form = JEANZUserCreationForm()
     else:
@@ -44,11 +62,15 @@ def create_user(request):
 
 @anonymous_required
 def login_user(request):
+    """This view logs in a user, getting their login information from the
+    `JEANZUserLoginForm` and creating a session for that user. Create a blank
+    form when the user is requesting the page
+    """
     if request.method == 'POST': # if the form has been submitted
         form = JEANZUserLoginForm(data=request.POST)
         if form.is_valid(): # Check for valid input, and then checks if a user exists with that username and password
             user = form.get_user() # get_user is a method of AuthenticationForm to get user_cache which was created during authentication (is_valid method)
-            login(request, user)
+            login(request, user) # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.login
             return redirect('forecast:dashboard') # redirect to the dashboard page  
         else:
             if (form.non_field_errors()):
@@ -62,6 +84,9 @@ def login_user(request):
     
 
 def logout_user(request):
+    """Logout a user, clearing their session data. Then redirect to the home
+    page (a.k.a., login page), with a logout successful message.
+    """
     logout(request)
     messages.success(request, "Logout Successful!")
     return redirect('users:login')
@@ -69,6 +94,10 @@ def logout_user(request):
 
 @login_required(redirect_field_name='', login_url='users:login')
 def update_account_information(request):
+    """View to redirect the user to the correct account management pages, with
+    the correct account management forms. For more information on each of these
+    forms, see the docstrings in users/forms.py 
+    """
     if request.method == 'POST':
         if 'update_username' in request.POST:
             username_form = UpdateUserNameForm(request.POST, instance=request.user)
@@ -110,4 +139,3 @@ def update_account_information(request):
     }
 
     return render(request, 'users/update_account.html', context=forms)
-
