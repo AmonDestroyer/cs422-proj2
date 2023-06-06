@@ -150,24 +150,28 @@ cursor: default;
         {% endfor %}
     {% endif %}
 
-    <h2>Degree Plan 1</h2>
+    <h2>Degree Plan: {{ selected_timestamp }}</h2>
 	<div class="courses-form">
-		{% for term in forecast_result %}
-			
-			<div class="category">
-				<h3>{{ term.0 }}</h3>
-				
-			</div>
-			<div class="courses">
-			{% for course in term.1 %}
-				
-				<p class="course">{{ course }}</p>
-			{% endfor %}
-			</div>
-		{% endfor %}
+        {% if forecast_result is not empty %}
+            {% for term in forecast_result %}
+                
+                <div class="category">
+                    <h3>{{ term.0 }}</h3>
+                    
+                </div>
+                <div class="courses">
+                {% for course in term.1 %}
+                    
+                    <p class="course">{{ course }}</p>
+                {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+                <h3>Error: forecast_result is empty</h3>
+        {% endif %}
 	</div>
 
-
+    {% if dshbrd_retrieval is False %}
     <div class="save_result">
         <form action="save_forecast" method="post">
             {% csrf_token %}
@@ -176,6 +180,7 @@ cursor: default;
         
         </form>
     </div>
+    {% endif %}
 
 </body>
 </html>

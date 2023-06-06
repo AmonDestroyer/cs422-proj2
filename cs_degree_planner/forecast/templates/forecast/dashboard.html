@@ -139,7 +139,7 @@ TODO: file description
     <div class="content">
       <h2>Your Degree Plans</h2>
 		<table>
-			<tr>
+			<tr> <!--First row has the plus button, then 3 boxes -->
 				<td>
 					<div class="homelog degreeplan" id="generate">
 							<a href="new_forecast" role="button" 
@@ -149,53 +149,20 @@ TODO: file description
 					</a>
 					</div>
 				</td>
-				
-				<!--<td>
-					<div class="homelog degreeplan empty">
-							<a href="new_forecast" role="button"
-					class="btn btn-secondary popover-test" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&nbsp;&nbsp;
-					</a>
-					</div>
-				</td>
-				
-				<td>
-					<div class="homelog degreeplan empty">
-							<a href="new_forecast" role="button"
-					class="btn btn-secondary popover-test" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&nbsp;&nbsp;
-					</a>
-					</div>
-				</td>-->
-				<td>
-					<div class="homelog degreeplan empty">
-							<a href="new_forecast" role="button" 
-					class="btn btn-secondary popover-test clear" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&#43;
-					</a>
-					</div>
-				</td>
-				<td>
-					<div class="homelog degreeplan empty">
-							<a href="new_forecast" role="button" 
-					class="btn btn-secondary popover-test clear" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&#43;
-					</a>
-					</div>
-				</td>
-				<td>
-					<div class="homelog degreeplan empty">
-							<a href="new_forecast" role="button" 
-					class="btn btn-secondary popover-test clear" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&#43;
-					</a>
-					</div>
-				</td>
+				{% if ts_raw_and_display is not empty %}
+					{% for tstmp_raw, tstmp_display in ts_raw_and_display %}
+					<td>
+						<form action="retrieve_forecast" method="post">
+							<!-- <div class="homelog degreeplan empty"></div> -->
+								{% csrf_token %}
+								<input type="hidden" name="timestamp_str" value="{{ tstmp_raw }}">
+								<button type="submit" class="homelog">{{ tstmp_display }}</button>
+							
+						</form>
+					</td>	
+					
+					{% endfor %}
+				{% endif %}
 			</tr>
 		</table>
       <p>

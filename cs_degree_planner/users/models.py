@@ -20,6 +20,9 @@ Django documentation for `django.contrib.auth`.
     timestamp for when that forecast was generated. Also, update the 
     `Forecast_Has_Course` bridge table to include a year and term that 
     the course is scheduled for.
+2023-06-05 - Zane Globus-O'Harra : add `split_forecast()` method to the
+    Forecast model. This returns a list of lists and strings similar to the
+    `split_forecast()` method in forecast/forecast.py.
 """
 
 from django.db import models
@@ -96,6 +99,42 @@ class Forecast(models.Model):
         username
         """
         return f"Forecast id {self.id} for {str(self.user)}"
+
+    def split_forecast(self):
+        """Return a forecast in the same (or at least similar) format to that
+        given by the `split_forecast` function in forecast/forecast.py
+        """
+        term_order = {
+            'W': [0, "Winter"], 
+            'S': [1, "Spring"], 
+            'U': [2, "Summer"], 
+            'F': [3, "Fall"]
+        }
+        out = []
+        i = 0
+        # get a list of the courses that are related to this forecast, ordered by the year
+        courses_qs = Forecast_Has_Course.objects.filter(forecast=self).order_by('year')
+        courses_li = list(courses_qs)
+        current_yr = courses_li[0].year
+        max_year = courses_li[len(courses_li)-1].year
+
+        while current_yr <= max_year:
+            for k in term_order:
+                term_qs = courses_qs.filter(year=current_yr, term=k)
+                if term_qs: # the query set is not empty
+                    term_str = f"{term_order[k][1]} {current_yr}" # create the string for the term
+
+                    out.append([])              # append the list that will hold the course to the forecast list
+                    out[i].append(term_str)     # append the term string to the term list
+                    out[i].append([])           # append the list that will hold the course names to the term list
+
+                    term_li = list(term_qs)
+                    for fc_has_c in term_li:    # add the course names to the term list's course name list
+                        course_str = fc_has_c.course.__str__()
+                        out[i][1].append(course_str)
+                    i += 1
+            current_yr += 1
+        return out
 
 
 class Forecast_Has_Course(models.Model):

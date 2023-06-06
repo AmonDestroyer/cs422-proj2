@@ -51,7 +51,42 @@ def health(request):
 # if user is not logged in, redirect them to the index/landing page 
 @login_required(redirect_field_name='', login_url='users:login')
 def index(request):
-    return render(request, "forecast/dashboard.html")
+    # need to retrieve all timestamps for forecasts associated with the current user
+    fcst_timestamps = get_forecast_timestamps(request)
+
+    timestamp_strs = []
+    for timestamp in fcst_timestamps:
+        timestamp_str = timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')
+        timestamp_strs.append(timestamp_str)
+
+    ts_raw_display = zip(timestamp_strs, fcst_timestamps)
+
+    context = {'ts_raw_and_display': ts_raw_display,
+               }
+
+    return render(request, "forecast/dashboard.html", context)
+
+
+@login_required(redirect_field_name='', login_url='users:login')
+def dshbrd_retrieve_forecast(request):
+    timestamp_from_user = request.POST['timestamp_str']
+    
+    timestamp = datetime.strptime(timestamp_from_user, '%Y-%m-%d %H:%M:%S.%f')
+
+    fcst = get_forecast_from_timestamp(request, timestamp)
+    split_fcst = None
+
+    if(fcst is not None):
+        # fcst is the forecast model object, but need to split it
+        split_fcst = fcst.split_forecast()
+
+    context = {'selected_timestamp': timestamp_from_user,
+            'dshbrd_retrieval': True,
+            'forecast_result': split_fcst}
+    #messages.info(request, "Selected timestamp: " + timestamp_from_user)
+    
+
+    return render(request, "forecast/forecast_display.html", context)
 
 
 @login_required(redirect_field_name='', login_url='users:login')
@@ -313,14 +348,11 @@ def new_forecast(request):
             forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
 
             request.session['forecast_raw'] = forecast # store as a session variable so it can be easily gotten if it needs to be saved
-            
-            #fcst_to_display = list_forecast("F", 2023, forecast)
-            #context = {'forecast_result': fcst_to_display}
-            #return render(request, "forecast/forecast_display.html", context)
 
             fcst_to_display = split_forecast('F', 2023, forecast) #TODO user defined target term/year
             context = {
                 'forecast_result': fcst_to_display,
+                'dshbrd_retrieval': False,
             }
             return render(request, "forecast/forecast_display.html", context)
     
@@ -349,6 +381,7 @@ def save_forecast(request):
         user_profile = Profile.objects.get(user=user) # get the user's profile
         forecast = Forecast(user=user_profile)
         forecast.save() # save the forecast model linked to the user's profile
+        print('Saved the forecast!')
         
         forecast_raw_data = request.session['forecast_raw'] # get the session data
         
@@ -459,7 +492,7 @@ def recursive_add_prereqs(course):
         return sub_prereqs
 
 
-def get_forecast_timestamps():
+def get_forecast_timestamps(request):
     """Return a list of the timestamps that are generated for forecasts. Return
     all of the timestamps associated with one user.
     """
@@ -467,7 +500,7 @@ def get_forecast_timestamps():
 
     try:
         # get forecasts related to the user's profile and order by creation time
-        forecasts = Forecast.objects.filter(user__in=profile).order_by('time_created')   
+        forecasts = Forecast.objects.filter(user=profile).order_by('time_created')   
         forecast_li = list(forecasts)
     except:
         print(f"user {request.user} does not have any saved forecasts!")
@@ -481,13 +514,13 @@ def get_forecast_timestamps():
     return timestamp_li
 
 
-def get_forecast_from_timestamp(timestamp):
+def get_forecast_from_timestamp(request, timestamp):
     """Return a forecast for a user based on a given time stamp (creation time)
     """
     profile = get_user_profile(request.user)
     try:
         # get forecasts related to a user's profile, filter for the time, and get the actual model object
-        forecast = Forecast.objects.filter(user__in=profile).filter(time_created=timestamp).first()                         
+        forecast = Forecast.objects.filter(user=profile).filter(time_created=timestamp).first()                         
     except:
         print(f"user {request.user} does not have any saved forecasts!")
         forecast = None
