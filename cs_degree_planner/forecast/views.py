@@ -36,6 +36,7 @@ from .models import Course
 from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
+from datetime import datetime
 
 def health(request):
     return HttpResponse('')
@@ -450,3 +451,25 @@ def recursive_add_prereqs(course):
         
         sub_prereqs.append(course) # Make sure to append this course as well since it's also a prereq
         return sub_prereqs
+
+
+def get_forecast_timestamps():
+    """Return a list of the timestamps that are generated for forecasts. Return
+    all of the timestamps associated with one user.
+    """
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    forecasts = Forecast.objects.filter(user=profile)       # get forecasts related to the user's profile
+                               .order_by('time_created')    # order by creation time
+    forecast_li = list(forecasts)
+
+    timestamp_li = []
+
+    for fc in forecast_li:
+        timestamp_li.append(fc.time_created)
+    
+    return timestamp_li
+
+
+def get_forecast_from_timestamp(timestamp):
+    pass
