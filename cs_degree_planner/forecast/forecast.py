@@ -37,7 +37,7 @@ def interested_in(course, interests):
     """
     return len(set((df['keywords'].loc[course]).split(", ")) & interests)
 
-def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=0):
+def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=0, interests=set()):
     '''
     ASSUMPTIONS: user will satisfy location-specific requirements and P/NP/Graded requirements on their own
     untested code below'''
@@ -247,11 +247,11 @@ def cs_electives_msg_to_ids(msg):
     return j
 
 
-def has_remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=0):
+def has_remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=0, interests=set()):
     '''
     ASSUMPTIONS: user will satisfy location-specific requirements and P/NP/Graded requirements on their own
     untested code below'''
-    return len(prioritize_requirements(remaining_requirements(course_history, aal, ssc, sc, gp, us, misc))) != 0 | \
+    return len(prioritize_requirements(remaining_requirements(course_history, aal, ssc, sc, gp, us, misc, interests))) != 0 | \
            REQUIRED_CREDITS - (total_credits(course_history) + aal + ssc + sc + gp + us + misc) > 0
 
 
@@ -327,10 +327,9 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
     this_term = target_term
     this_year = target_year
 
-    while self.has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
+    while has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
         term_forecast = []  # single term
-        for course in self.prioritize_requirements(
-                self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
+        for course in prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
             # print("prio: ",self.prioritize_requirements(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2)))
             # print("course:",course, "term:", term_forecast, "forecast:", forecast)
             # print(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2))
@@ -342,7 +341,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                     else:
                         course = 251001
                 elif cs_elec_left in course:  # suggest an available cs elective TODO tailor to interest
-                    course = self.cs_electives_msg_to_ids(course)  # course is now actually a set of course ids
+                    course = cs_electives_msg_to_ids(course)  # course is now actually a set of course ids
                     print(course)
                     match_not_found = True
                     options = {}
@@ -501,9 +500,8 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                 term_credits += get_credits(course)
 
         while term_credits + 4 <= max_credits_per_term and \
-                len(self.prioritize_requirements(
-                    self.remaining_requirements(course_hist, 15, 15, 15, 4, 4, misc2))) == 0 and \
-                self.has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):
+                len(prioritize_requirements(remaining_requirements(course_hist, 15, 15, 15, 4, 4, misc2))) == 0 and \
+                has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):
             # fulfill general credit area whenever a term ends up with space in it
             # this scenario happens because cs elective requirement / any one gen ed area is never worked towards more than once per term
             print(term_forecast)
