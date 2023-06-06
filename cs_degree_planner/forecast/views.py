@@ -24,6 +24,7 @@ as well as helper functions
 2023-06-03 - Nathaniel Mason : added save_forecast view
 2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB, add docstrings and file header description
 2023-06-04 - Josh Sawyer     : fixed bug with cs electives + added pop up for saved changes + added reset/restore course history button
+2023-06-05 - Zane Globus-O'Harra : add helper fxn to get a list of creation times of a user's forecasts and a fxn to get a forecast based on a creation time
 """
 
 from django.http import HttpResponse
@@ -37,6 +38,11 @@ from .forecast import remaining_requirements, categorize_courses, generate_forec
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
 from datetime import datetime
+
+def get_user_profile(user):
+    """helper function to easily get a user's profile
+    """
+    return Profile.objects.get(user=user)
 
 def health(request):
     return HttpResponse('')
@@ -457,11 +463,15 @@ def get_forecast_timestamps():
     """Return a list of the timestamps that are generated for forecasts. Return
     all of the timestamps associated with one user.
     """
-    user = request.user
-    profile = Profile.objects.get(user=user)
-    forecasts = Forecast.objects.filter(user=profile)       # get forecasts related to the user's profile
-                               .order_by('time_created')    # order by creation time
-    forecast_li = list(forecasts)
+    profile = get_user_profile(request.user)
+
+    try:
+        # get forecasts related to the user's profile and order by creation time
+        forecasts = Forecast.objects.filter(user__in=profile).order_by('time_created')   
+        forecast_li = list(forecasts)
+    except:
+        print(f"user {request.user} does not have any saved forecasts!")
+        forecast_li = []
 
     timestamp_li = []
 
@@ -472,4 +482,14 @@ def get_forecast_timestamps():
 
 
 def get_forecast_from_timestamp(timestamp):
-    pass
+    """Return a forecast for a user based on a given time stamp (creation time)
+    """
+    profile = get_user_profile(request.user)
+    try:
+        # get forecasts related to a user's profile, filter for the time, and get the actual model object
+        forecast = Forecast.objects.filter(user__in=profile).filter(time_created=timestamp).first()                         
+    except:
+        print(f"user {request.user} does not have any saved forecasts!")
+        forecast = None
+
+    return forecast
