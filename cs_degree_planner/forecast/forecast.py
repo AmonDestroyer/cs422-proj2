@@ -295,7 +295,7 @@ def prioritize_requirements(remaining):
     return cs_req + calc + cs_elec + math2 + other + sc + wr + areas
 
 
-def generate_forecast(self, course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
+def generate_forecast(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
                       sc=0, gp=0, us=0, misc=0, interests=set()):
     """
     '16 credits per term' preset. Completes all required courses for the CS major and then completes general areas and then overall credits.
