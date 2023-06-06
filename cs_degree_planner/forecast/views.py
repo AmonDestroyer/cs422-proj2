@@ -23,7 +23,7 @@ as well as helper functions
 2023-06-02 - Josh Sawyer     : added recursive_add_prereqs function, also made it so courses already in form aren't added again
 2023-06-03 - Nathaniel Mason : added save_forecast view
 2023-06-03 - Zane Globus-O'Harra : add saved forecasts to the DB, add docstrings and file header description
-2023-06-04 - Josh Sawyer     : fixed bug with cs electives
+2023-06-04 - Josh Sawyer     : fixed bug with cs electives + added pop up for saved changes + added reset/restore course history button
 """
 
 from django.http import HttpResponse
@@ -57,36 +57,43 @@ def edit_courses(request):
     user_profile = user_model.profile
     prev_choices = {}
     course_options = []
+    courses_reset = False
     
     if request.method != 'POST':
         form = EditCoursesForm()
-        # user is just requesting the page
-        # just display the form for them to choose options from
-        # get course selections of the user and update the list with them
-        course_selections = user_profile.courses_taken.all()
-
-        general_credits = {'sci_cred': user_profile.sci_credits,
-                           'soc_sci_cred': user_profile.ssci_credits,
-                           'arts_letters_cred': user_profile.aal_credits,
-                           'gp_cred': user_profile.gp_credits, 
-                           'us_cred': user_profile.us_credits}
         
-        if(course_selections is not None):
+        if 'reset_courses' not in request.GET:
+            # user is just requesting the page
+            # just display the form for them to choose options from
+            # get course selections of the user and update the list with them
+            course_selections = user_profile.courses_taken.all()
+
+            general_credits = {'sci_cred': user_profile.sci_credits,
+                            'soc_sci_cred': user_profile.ssci_credits,
+                            'arts_letters_cred': user_profile.aal_credits,
+                            'gp_cred': user_profile.gp_credits, 
+                            'us_cred': user_profile.us_credits}
+            
+            if(course_selections is not None):
+                course_options = form.fields['major_courses'].choices
+
+                for selection in course_selections:
+                    selection_id = selection.id # ex 210000
+                    for option_val, option_display in course_options:
+                        if int(option_val) == selection_id: # found a match, set as selected for that list option
+                            print('found a match for: ', selection_id)
+                            prev_choices[str(selection_id)] = True
+
+                print(prev_choices)
+            
+            for general in general_credits:
+                if general_credits[general] is not None:
+                    form.fields[general].initial = general_credits[general]
+        
+        else:
             course_options = form.fields['major_courses'].choices
+            courses_reset = True
 
-            for selection in course_selections:
-                selection_id = selection.id # ex 210000
-                for option_val, option_display in course_options:
-                    if int(option_val) == selection_id: # found a match, set as selected for that list option
-                        print('found a match for: ', selection_id)
-                        prev_choices[str(selection_id)] = True
-
-            print(prev_choices)
-        
-        for general in general_credits:
-            if general_credits[general] is not None:
-                form.fields[general].initial = general_credits[general]
-    
     else:
         form = EditCoursesForm(request.POST)
         if form.is_valid():
@@ -209,7 +216,9 @@ def edit_courses(request):
 
     context = {'courseform': form,
                'course_options': course_options,
-               'prev_choices': prev_choices}
+               'prev_choices': prev_choices,
+               'courses_reset': courses_reset,
+               }
     
     return render(request, "forecast/edit_courses.html", context)
 

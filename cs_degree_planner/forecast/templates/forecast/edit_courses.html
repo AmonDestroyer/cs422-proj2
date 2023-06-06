@@ -206,18 +206,52 @@ input:focus {
 	background-color: #f44336;
   transform: scale(1);
 }	
+
+#reset-link {
+	display: inline-block;
+	padding: 12px 24px;
+	background-color: #3A8795;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 4px;
+	font-size: 14pt;
+	font-weight: bold;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.7s, color 0.7s;
+	margin-top: 10px;
+}
+
+#reset-link:hover {
+	background-color: #fff;
+	color: #3A8795;
+	text-decoration: none;
+}
+
+#reset-link:active {
+	background-color: #3A8795;
+	color: #fff;
+	text-decoration: none;
+}
+
 	</style>
 </head>
 <body>
 
 	
-<form method="post">
+<form id="courseForm" method="post">
   {% csrf_token %}
 
 	<div id="ChangeInfoPopup">
 		<div id="ChangeInfoPopupInfo">
 		</div>
 	</div>
+	{% if courses_reset %}
+		<a id="reset-link" href="/forecast/edit_courses">Restore Course History</a> 
+	{% else %}
+		<a id="reset-link" href="?reset_courses=true" onclick="resetForm()">Reset Course History</a>
+	{% endif %}
+
 <table>
 	<tr>
     <td><h3>Your course history</h3></td><td></td>
@@ -372,6 +406,10 @@ function hideFullscreenPopup() {
 	// Show the popup now that it's set up
 	showFullscreenPopup();
 {% endif %}
+
+function resetForm() {
+	document.getElementById("courseForm").reset();
+}
 
 </script>
 
