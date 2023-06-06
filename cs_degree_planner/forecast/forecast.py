@@ -295,8 +295,8 @@ def prioritize_requirements(remaining):
     return cs_req + calc + cs_elec + math2 + other + sc + wr + areas
 
 
-def generate_forecast(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0, sc=0,
-                      gp=0, us=0, misc=0):
+def generate_forecast(self, course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
+                      sc=0, gp=0, us=0, misc=0, interests=set()):
     """
     '16 credits per term' preset. Completes all required courses for the CS major and then completes general areas and then overall credits.
 
@@ -327,37 +327,59 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
     this_term = target_term
     this_year = target_year
 
-    while has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):  # runs each term
+    while self.has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
         term_forecast = []  # single term
-        for course in prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2)):
-            # print("prio: ",prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2)))
+        for course in self.prioritize_requirements(
+                self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
+            # print("prio: ",self.prioritize_requirements(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2)))
             # print("course:",course, "term:", term_forecast, "forecast:", forecast)
-            # print(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2))
+            # print(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2))
             # print(course, type(course))
             if isinstance(course, str):
-                if calc_left in course:  # suggest MATH 251 to start the calculus path (TODO tailor to interest in case user wants 246 instead)
-                    course = 251001
+                if calc_left in course:  # suggest MATH 251 to start the calculus path (tailor to interest in case user wants 246 instead)
+                    if interested_in(246001, interests):
+                        course = 246001
+                    else:
+                        course = 251001
                 elif cs_elec_left in course:  # suggest an available cs elective TODO tailor to interest
-                    course = cs_electives_msg_to_ids(course)  # course is now actually a set of course ids
+                    course = self.cs_electives_msg_to_ids(course)  # course is now actually a set of course ids
+                    print(course)
                     match_not_found = True
+                    options = {}
                     for i in course:  # i is a cs elective the user hasn't yet taken
-                        if (get_prereq(i)).issubset(last_course_hist) and is_offered(i, this_term,
-                                                                                     this_year) and match_not_found:
-                            course = i  # choose this cs elective to see if we can add it to this term
+                        if (get_prereq(i)).issubset(last_course_hist) and is_offered(i, this_term, this_year):
+                            options[interested_in(i, interests)] = i  # associate course with number of shared interests
+                            # TODO WARNING may not be checking that only 8 300lvl electives are taken
                             match_not_found = False  # match has been found!
 
                     if match_not_found:  # the check to add the course to the term later will fail since no takeable cs elective exists for this term
                         course = list(course)[
                             0]  # so we at least set the course to a valid id so it is no longer a string
-                elif wr_left in course:  # suggest writing (TODO tailor to interest in case user wants 321 instead)
+                    else:
+                        print(options)
+                        course = options[max(options)]  # choose course with most shared interests out of all options
+                elif wr_left in course:  # suggest writing (tailor to interest in case user wants 321 instead)
                     if total_credits(course_hist) >= 90:  # user is junior standing
-                        course = 320008
+                        if interested_in(321008, interests):
+                            course = 321008
+                        else:
+                            course = 320008
                     else:  # user cannot take WR 3XX, do not try writing course
                         course = 261001
                 elif sc_path_left in course:  # suggest science path to begin (TODO tailor to interest)
-                    course = 201005  # ERTH
+                    options = {}
+                    for i in {201002, 251002, 221003, 141004, 201005, 201006,
+                              111003}:  # all recommendable (not all) entry science courses
+                        options[interested_in(i, interests)] = i  # associate course with number of shared interests
+
+                    course = options[max(options)]  # choose course with most shared interests out of all options
                 elif math2_left in course:  # suggest MATH 300+ elective (TODO tailor to interest)
-                    course = 253001
+                    options = {}
+                    for i in {413000, 420000, 427000, 473000, 253001, 281001, 256001, 282001, 307001, 316001, 317001,
+                              320001, 345001, 347001, 348001, 351001, 352001,
+                              391001}:  # all recommendable (not all) courses satisfying 300+ MATH
+                        options[interested_in(i, interests)] = i  # associate course with number of shared interests
+                    course = options[max(options)]  # choose course with most shared interests out of all options
                 elif us_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
@@ -410,9 +432,11 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                                 level_2.append(222003)
                         elif ge_left in path:  # user started GEOG path
                             taken_ge = {321004, 322004, 323004} & course_hist
-                            if len(taken_ge == 1):  # user only needs one more GEOG class
-                                level_3.append(list(taken_ge)[0])  # add user's remaining options
-                                level_3.append(list(taken_ge)[1])
+                            # print(taken_ge)
+                            if len(taken_ge) == 1:  # user only needs one more GEOG class
+                                options = list({321004, 322004, 323004}.difference(taken_ge))
+                                level_3.append(options[0])  # add user's remaining options
+                                level_3.append(options[1])
                             else:  # user only took GEOG 141, needs 2
                                 level_2.append(321004)  # add user's options
                                 level_2.append(322004)
@@ -425,9 +449,10 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                         elif ps_left in path:  # user started PSY path
                             taken_ps = {348006, 301006, 304006, 305006} & course_hist
                             if len(taken_ps) == 1:  # user only needs one more PSY class
-                                level_3.append(list(taken_ps)[0])
-                                level_3.append(list(taken_ps)[1])
-                                level_3.append(list(taken_ps)[2])
+                                options = list({348006, 301006, 304006, 305006}.difference(taken_ps))
+                                level_3.append(options[0])
+                                level_3.append(options[1])
+                                level_3.append(options[2])
                             else:  # user only took PSY201, needs 2
                                 level_2.append(348006)
                                 level_2.append(301006)
@@ -443,10 +468,14 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                                 level_2.append(212007)
                                 level_2.append(213007)
                                 level_2.append(211007)
+                    options = {}
                     if len(level_3) > 0:
-                        course = level_3[0]  # TODO sort from most to least interesting and tailor to user interests
+                        for i in level_3:
+                            options[interested_in(i, interests)] = i  # associate course with number of shared interests
                     else:
-                        course = level_2[0]  # TODO sort from most to least interesting ...
+                        for i in level_2:
+                            options[interested_in(i, interests)] = i  # associate course with number of shared interests
+                    course = options[max(options)]  # choose course with most shared interests out of all options
                 elif "One from" in course:  # user needs MATH 300+ elective
                     options = {eval(i) for i in course[course.index("{") + 1:course.index("}")].split(", ")}
                     match_not_found = True
@@ -472,9 +501,12 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                 term_credits += get_credits(course)
 
         while term_credits + 4 <= max_credits_per_term and \
-                len(prioritize_requirements(
-                    remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2))) == 0 and \
-                has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):
+                len(self.prioritize_requirements(
+                    self.remaining_requirements(course_hist, 15, 15, 15, 4, 4, misc2))) == 0 and \
+                self.has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):
+            # fulfill general credit area whenever a term ends up with space in it
+            # this scenario happens because cs elective requirement / any one gen ed area is never worked towards more than once per term
+            print(term_forecast)
             term_forecast.append("4 credits")  # any credits
             term_credits += 4
             misc2 += 4
@@ -489,7 +521,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
         # print("last",last_course_hist)
         # print("forecast: ",forecast)
 
-        # print("prioreq: ",prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2)))
+        # print("prioreq: ",self.prioritize_requirements(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2)))
     return forecast
 
 
