@@ -110,6 +110,14 @@ class Forecast(models.Model):
             'U': [2, "Summer"], 
             'F': [3, "Fall"]
         }
+        general_credits = {
+            'US': "4 US Perspectives (US) credits",   # (US)
+            'GP': "4 Global Perspectives (GP) credits",   # (GP)
+            'SCI': "4 Science General Area (>3) credits",  # (>3)
+            'SO': "4 Social Science Area (>2) credits",   # (>2)
+            'AAL': "4 Arts & Letters (>1) credits",  # (>1)
+            'CRE': "4 credits",  # 4 credits
+        }
         out = []
         i = 0
         # get a list of the courses that are related to this forecast, ordered by the year
@@ -130,7 +138,11 @@ class Forecast(models.Model):
 
                     term_li = list(term_qs)
                     for fc_has_c in term_li:    # add the course names to the term list's course name list
-                        course_str = fc_has_c.course.__str__()
+                        subject = fc_has_c.course.subject
+                        if subject in general_credits:
+                            course_str = general_credits[subject]
+                        else:
+                            course_str = fc_has_c.course.__str__()
                         out[i][1].append(course_str)
                     i += 1
             current_yr += 1
