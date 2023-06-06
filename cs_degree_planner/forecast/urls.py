@@ -17,6 +17,7 @@ urlpatterns = [
     path("health", views.health),
     # ex: /forecast/dashboard
     path("dashboard", views.index, name="dashboard"),
+    path("retrieve_forecast", views.dshbrd_retrieve_forecast, name="retrieve_forecast"),
     # ex: /forecast/edit_courses
     path("edit_courses", views.edit_courses, name="edit_courses"),
     path("courses_left", views.courses_left, name="courses_left"),
