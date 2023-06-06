@@ -62,8 +62,7 @@ def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=
 
     for course in course_history:  # create taken cs electives set EXCLUDING any shared with math elective area
         if isinstance(course, int):
-            if "cselectiveunder" in df['satisfyarea'].loc[course] or "cselectiveover" in df['satisfyarea'].loc[
-                course]:  # course is cs elective
+            if "cselectiveunder" in df['satisfyarea'].loc[course] or "cselectiveover" in df['satisfyarea'].loc[course]:  # course is cs elective
                 if course in {413000, 420000, 427000, 473000} and not skipped_shared:
                     skipped_shared = True
                     skipped_shared_course.add(course)
@@ -83,9 +82,7 @@ def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=
     # TODO BA/BS
 
     # CS major requirements
-    calc_done = {251001, 252001}.issubset(course_history) or {261001, 262001}.issubset(course_history) or {246001,
-                                                                                                           247001}.issubset(
-        course_history)
+    calc_done = {251001, 252001}.issubset(course_history) or {261001, 262001}.issubset(course_history) or {246001, 247001}.issubset(course_history)
     math1_taken = {253001, 263001, 347001, 351001, 391001, 341001, 343001,
                    425001} & course_history  # taken classes from math1 requirement
     math1_done = len(math1_taken) >= 2 and math1_taken != {253001, 263001} and math1_taken != {343001, 425001}

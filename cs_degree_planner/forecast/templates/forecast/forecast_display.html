@@ -119,6 +119,14 @@ color: green;
         width: 60px;
         border-radius: 0px;
     }
+	
+	#save {
+		font-family: Lato;
+		letter-spacing: 1.5px;
+		outline: none;
+		border: none;
+		padding: 30px 40px;
+	}
     
     .chosen-container-multi .chosen-choices li.search-choice { /*hi erin style deletable bubbles*/
 position: relative;
@@ -150,7 +158,7 @@ cursor: default;
         {% endfor %}
     {% endif %}
 
-    <h2>Degree Plan: {{ selected_timestamp }}</h2>
+    <h2>Degree Plan<br> {{ selected_timestamp }}</h2>
 	<div class="courses-form">
         {% if forecast_result is not empty %}
             {% for term in forecast_result %}
@@ -176,7 +184,7 @@ cursor: default;
         <form action="save_forecast" method="post">
             {% csrf_token %}
             <input type="hidden" name="forecast_result" value="{{ forecast_result }}">
-            <button type="submit" class="homelog">SAVE SCHEDULE</button>
+            <button type="submit" class="homelog" id="save">SAVE SCHEDULE</button>
         
         </form>
     </div>

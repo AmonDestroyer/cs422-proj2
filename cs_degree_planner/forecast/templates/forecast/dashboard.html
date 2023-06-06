@@ -112,7 +112,27 @@ TODO: file description
 		  color: rgba(0,0,0,0.00);
 	  }
 	  
+	  .saved {
+		  width: 210px;
+		  height: 200px;
+		  padding: 35px 25px 40px 25px;
+		  background: rgba(0,0,0,0.00);
+		  font-size: 80pt;
+		  border: 6px solid #95703A;
+		  border-radius: 30px;
+		  font-size: 16pt;
+		  margin-right: 10px;
+		  
+	  }
+	  .saved:hover{
+		  border: 5px solid #3A8795;
+		  background:rgba(58,135,149,0.1);
+	  }
 	  
+	  td {
+		  align-items: center;
+		  align-content: center;
+	  }
 	  
 	  
 	  
@@ -141,25 +161,34 @@ TODO: file description
 		<table>
 			<tr> <!--First row has the plus button, then 3 boxes -->
 				<td>
-					<div class="homelog degreeplan" id="generate">
+					
 							<a href="new_forecast" role="button" 
 					class="btn btn-secondary popover-test" title="Popover title" 
-					data-content="Popover body content is set in this attribute.">
-						&#43;
+					data-content="Popover body content is set in this attribute."><div class="homelog degreeplan" id="generate">
+						&#43;</div>
 					</a>
-					</div>
+					
 				</td>
 				{% if ts_raw_and_display is not empty %}
 					{% for tstmp_raw, tstmp_display in ts_raw_and_display %}
+						
 					<td>
 						<form action="retrieve_forecast" method="post">
 							<!-- <div class="homelog degreeplan empty"></div> -->
 								{% csrf_token %}
 								<input type="hidden" name="timestamp_str" value="{{ tstmp_raw }}">
-								<button type="submit" class="homelog">{{ tstmp_display }}</button>
+								<button type="submit" class="homelog saved">{{ tstmp_display }}</button>
 							
 						</form>
-					</td>	
+					</td>
+					
+						<!-- if (forloop.counter0 + 2)|divisibleby:4 -->
+						{% if forloop.counter0 == 2 or forloop.counter0 == 6 or forloop.counter0 == 10 or forloop.counter0 == 14 or forloop.counter0 == 18 or forloop.counter0 == 22 or forloop.counter0 == 26 or forloop.counter0 == 30 or forloop.counter0 == 34 or forloop.counter0 == 38 %}
+				
+					</tr>
+	  				<tr>
+					</tr>
+	  					{% endif %}
 					
 					{% endfor %}
 				{% endif %}
