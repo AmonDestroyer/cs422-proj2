@@ -79,6 +79,10 @@ def dshbrd_retrieve_forecast(request):
     timestamp_naive = datetime.strptime(timestamp_from_user, '%Y-%m-%d %H:%M:%S.%f')
     timestamp = make_aware(timestamp_naive, timezone=pytz.timezone('UTC'))
     print("TIMESTAMP", timestamp)
+
+    pst_timezone = pytz.timezone('US/Pacific')
+    timestamp_pst = timestamp.astimezone(pst_timezone)
+    ts_pst_str = timestamp_pst.strftime('%B %d, %Y, %I:%M %p')
     
     fcst = get_forecast_from_timestamp(request, timestamp)
     split_fcst = None
@@ -88,7 +92,7 @@ def dshbrd_retrieve_forecast(request):
         split_fcst = fcst.split_forecast()
 
     #print("PRINT SPLIT_FCST", split_fcst)
-    context = {'selected_timestamp': timestamp_from_user,
+    context = {'selected_timestamp': ts_pst_str,
             'dshbrd_retrieval': True,
             'forecast_result': split_fcst}
     #messages.info(request, "Selected timestamp: " + timestamp_from_user)
@@ -350,7 +354,7 @@ def edit_interests(request):
             print(f'user_ints {user_interests}')
             
             # Check if the box has data in it or if it's empty but the user removed all interests from the list
-            if ((len(user_interests) > 0) or (len(user_interests) > 0)):
+            if ((len(saved_interests) > 0) or (len(user_interests) > 0)):
                 # Each Keyword model will have an id so need to retrieve
                 # the appropriate Keyword models, then add those to the instance of the user profile model
 
