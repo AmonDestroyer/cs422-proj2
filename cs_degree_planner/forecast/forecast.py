@@ -400,31 +400,31 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                 elif us_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
-                        term_forecast.append("4 (US) credits")  # us difference/inequality/agency
+                        term_forecast.append("4 US Diff/Ineq/Agency (US) credits")  # us difference/inequality/agency
                         term_credits += 4
                         us2 += 4
                 elif gp_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
-                        term_forecast.append("4 (GP) credits")  # global perspectives
+                        term_forecast.append("4 Global Perspectives (GP) credits")  # global perspectives
                         term_credits += 4
                         gp2 += 4
                 elif sc_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
-                        term_forecast.append("4 (>3) credits")  # science general area
+                        term_forecast.append("4 General Science (>3) credits")  # science general area
                         term_credits += 4
                         sc2 += 4
                 elif ssc_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
-                        term_forecast.append("4 (>2) credits")  # social science area
+                        term_forecast.append("4 Social Science (>2) credits")  # social science area
                         term_credits += 4
                         ssc2 += 4
                 elif aal_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
-                        term_forecast.append("4 (>1) credits")  # arts and letters area
+                        term_forecast.append("4 Arts & Letters (>1) credits")  # arts and letters area
                         term_credits += 4
                         aal2 += 4
                 elif "Complete remainder" in course:  # user has begun at least one science path.
