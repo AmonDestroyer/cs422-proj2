@@ -33,6 +33,8 @@ TODO: file description
     overflow-x: hidden;
 	min-height:100%;
       background-size:cover;
+				background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+
 }
 
 body {
@@ -199,15 +201,18 @@ input:focus {
 }
 
 #ClosePopupButton {
-	background-color: #f44336;
+	border-radius: 20px;
+	background-color:rgba(2,119,96,1.00);
   color: #fff;
   padding: 10px 20px;
   border: none;
   cursor: pointer;
+	transition: all 0.5s ease;
 }
 
 #ClosePopupButton:hover {
-	background-color: #ff6347;
+	border-radius: 20px;
+	background-color: rgba(18,177,146,1.00);
   color: #fff;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   transform: scale(1.1);
@@ -218,7 +223,7 @@ input:focus {
   transform: scale(1);
 }	
 
-#reset-link {
+/*#reset-link {
 	display: inline-block;
 	padding: 12px 24px;
 	background-color: #3A8795;
@@ -231,7 +236,7 @@ input:focus {
 	cursor: pointer;
 	transition: background-color 0.7s, color 0.7s;
 	margin-top: 10px;
-}
+}*/
 
 .popup-column {
 	display: inline-block;
@@ -243,7 +248,7 @@ input:focus {
 	overflow-wrap: break-word;
 }
 
-#reset-link:hover {
+/*#reset-link:hover {
 	background-color: #fff;
 	color: #3A8795;
 	text-decoration: none;
@@ -253,7 +258,7 @@ input:focus {
 	background-color: #3A8795;
 	color: #fff;
 	text-decoration: none;
-}
+}*/
 
 #course-container {
 	display: flex;
@@ -273,6 +278,34 @@ td {
 	padding: 0 30px;
 	
 }
+		
+						.course {
+			display: inline-block;
+			padding: 12px 24px;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+            margin-right: 5px;
+            margin-left: 5px;
+			margin-top: 20px;
+			/*background:rgba(149,112,58,0.3);*/
+			background: rgba(58,135,149,0.3);
+			transition: background 1s ease;
+			font-size: 12pt;
+			letter-spacing: 1px;
+			font-family: Lato;
+        }      
+
+        .course:hover {
+            /*background-color: rgba(149,112,58,0.7);*/
+			background: rgba(58,135,149,0.7);
+        }
+		
+		#savetitle{
+			margin-left: -290px;
+		}
 
 	</style>
 </head>
@@ -287,20 +320,20 @@ td {
 		</div>
 	</div>
 	{% if interests_reset %}
-		<a id="reset-link" href="/forecast/edit_interests">Restore Interests</a> 
+		<a class="course" id="reset-link" href="/forecast/edit_interests">RESTORE INTERESTS</a> 
 	{% else %}
-		<a id="reset-link" href="?reset_interests=true" onclick="resetForm()">Reset Interests</a>
+		<a class="course" id="reset-link" href="?reset_interests=true" onclick="resetForm()">RESET INTERESTS</a>
 	{% endif %}
 
 	<div id="course-container">
 		<table>
 			<tr>
-				<td><h3>Your interests</h3></td><td></td>
+				<td><h3>Your interests</h3></td><td></td><td></td>
 				
 				<td><h3 id="savetitle">Save changes</h3></td>
 			</tr>
 			<tr>
-			<td><h4>These will influence which classes are included in generated degree plans.</h4></td>
+			<td><h4>These will influence which classes are included in generated degree plans.</h4></td><td></td>
 			</tr>
 			<tr>
 				<td>
@@ -310,7 +343,7 @@ td {
 						</option>
 					{% endfor %}
 				</select>
-				</td> 
+				</td> <td></td>
 				<td><button type="submit" name="Submit" id="submit">Save Changes</button><label class="homelog" id="savebutton" for="submit">SAVE</label></td>
 			</tr>
 			</table>

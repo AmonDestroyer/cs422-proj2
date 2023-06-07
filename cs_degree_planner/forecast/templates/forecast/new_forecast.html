@@ -109,7 +109,53 @@ cursor: default;
 		font-size: 23pt;
 		color: #d9d0c1;
 	}
+	#tips {
+		font-size: 12pt;
+		padding: 5px 8px;
+		border-radius: 20px;
+		background: rgba(58,135,149,0.2);
+	}
+	.tipslist {
+		color:#875711;
+		
+	}
     
+	h4 {
+		color: #95703A;
+	}
+	.preset {
+		display: inline-block;
+		padding: 15px 15px;
+		border-radius: 20px;
+		background: rgba(58,135,149,0.2);
+		
+	}
+	.preset-inner {
+		padding: 10px;
+		border-radius: 20px;
+		border: 3px solid rgba(58,135,149,0.3);
+	}
+	
+	.chzn-select{
+		border: 3px solid rgba(58,135,149,1);
+		border-radius: 20px;
+		font-family: Lato;
+		font-size: 12pt;
+		background: transparent;
+		padding: 5px 10px;
+		color: #d9d0c1;
+		transition: all 0.5s ease;
+	}
+	
+		.chzn-select:hover{
+		border: 3px solid rgba(58,135,149,1);
+		border-radius: 20px;
+		font-family: Lato;
+		font-size: 12pt;
+		background:  rgba(58,135,149,0.3);
+		padding: 5px 10px;
+		color: #d9d0c1;
+	}
 </style>
 </head>
 
@@ -124,14 +170,17 @@ cursor: default;
     <form method="post">
         {% csrf_token %}
 
-		<h4><b>Tips:</b><br>
-			-Credits per term: the number of credits the user does not want to exceed per term<br>
-			-Target term: when the user wants the first term of the degree plan to start<br>
-			-Target year: the year the user wants their degree plan to start<br>
+		<h4><b id="tips">Tips:</b><br><br>
+			<span class="tipslist">Credits per term:</span> The maximum number of credits to be taken each term<br>
+			<span class="tipslist">Target term:</span> The beginning term of the degree plan<br>
+			<span class="tipslist">Target year:</span> The beginning year of the degree plan<br>
+			
 		</h4>
 
 		<div class="preset">
+			<div class="preset-inner">
         	{{ preset_form.as_p }}
+			</div>
 		</div>
 		
 		<!--
