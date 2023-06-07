@@ -362,7 +362,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                         course = list(course)[
                             0]  # so we at least set the course to a valid id so it is no longer a string
                     else:
-                        #print(options)
+                        print(options)
                         course = options[max(options)]  # choose course with most shared interests out of all options
                 elif wr_left in course:  # suggest writing (tailor to interest in case user wants 321 instead)
                     if total_credits(course_hist) >= 90:  # user is junior standing

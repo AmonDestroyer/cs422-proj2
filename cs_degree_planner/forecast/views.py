@@ -436,7 +436,10 @@ def new_forecast(request):
             # or could use a separate forecast display template to show the result of the fxn
             courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
             courses_taken_set = set(courses_taken) # Convert query set to a regular set
-            forecast = generate_forecast(course_history=courses_taken_set, max_credits_per_term=credits_choice, target_term=term_choice, target_year=year_choice)
+            
+            interests = set(request.user.profile.interests.values_list('keyword', flat=True))
+            print(interests)
+            forecast = generate_forecast(course_history=courses_taken_set, max_credits_per_term=credits_choice, target_term=term_choice, target_year=year_choice, interests=interests)
 
             request.session['forecast_raw'] = forecast # store as a session variable so it can be easily gotten if it needs to be saved
 
