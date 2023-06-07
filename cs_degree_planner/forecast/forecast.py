@@ -547,10 +547,10 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
         print(forecast)
     return forecast
 
-def generate_recommended_forecast(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
+def generate_recommended_forecast_ba(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
                       sc=0, gp=0, us=0, misc=0, interests=set()):
     """
-        'recommended by UO' preset. Follows the degree plan provided by UO, while taking into account the user's history, interests, and other preferences.
+        'recommended by UO' preset for BA in CS. Follows the degree plan provided by UO, while taking into account the user's history, interests, and other preferences.
 
         :param course_history: set of course ids (ex: {210000, 211000, 231001})
         :param max_credits_per_term: int representing the number of credits the user does not want to exceed per term
@@ -569,8 +569,70 @@ def generate_recommended_forecast(course_history, max_credits_per_term=16, targe
                             211000, "calc2", 100013, 100012,
                             212000, 231001, "sc1", "ssandcl",
                             314000, 232001, "sc2", 100013,
-                            322000, "math1", "sc3", "aalandcl",
-                            313000, "math2"]
+                            322000, "math1_1", "sc3", "aalandcl",
+                            313000, "math1_2", "wr3", "la1",
+                            315000, 330000, "math2", "la2",
+                            415000, "cs_elec", "PHIL 223", "la3",
+                            425000, "cs_elec", "Upper-division elective",
+                            422000, "cs_elec", "Upper-division elective",
+                            "cs_elec", "cs_elec", "Upper-division elective"]
+
+    forecast = []  # entire degree plan
+    # remaining = remaining_requirements(course_history, aal, ssc, sc, gp, us)
+    course_hist = course_history.copy()
+    last_course_hist = course_history.copy()
+    aal2 = aal
+    ssc2 = ssc
+    sc2 = sc
+    gp2 = gp
+    us2 = us
+    misc2 = misc
+    term_credits = 0
+    terms = "FWSF"  # TODO deal with summer "FWSUF"
+    this_term = target_term
+    this_year = target_year
+    for course in recommended_sequence:
+        if course in course_history:
+            recommended_sequence.remove(course)
+
+    while 100013 in recommended_sequence and aal2 >= 4:
+        recommended_sequence.remove(100013)
+        aal2 -= 4
+    while 100012 in recommended_sequence and ssc2 >= 8:
+        recommended_sequence.remove(100012)
+        ssc2 -= 4
+    if aal2 >= 4 and gp2 >= 4:
+        recommended_sequence.remove("aalandcl")
+        aal2 -= 4
+        gp2 -= 4
+    if ssc2 >= 4 and us2 >= 4:
+        recommended_sequence.remove("ssandcl")
+        ssc2 -= 4
+        us2 -= 4
+    if 251001 in course_history or 246001 in course_history:
+        recommended_sequence.remove("calc1")
+    if 252001 in course_history or 247001 in course_history:
+        recommended_sequence.remove("calc2")
+    if 122008 in course_history or 123008 in course_history:
+        recommended_sequence.remove("wr2")
+    if 320008 in course_history or 321008 in course_history:
+        recommended_sequence.remove("wr3")
+    if not (math2_left in course_history):
+        recommended_sequence.remove("math2")
+    math1_req = {253001, 263001, 347001, 351001, 391001, 341001, 343001, 425001}
+    if len(math1_req & course_history) > 0:
+        recommended_sequence.remove("math1_1")
+        if len(math1_req & course_history) > 1:
+            recommended_sequence.remove("math1_2")
+
+
+    print(prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)))
+
+
+    #while has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
+    #    term_forecast = []  # single term
+    #    for course in prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
+    #        1
 
 
 def print_forecast(start_term, start_year, forecast):
@@ -654,6 +716,12 @@ def categorize_courses(course_set):
                 or ge_left in course or er_left in course or bi_left in course or ps_left in course:
             categorized_courses['CS Science Path and Writing Requirements'].append(course)
         else:
+            if math1_left in course:
+                course2 = set((course[course.index("{") + 1:course.index("}")]).split(', '))
+                course2 = {eval(i) for i in course2}
+                course2 = id_to_title(course2)
+                course2 = ", ".join(list(course2))
+                course = str(course.split("{")[0]) + course2
             categorized_courses['CS Core and Math Requirements'].append(course)
 
     return arrange_electives(categorized_courses)
@@ -777,6 +845,8 @@ def total_credits(course_set):
 
 def main():
     print_forecast('F', 2023, generate_forecast({101001, 111001, 112001, 210000}, 16, 'F', 2023, interests={"Graphics", "Biology", "Teamwork", "Business", "Cybersecurity", "Cryptography", "AI"}))
+    generate_recommended_forecast_ba({101001, 111001, 112001, 210000}, 16, 'F', 2023, interests={"Graphics", "Biology", "Teamwork", "Business", "Cybersecurity", "Cryptography", "AI"})
+
 
 if __name__ == "__main__":
     main()
