@@ -33,7 +33,7 @@ class Keyword(models.Model):
     desc = models.CharField(max_length=100)     # the description of the keyword 
 
     def __str__(self):
-        return self.kw_name
+        return self.keyword
 
 
 class Course(models.Model):

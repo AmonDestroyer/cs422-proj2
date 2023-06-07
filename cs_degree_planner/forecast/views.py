@@ -33,9 +33,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import EditCoursesForm, PresetForm
+from .forms import EditCoursesForm, PresetForm, EditInterestsForm
 from django.contrib import messages
-from .models import Course
+from .models import Course, Keyword
 from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
@@ -314,7 +314,91 @@ def edit_interests(request):
     """View to allow the user to edit their interests, allowing forecasts to be
     tailored to fit what the user is most interested in. 
     """
-    context = {}
+    user_model = request.user # user that is currently logged in
+    user_profile = user_model.profile
+    prev_choices = {}
+    interest_options = []
+    interests_reset = False
+    
+    if request.method != 'POST':
+        form = EditInterestsForm()
+        
+        if 'reset_interests' not in request.GET:
+            int_selections = user_profile.interests.all()
+            print(f'user_ints selections: {int_selections}')
+            
+            if(int_selections is not None):
+                interest_options = form.fields['user_interests'].choices
+
+                for selection in int_selections:
+                    print(selection.keyword)
+                    #selection_id = selection.id 
+                    for interest_val, interest_display in interest_options:
+                        if interest_val == selection.keyword: # found a match, set as selected for that list option
+                            print('found a match for: ', selection)
+                            prev_choices[str(selection)] = True
+        else:
+            interest_options = form.fields['user_interests'].choices
+            interests_reset = True
+
+    else:
+        form = EditInterestsForm(request.POST)
+        if form.is_valid():
+            saved_interests = list(map(str, user_profile.interests.values_list('keyword', flat=True)))
+            print(f'saved_ints {saved_interests}')
+            user_interests = form.cleaned_data.get('user_interests')
+            print(f'user_ints {user_interests}')
+            
+            # Check if the box has data in it or if it's empty but the user removed all interests from the list
+            if ((len(user_interests) > 0) or (len(user_interests) > 0)):
+                # Each Keyword model will have an id so need to retrieve
+                # the appropriate Keyword models, then add those to the instance of the user profile model
+
+                un = user_model.username
+                print(un)
+
+                # Get interests to remove (if anything was removed from list)
+                int_strs_to_remove = [interest for interest in saved_interests if interest not in user_interests]
+                print('interests to remove:')
+                print(int_strs_to_remove)
+                # Now this is array of strings, go through string and delete
+                for interest_str in int_strs_to_remove:
+                    keyword_model = Keyword.objects.get(keyword=interest_str)
+                    user_profile.interests.remove(keyword_model)
+                    messages.info(request, "Removed interest: " + keyword_model.keyword)
+
+                for interest_kw in user_interests:
+                    try:
+                        keyword_model = Keyword.objects.get(keyword=interest_kw)
+                        if (keyword_model not in user_profile.interests.all()):
+                            user_profile.interests.add(keyword_model)
+                            messages.info(request, "Added interest: " + keyword_model.keyword)
+                            print("found keyword_model with the id!")                        
+                        
+                    except:
+                        print("keyword_model not found")
+
+            if (len(messages.get_messages(request)) == 0):
+                messages.info(request, "No changes submitted!")
+                messages.info(request, "Please update your interests to see saved changes.")
+
+            user_profile.save()
+            print("user prof saved with new changes!")
+            
+            return redirect('forecast:edit_interests')
+        else:
+            for field in form:
+                if field.errors:
+                    print(field.errors) 
+            messages.error(request, "Error While Attempting to Save Changes")
+            
+            return redirect('forecast:edit_interests')
+
+    context = {'interestform': form,
+               'interest_options': interest_options,
+               'prev_choices': prev_choices,
+               'interests_reset': interests_reset,
+               }
     
     return render(request, "forecast/edit_interests.html", context)
 

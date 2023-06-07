@@ -10,6 +10,7 @@ TODO: file description
 import os
 import pandas as pd
 from django import forms
+from .models import Keyword
 
 current_dir = os.path.dirname(__file__)
 file_path = current_dir + '/recommendcourses.xlsx'
@@ -109,5 +110,20 @@ class UserChoicesForm(forms.Form):
     target_year = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'target_year', 'class': 'input-number', 
                'type': 'number', 'value': '', 'min': '2023'}))
-    
-    
+
+
+INTEREST_OPTIONS = []
+
+keyword_arr = list(Keyword.objects.all())
+
+for option in keyword_arr:
+    list_option = (option.keyword, option.keyword)
+    INTEREST_OPTIONS.append(list_option)
+
+print('INTEREST_OPTIONS:')
+print(INTEREST_OPTIONS)
+
+class EditInterestsForm(forms.Form):
+    user_interests = forms.MultipleChoiceField(
+        label='', choices=INTEREST_OPTIONS, widget=forms.SelectMultiple(
+            attrs={'id': 'interest_select','class': 'chzn-select'}), required=False)
