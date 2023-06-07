@@ -40,6 +40,8 @@ from .forecast import remaining_requirements, categorize_courses, generate_forec
 from users.models import Profile, Forecast, Forecast_Has_Course
 import ast
 from datetime import datetime
+from django.utils.timezone import make_aware
+import pytz
 
 def get_user_profile(user):
     """helper function to easily get a user's profile
@@ -73,8 +75,11 @@ def index(request):
 def dshbrd_retrieve_forecast(request):
     timestamp_from_user = request.POST['timestamp_str']
     
-    timestamp = datetime.strptime(timestamp_from_user, '%Y-%m-%d %H:%M:%S.%f')
-
+    # timestamp = timezone.make_aware(
+    timestamp_naive = datetime.strptime(timestamp_from_user, '%Y-%m-%d %H:%M:%S.%f')
+    timestamp = make_aware(timestamp_naive, timezone=pytz.timezone('UTC'))
+    print("TIMESTAMP", timestamp)
+    
     fcst = get_forecast_from_timestamp(request, timestamp)
     split_fcst = None
 
@@ -82,11 +87,11 @@ def dshbrd_retrieve_forecast(request):
         # fcst is the forecast model object, but need to split it
         split_fcst = fcst.split_forecast()
 
+    #print("PRINT SPLIT_FCST", split_fcst)
     context = {'selected_timestamp': timestamp_from_user,
             'dshbrd_retrieval': True,
             'forecast_result': split_fcst}
     #messages.info(request, "Selected timestamp: " + timestamp_from_user)
-    
 
     return render(request, "forecast/forecast_display.html", context)
 
@@ -383,6 +388,7 @@ def save_forecast(request):
         user_profile = Profile.objects.get(user=user) # get the user's profile
         forecast = Forecast(user=user_profile)
         forecast.save() # save the forecast model linked to the user's profile
+        print("Forecast Save Time:", forecast.time_created)
         print('Saved the forecast!')
         
         forecast_raw_data = request.session['forecast_raw'] # get the session data
