@@ -162,6 +162,16 @@ input:focus {
 
 /*---------- Navbar --------------------*/
 
+.prof_dropdown {
+	padding: 0 !important;
+	text-decoration: none !important;
+	color: inherit !important;
+	display: inline !important;
+	margin: 0 !important;
+	font: inherit !important;
+	background: none !important;
+}
+
 nav {
 	border-radius: 0;
 	width: 100%;
