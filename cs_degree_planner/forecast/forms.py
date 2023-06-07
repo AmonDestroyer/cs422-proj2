@@ -111,19 +111,18 @@ class UserChoicesForm(forms.Form):
         attrs={'id': 'target_year', 'class': 'input-number', 
                'type': 'number', 'value': '', 'min': '2023'}))
 
-
-INTEREST_OPTIONS = []
-
-keyword_arr = list(Keyword.objects.all())
-
-for option in keyword_arr:
-    list_option = (option.keyword, option.keyword)
-    INTEREST_OPTIONS.append(list_option)
-
-print('INTEREST_OPTIONS:')
-print(INTEREST_OPTIONS)
-
 class EditInterestsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(EditInterestsForm, self).__init__(*args, **kwargs)
+        INTEREST_OPTIONS = []
+        keyword_arr = list(Keyword.objects.all())
+
+        for option in keyword_arr:
+            list_option = (option.keyword, option.keyword)
+            INTEREST_OPTIONS.append(list_option)
+            
+        self.fields['user_interests'].choices = INTEREST_OPTIONS
+  
     user_interests = forms.MultipleChoiceField(
-        label='', choices=INTEREST_OPTIONS, widget=forms.SelectMultiple(
+        label='', choices=[], widget=forms.SelectMultiple(
             attrs={'id': 'interest_select','class': 'chzn-select'}), required=False)
