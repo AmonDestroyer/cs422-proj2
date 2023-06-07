@@ -3,12 +3,12 @@ steps:
   # NOTE: Build path is relative to root of directory
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest',
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}',
             '.']
   # Push Image to Artifact Repository
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',
-            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest']
+            'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}']
   # [Cloud Run] Development Deployment - Dev
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -17,7 +17,7 @@ steps:
       - 'deploy'
       - 'deploy-cdp-dev'
       - '--image'
-      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}'
       - '--region'
       - 'us-central1'
   # [Cloud Run] Production Deployment - Prod
@@ -28,7 +28,7 @@ steps:
       - 'deploy'
       - 'deploy-cdp-prod'
       - '--image'
-      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}'
       - '--region'
       - 'us-central1'
   # [Cloud Run] Traffic Update - Dev
@@ -63,7 +63,7 @@ steps:
       - 'update-container'
       - 'jeanz-app'
       - '--container-image'
-      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}'
       - '--zone'
       - 'us-central1-a'
 
@@ -73,4 +73,4 @@ options:
 
 # Image Settings
 images:
-  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:latest'
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/jeanz-repo/jeanz-image:${SHORT_SHA}'
