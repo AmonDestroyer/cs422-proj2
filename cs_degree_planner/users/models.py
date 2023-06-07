@@ -141,8 +141,14 @@ class Forecast(models.Model):
                         subject = fc_has_c.course.subject
                         if subject in general_credits:
                             course_str = general_credits[subject]
+                        elif subject == 'CS' and fc_has_c.course.number == 410:
+                            # need to add extra info for CS 410 because there
+                            # are multiple courses of the same subject and
+                            # number, but different names
+                            course_str = fc_has_c.course.full_name
                         else:
-                            course_str = fc_has_c.course.__str__()
+                            course_str = str(fc_has_c.course)
+
                         out[i][1].append(course_str)
                     i += 1
             current_yr += 1
