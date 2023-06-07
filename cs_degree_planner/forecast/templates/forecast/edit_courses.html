@@ -34,14 +34,22 @@ TODO: file description
     overflow-x: hidden;
 	min-height:100%;
       background-size:cover;
+				background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
 }
+		
+		.noshift {
+				display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+		}
 
 body {
+
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-
 	background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
 	text-align: center;
 	padding-bottom: 200px;
@@ -219,7 +227,7 @@ input:focus {
   transform: scale(1);
 }	
 
-#reset-link {
+/*#reset-link {
 	display: inline-block;
 	padding: 12px 24px;
 	background-color: #3A8795;
@@ -232,7 +240,7 @@ input:focus {
 	cursor: pointer;
 	transition: background-color 0.7s, color 0.7s;
 	margin-top: 10px;
-}
+}*/
 
 .popup-column {
 	display: inline-block;
@@ -244,7 +252,7 @@ input:focus {
 	overflow-wrap: break-word;
 }
 
-#reset-link:hover {
+/*#reset-link:hover {
 	background-color: #fff;
 	color: #3A8795;
 	text-decoration: none;
@@ -254,7 +262,7 @@ input:focus {
 	background-color: #3A8795;
 	color: #fff;
 	text-decoration: none;
-}
+}*/
 
 #course-container {
 	display: flex;
@@ -272,11 +280,34 @@ td {
 	text-align: center;
 	width: 30%;
 }
+				.course {
+			display: inline-block;
+			padding: 12px 24px;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+            margin-right: 5px;
+            margin-left: 5px;
+			margin-top: 20px;
+			/*background:rgba(149,112,58,0.3);*/
+			background: rgba(58,135,149,0.3);
+			transition: background 1s ease;
+			font-size: 12pt;
+			letter-spacing: 1px;
+			font-family: Lato;
+        }      
+
+        .course:hover {
+            /*background-color: rgba(149,112,58,0.7);*/
+			background: rgba(58,135,149,0.7);
+        }
 
 	</style>
 </head>
 <body>
-
+<div class="noshift">
 	
 <form id="courseForm" method="post">
   {% csrf_token %}
@@ -286,9 +317,9 @@ td {
 		</div>
 	</div>
 	{% if courses_reset %}
-		<a id="reset-link" href="/forecast/edit_courses">Restore Course History</a> 
+		<a class="course" id="reset-link" href="/forecast/edit_courses">RESTORE COURSE HISTORY</a> 
 	{% else %}
-		<a id="reset-link" href="?reset_courses=true" onclick="resetForm()">Reset Course History</a>
+		<a class="course" id="reset-link" href="?reset_courses=true" onclick="resetForm()">RESET COURSE HISTORY</a>
 	{% endif %}
 
 	<div id="course-container">
@@ -351,7 +382,7 @@ td {
 		</form>
 
 
-
+	</div>
 <script type="text/javascript">
 
 $(document).ready(function() {

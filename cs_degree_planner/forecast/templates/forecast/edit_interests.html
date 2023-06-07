@@ -34,6 +34,13 @@ TODO: file description
 	min-height:100%;
       background-size:cover;
 }
+		
+				.noshift {
+				display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+		}
 
 body {
 	display: flex;
@@ -115,7 +122,7 @@ body {
 			margin-left:-150px;
 		}
 		#savebutton {
-			margin-left: 200px;
+			margin-right: 150px;
 			font-size: 16pt;
 			padding: 15px 30px;
 			font-family: Lato;
@@ -218,7 +225,7 @@ input:focus {
   transform: scale(1);
 }	
 
-#reset-link {
+/*#reset-link {
 	display: inline-block;
 	padding: 12px 24px;
 	background-color: #3A8795;
@@ -231,7 +238,7 @@ input:focus {
 	cursor: pointer;
 	transition: background-color 0.7s, color 0.7s;
 	margin-top: 10px;
-}
+}*/
 
 .popup-column {
 	display: inline-block;
@@ -243,7 +250,7 @@ input:focus {
 	overflow-wrap: break-word;
 }
 
-#reset-link:hover {
+/*#reset-link:hover {
 	background-color: #fff;
 	color: #3A8795;
 	text-decoration: none;
@@ -253,7 +260,7 @@ input:focus {
 	background-color: #3A8795;
 	color: #fff;
 	text-decoration: none;
-}
+}*/
 
 #course-container {
 	display: flex;
@@ -273,11 +280,34 @@ td {
 	padding: 0 30px;
 	
 }
+		.course {
+			display: inline-block;
+			padding: 12px 24px;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #3A8795;
+            border-radius: 40px;
+            color: #d9d0c1;
+            margin-right: 5px;
+            margin-left: 5px;
+			margin-top: 20px;
+			/*background:rgba(149,112,58,0.3);*/
+			background: rgba(58,135,149,0.3);
+			transition: background 1s ease;
+			font-size: 12pt;
+			letter-spacing: 1px;
+			font-family: Lato;
+        }      
+
+        .course:hover {
+            /*background-color: rgba(149,112,58,0.7);*/
+			background: rgba(58,135,149,0.7);
+        }
 
 	</style>
 </head>
 <body>
-
+<div class="noshift">
 	
 <form id="courseForm" method="post">
   {% csrf_token %}
@@ -287,9 +317,9 @@ td {
 		</div>
 	</div>
 	{% if interests_reset %}
-		<a id="reset-link" href="/forecast/edit_interests">Restore Interests</a> 
+		<a class="course" id="reset-link" href="/forecast/edit_interests">RESTORE INTERESTS</a> 
 	{% else %}
-		<a id="reset-link" href="?reset_interests=true" onclick="resetForm()">Reset Interests</a>
+		<a class="course" id="reset-link" href="?reset_interests=true" onclick="resetForm()">RESET INTERESTS</a>
 	{% endif %}
 
 	<div id="course-container">
@@ -300,7 +330,7 @@ td {
 				<td><h3 id="savetitle">Save changes</h3></td>
 			</tr>
 			<tr>
-			<td><h4>These will influence which classes are included in generated degree plans.</h4></td>
+			<td><h4>These will influence which classes are included in generated degree plans.</h4></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td>
@@ -311,6 +341,7 @@ td {
 					{% endfor %}
 				</select>
 				</td> 
+				<td></td>
 				<td><button type="submit" name="Submit" id="submit">Save Changes</button><label class="homelog" id="savebutton" for="submit">SAVE</label></td>
 			</tr>
 			</table>
@@ -428,7 +459,7 @@ $(document).ready(function() {
 
 </script>
 
-
+</div>
 </body>
 </html>
 
