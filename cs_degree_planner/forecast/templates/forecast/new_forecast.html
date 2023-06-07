@@ -120,12 +120,25 @@ cursor: default;
         {% endfor %}
     {% endif %}
 
-    <h3><br><br>Select a preset to tailor<br> your degree plan to your learning style<br><br></h3>
+    <h3><br><br>Select credits per term, target term and target year to tailor<br> your degree plan to your learning style<br><br></h3>
     <form method="post">
         {% csrf_token %}
+
+		<h4><b>Tips:</b><br>
+			-Credits per term: the number of credits the user does not want to exceed per term<br>
+			-Target term: when the user wants the first term of the degree plan to start<br>
+			-Target year: the year the user wants their degree plan to start<br>
+		</h4>
+
 		<div class="preset">
         	{{ preset_form.as_p }}
 		</div>
+		
+		<!--
+		<div class="choices">
+        	{{ user_choices.as_p }}
+		</div>
+		-->
 		
         <button class="hidden" id="generate" type="submit" name="Submit">Generate New</button>
 		<br><br><br><br>

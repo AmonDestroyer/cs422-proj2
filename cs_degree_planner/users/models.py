@@ -111,10 +111,10 @@ class Forecast(models.Model):
             'F': [3, "Fall"]
         }
         general_credits = {
-            'US': "4 US Perspectives (US) credits",   # (US)
+            'US': "4 US Diff/Ineq/Agency (US) credits",   # (US)
             'GP': "4 Global Perspectives (GP) credits",   # (GP)
-            'SCI': "4 Science General Area (>3) credits",  # (>3)
-            'SO': "4 Social Science Area (>2) credits",   # (>2)
+            'SCI': "4 General Science (>3) credits",  # (>3)
+            'SO': "4 Social Science (>2) credits",   # (>2)
             'AAL': "4 Arts & Letters (>1) credits",  # (>1)
             'CRE': "4 credits",  # 4 credits
         }
