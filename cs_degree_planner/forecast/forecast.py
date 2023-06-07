@@ -15,6 +15,7 @@ ssc_left = "Social Science"
 sc_left = "General Science"
 gp_left = "Global Perspectives"
 us_left = "US Difference"
+math1_left = "Choose"
 math2_left = "252 or higher"
 sc_path_left = "science path"
 wr_left = "320 or WR"
@@ -128,13 +129,18 @@ def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=
             # remaining.add("One from (2511 and 2521), (2611 and 2621), (2461 and 2471)")
             # remaining.add("(2511 and 2521) or (2461 and 2471)")
             remaining.add("(MATH 251 and MATH 252) or (MATH 246 and MATH 247)")
-
+    #print(math2_done, math2_taken)
     if not math1_done:
         math1_req = {253001, 263001, 347001, 351001, 391001, 341001, 343001, 425001}
-        if 253001 in math1_taken or 263001 in math1_taken:
-            remaining.add("One from " + str(math1_req.difference({253001, 263001})))
-        if 343001 in math1_taken or 425001 in math1_taken:
-            remaining.add("One from " + str(math1_req.difference({343001, 425001})))
+        if len(math1_taken) == 1:
+            if 253001 in math1_taken or 263001 in math1_taken:
+                remaining.add("Choose one from " + str(math1_req.difference({253001, 263001})))
+            elif 343001 in math1_taken or 425001 in math1_taken:
+                remaining.add("Choose one from " + str(math1_req.difference({343001, 425001})))
+            else:
+                remaining.add("Choose one from " + str(math1_req.difference(math1_taken)))
+        else:
+            remaining.add("Choose two from " + str(math1_req))
 
     if not cs_electives_done:
         alttxt = ""
@@ -240,7 +246,7 @@ def cs_electives_msg_to_ids(msg):
         tmp = int(tmp)
         j.add(tmp)
 
-    print(j)
+    #print(j)
     return j
 
 
@@ -264,6 +270,7 @@ def prioritize_requirements(remaining):
     cs_req = []
     cs_elec = []
     calc = []
+    math1 = []
     math2 = []
     sc = []
     wr = []
@@ -275,6 +282,8 @@ def prioritize_requirements(remaining):
                 calc.append(req)
             elif cs_elec_left in req:
                 cs_elec.append(req)
+            elif math1_left in req:
+                math1.append(req)
             elif math2_left in req:
                 math2.append(req)
             elif ph1_left in req or ph2_left in req or ch_left in req or ge_left in req or er_left in req \
@@ -289,13 +298,13 @@ def prioritize_requirements(remaining):
             cs_req.append(req)
         else:  # other things user must finish that they started
             other.append(req)
-    return cs_req + calc + cs_elec + math2 + other + sc + wr + areas
+    return cs_req + calc + cs_elec + math2 + other + sc + wr + math1 + areas
 
 
 def generate_forecast(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
                       sc=0, gp=0, us=0, misc=0, interests=set()):
     """
-    '16 credits per term' preset. Completes all required courses for the CS major and then completes general areas and then overall credits.
+    'N or default 16 credits per term' preset. Completes all required courses for the CS major and then completes general areas and then overall credits.
 
     :param course_history: set of course ids (ex: {210000, 211000, 231001})
     :param max_credits_per_term: int representing the number of credits the user does not want to exceed per term
@@ -327,6 +336,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
     while has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
         term_forecast = []  # single term
         for course in prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
+            #print(course)
             # print("prio: ",self.prioritize_requirements(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2)))
             # print("course:",course, "term:", term_forecast, "forecast:", forecast)
             # print(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2))
@@ -339,7 +349,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                         course = 251001
                 elif cs_elec_left in course:  # suggest an available cs elective TODO tailor to interest
                     course = cs_electives_msg_to_ids(course)  # course is now actually a set of course ids
-                    print(course)
+                    #print(course)
                     match_not_found = True
                     options = {}
                     for i in course:  # i is a cs elective the user hasn't yet taken
@@ -352,7 +362,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                         course = list(course)[
                             0]  # so we at least set the course to a valid id so it is no longer a string
                     else:
-                        print(options)
+                        #print(options)
                         course = options[max(options)]  # choose course with most shared interests out of all options
                 elif wr_left in course:  # suggest writing (tailor to interest in case user wants 321 instead)
                     if total_credits(course_hist) >= 90:  # user is junior standing
@@ -371,11 +381,22 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                     course = options[max(options)]  # choose course with most shared interests out of all options
                 elif math2_left in course:  # suggest MATH 300+ elective (TODO tailor to interest)
                     options = {}
+                    match_not_found = True
                     for i in {413000, 420000, 427000, 473000, 253001, 281001, 256001, 282001, 307001, 316001, 317001,
                               320001, 345001, 347001, 348001, 351001, 352001,
                               391001}:  # all recommendable (not all) courses satisfying 300+ MATH
+                        if not get_prereq(i) or get_prereq(i).issubset(last_course_hist) and is_offered(i, this_term,
+                                                                                                        this_year):  # TODO deal w interests
+                            options[interested_in(i, interests)] = i  # associate course with number of shared interests
+                            match_not_found = False  # match has been found!
+                            #print("i", i)
+                    if match_not_found:  # the check to add the course to the term later will fail since no takeable math elective exists for this term
+                        course = 261001  # so we at least set the course to a valid id so it is no longer a string
+                    else:
+                        course = options[max(options)]  # choose course with most shared interests out of all options
                         options[interested_in(i, interests)] = i  # associate course with number of shared interests
-                    course = options[max(options)]  # choose course with most shared interests out of all options
+
+                    print(options)
                 elif us_left in course:
                     course = 261001  # this course is never offered so the following checks will fail and no specific course will be added
                     if term_credits + 4 <= max_credits_per_term:
@@ -472,18 +493,24 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                         for i in level_2:
                             options[interested_in(i, interests)] = i  # associate course with number of shared interests
                     course = options[max(options)]  # choose course with most shared interests out of all options
-                elif "One from" in course:  # user needs MATH 300+ elective
-                    options = {eval(i) for i in course[course.index("{") + 1:course.index("}")].split(", ")}
+                elif math1_left in course:  # user needs MATH 300+ elective (2 total, NOT the same as MATH252 prereq+ area (that's math2))
+                    all_options = {eval(i) for i in course[course.index("{") + 1:course.index("}")].split(", ")}
                     match_not_found = True
-                    for i in options:  # i is a cs elective the user hasn't yet taken
-                        if (get_prereq(i)).issubset(last_course_hist) and is_offered(i, this_term,
-                                                                                     this_year) and match_not_found:  # TODO deal w interests
-                            course = i  # choose this math elective to see if we can add it to this term
-                            match_not_found = False  # match has been found!
-                    if match_not_found:  # the check to add the course to the term later will fail since no takeable math elective exists for this term
-                        course = list(options)[
-                            0]  # so we at least set the course to a valid id so it is no longer a string
 
+
+                    options = {}
+                    for i in all_options:  # i is a math elective the user hasn't yet taken
+                        if not get_prereq(i) or get_prereq(i).issubset(last_course_hist) and is_offered(i, this_term, this_year):  # TODO deal w interests
+                            options[interested_in(i, interests)] = i  # associate course with number of shared interests
+                            match_not_found = False  # match has been found!
+                            print("i",i)
+                    if match_not_found:  # the check to add the course to the term later will fail since no takeable math elective exists for this term
+                        course = list(all_options)[0]  # so we at least set the course to a valid id so it is no longer a string
+                    else:
+                        course = options[max(options)]  # choose course with most shared interests out of all options
+                    #print(252001 in last_course_hist, "opt", options, get_prereq(341001).issubset(last_course_hist))
+            if 247001 in last_course_hist: # count math 247 as equivalent prerequisite to math 252
+                last_course_hist.add(252001)
             # check that the identified course may be added to the current term. if not, continue to next course or msg in remaining list
             if term_credits + get_credits(course) <= max_credits_per_term and (
                     {df['prereq'].loc[course]} == {False} or (get_prereq(course)).issubset(
@@ -501,7 +528,7 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
                 has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2):
             # fulfill general credit area whenever a term ends up with space in it
             # this scenario happens because cs elective requirement / any one gen ed area is never worked towards more than once per term
-            print(term_forecast)
+            #print(term_forecast)
             term_forecast.append("4 credits")  # any credits
             term_credits += 4
             misc2 += 4
@@ -517,7 +544,33 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
         # print("forecast: ",forecast)
 
         # print("prioreq: ",self.prioritize_requirements(self.remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2)))
+        print(forecast)
     return forecast
+
+def generate_recommended_forecast(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
+                      sc=0, gp=0, us=0, misc=0, interests=set()):
+    """
+        'recommended by UO' preset. Follows the degree plan provided by UO, while taking into account the user's history, interests, and other preferences.
+
+        :param course_history: set of course ids (ex: {210000, 211000, 231001})
+        :param max_credits_per_term: int representing the number of credits the user does not want to exceed per term
+        :param target_term: char 'F' or 'W' or 'S' or 'U' representing Fall or Winter or Spring or Summer respectively, representing when the user wants the
+            first term of the degree plan to start
+        :param target_year: int year representing the year the user wants heir degree plan to start
+        :param aal: int representing the user's completed arts and letters credits
+        :param ssc: int representing the user's completed social science credits
+        :param sc: int representing the user's completed (general) science credits
+        :param gp: int representing the user's completed global perspectives credits
+        :param us: int representing the user's completed US difference/inequality/agency credits
+        :return: TODO
+    """
+    recommended_sequence = [122000, 112001, 121008, 100013,
+                            210000, "calc1", "wr2", 100012,
+                            211000, "calc2", 100013, 100012,
+                            212000, 231001, "sc1", "ssandcl",
+                            314000, 232001, "sc2", 100013,
+                            322000, "math1", "sc3", "aalandcl",
+                            313000, "math2"]
 
 
 def print_forecast(start_term, start_year, forecast):
@@ -573,7 +626,7 @@ def split_forecast(start_term, start_year, forecast):
         if (this_term == 'Winter'):
             this_year += 1
 
-    print(splitted)
+    #print(splitted)
     return splitted
 
 
@@ -672,10 +725,13 @@ def get_prereq(course):  # get course prereq ignoring Course object
     :param course: course id int
     :return: set of course id ints
     '''
+    if course in {261001, 262001, 263001}:
+        return {False}
     if isinstance(df['prereq'].loc[course], str):
-        p = {eval(i) for i in (df['prereq'].loc[313000]).split(", ")}
+        p = {eval(i) for i in (df['prereq'].loc[course]).split(", ")}
     else:
         p = {df['prereq'].loc[course]}
+    #print(course, p)
     return p
 
 
@@ -718,3 +774,9 @@ def total_credits(course_set):
         if isinstance(course, int):
             total += int(df['credits'].loc[course])
     return total
+
+def main():
+    print_forecast('F', 2023, generate_forecast({101001, 111001, 112001, 210000}, 16, 'F', 2023, interests={"Graphics", "Biology", "Teamwork", "Business", "Cybersecurity", "Cryptography", "AI"}))
+
+if __name__ == "__main__":
+    main()
