@@ -4,6 +4,7 @@ TODO: file description
 2023-05-24 - Nathaniel mason : add EditCoursesForm and code to pull course options
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
 2023-05-30 - Nathaniel Mason : added PresetForm for when a user will request a new forecast
+2023-06-06 - Nathaniel Mason : edited PresetForm and options and added UserChoicesForm
 """
 
 import os
@@ -67,7 +68,11 @@ TERM_OPTIONS = [("F", "Fall"),
                   #("U", "Summer"), # not working with the generate_forecast fxn rn
                   ]
 
-YEAR_OPTIONS = [(2027, "2027"),
+YEAR_OPTIONS = [(2023, "2023"),
+                  (2024, "2024"),
+                  (2025, "2025"),
+                  (2026, "2026"),
+                  (2027, "2027"),
                   (2028, "2028"),
                   (2029, "2029"),
                   (2030, "2030"),
