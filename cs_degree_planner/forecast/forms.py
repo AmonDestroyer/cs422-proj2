@@ -5,6 +5,7 @@ TODO: file description
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
 2023-05-30 - Nathaniel Mason : added PresetForm for when a user will request a new forecast
 2023-06-06 - Nathaniel Mason : edited PresetForm and options and added UserChoicesForm
+2023-06-07 - Nathaniel Mason : small bug fix for edit_courses options
 """
 
 import os
@@ -20,11 +21,12 @@ df = pd.read_excel(file_path, index_col="id")
 COURSE_OPTIONS = []
 
 for index, row in df.iterrows():
-    list_option_display = str(row['subject']) + ' ' + str(row['number']) + ' ' + str(row['name'])
-    list_option_val = str(index)
-    #print(list_option)
-    list_option = (list_option_val, list_option_display)
-    COURSE_OPTIONS.append(list_option)
+    if(row['number'] != 0):
+        list_option_display = str(row['subject']) + ' ' + str(row['number']) + ' ' + str(row['name'])
+        list_option_val = str(index)
+        #print(list_option)
+        list_option = (list_option_val, list_option_display)
+        COURSE_OPTIONS.append(list_option)
 
 #print(COURSE_OPTIONS)
 
