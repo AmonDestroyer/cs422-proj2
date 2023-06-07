@@ -75,7 +75,7 @@ class Course(models.Model):
         """:return: string identifying the course by the subject code (e.g., 
        'CS'), the number, and the full course name 
         """
-        return f"{self.subject} {self.number}: {self.name}"
+        return f"{self.subject} {self.number} {self.name}"
 
 
 class Major(models.Model):
