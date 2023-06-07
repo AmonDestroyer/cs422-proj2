@@ -53,11 +53,57 @@ class EditCoursesForm(forms.Form):
                'type': 'number', 'value': '0', 'min': '0'}))
     
 
-PRESET_OPTIONS = [("16_cr", "16 credits per term"),
-                  ("other", "Other preset test choice")
+CREDIT_OPTIONS = [(16, "16 credits per term"),
+                  (12, "12 credits per term"),
+                  (8, "8 credits per term"),
+                  (6, "6 credits per term"),
+                  (4, "4 credits per term"),
+                  (2, "2 credits per term"),
                   ]
 
+TERM_OPTIONS = [("F", "Fall"),
+                  ("W", "Winter"),
+                  ("S", "Spring"),
+                  #("U", "Summer"), # not working with the generate_forecast fxn rn
+                  ]
+
+YEAR_OPTIONS = [(2027, "2027"),
+                  (2028, "2028"),
+                  (2029, "2029"),
+                  (2030, "2030"),
+                  (2031, "2031"),
+                  (2032, "2032"),
+                  (2033, "2033"),
+                  (2034, "2034"),
+                  ]
+
+
 class PresetForm(forms.Form):
-    preset_choice = forms.ChoiceField(
-        label='', choices=PRESET_OPTIONS, widget=forms.Select(
-            attrs={'id': 'preset_choice', 'class': 'chzn-select'}))
+    credits_choice = forms.ChoiceField(
+        label='', choices=CREDIT_OPTIONS, widget=forms.Select(
+            attrs={'id': 'credits_choice', 'class': 'chzn-select'}))
+    
+    term_choice = forms.ChoiceField(
+        label='', choices=TERM_OPTIONS, widget=forms.Select(
+            attrs={'id': 'term_choice', 'class': 'chzn-select'}))
+    
+    year_choice = forms.ChoiceField(
+        label='', choices=YEAR_OPTIONS, widget=forms.Select(
+            attrs={'id': 'year_choice', 'class': 'chzn-select'}))
+
+
+# Alternative form where user would type in field values instead of choosing presets
+class UserChoicesForm(forms.Form):
+    credits_per_term = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'cred_per_term', 'class': 'input-number', 
+               'type': 'number', 'value': '16', 'min': '0'}))
+    
+    target_term = forms.CharField(max_length=6, help_text="e.g. Fall", label='', widget=forms.TextInput(
+        attrs={'id': 'target_term', 'class': 'input-text', 
+               'type': 'text'}))
+    
+    target_year = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'target_year', 'class': 'input-number', 
+               'type': 'number', 'value': '', 'min': '2023'}))
+    
+    

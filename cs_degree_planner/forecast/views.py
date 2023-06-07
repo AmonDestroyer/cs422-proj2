@@ -331,23 +331,26 @@ def new_forecast(request):
         form = PresetForm(request.POST)
 
         if form.is_valid():
-            preset_choice = form.cleaned_data.get('preset_choice')
-            # in future version, will need to take this preset choice into account and call the fxn
-            # with the appropriate choice, but for now the default call
-            # is used to get the generated forecast
+            credits_choice = form.cleaned_data.get('credits_choice')
+            term_choice = form.cleaned_data.get('term_choice')
+            year_choice = form.cleaned_data.get('year_choice')
+
+            credits_choice = int(credits_choice)
+            term_choice = str(term_choice)
+            year_choice = int(year_choice)
             
-            messages.success(request, f"Got your choice: {preset_choice}")
+            messages.success(request, f"Got your choices: {credits_choice}, {term_choice}, {year_choice}")
 
             # will need to call the function to get the forecast which is list of lists and then will send to template
             # either need to send to redirected new_forecast template page, 
             # or could use a separate forecast display template to show the result of the fxn
             courses_taken = request.user.profile.courses_taken.values_list('id', flat=True)
             courses_taken_set = set(courses_taken) # Convert query set to a regular set
-            forecast = generate_forecast(course_history=courses_taken_set) # for now, just calls the fxn with default vals
+            forecast = generate_forecast(course_history=courses_taken_set, max_credits_per_term=credits_choice, target_term=term_choice, target_year=year_choice)
 
             request.session['forecast_raw'] = forecast # store as a session variable so it can be easily gotten if it needs to be saved
 
-            fcst_to_display = split_forecast('F', 2023, forecast) #TODO user defined target term/year
+            fcst_to_display = split_forecast(term_choice, year_choice, forecast)
             context = {
                 'forecast_result': fcst_to_display,
                 'dshbrd_retrieval': False,
