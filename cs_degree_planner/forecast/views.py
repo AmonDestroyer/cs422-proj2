@@ -26,6 +26,7 @@ as well as helper functions
 2023-06-04 - Josh Sawyer     : fixed bug with cs electives + added pop up for saved changes + added reset/restore course history button
 2023-06-05 - Zane Globus-O'Harra : add helper fxn to get a list of creation times of a user's forecasts and a fxn to get a forecast based on a creation time
 2023-06-06 - Josh Sawyer     : fixed generic credits not being saved when there was nothing in the course history drop down
+2023-06-06 - Nathaniel Mason : edited new_forecast view to pass user's choices to generate_forecast()
 """
 
 from django.http import HttpResponse
