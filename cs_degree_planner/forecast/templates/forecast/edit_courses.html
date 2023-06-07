@@ -37,16 +37,18 @@ TODO: file description
 }
 
 body {
-	      background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 
+	background:linear-gradient(0deg, rgba(4, 14, 28, 0.9), rgba(4, 14, 28, 0.9)), url("{% static 'img/knight2.jpeg' %}") !important;
 	text-align: center;
-	
 	padding-bottom: 200px;
 	font-family: AlteHaasGrotesk, sans-serif;
 	font-style: normal;
-          font-weight: 300;
+	font-weight: 300;
 	color: #d9d0c1;
-	
 }
 		
 		.input-number {
@@ -174,13 +176,23 @@ input:focus {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.925);
 	z-index: 9999;
 }
 
 #ChangeInfoPopupInfo {
 	display: flex;
 	flex-direction: column;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+#column-div {
+	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
@@ -222,6 +234,16 @@ input:focus {
 	margin-top: 10px;
 }
 
+.popup-column {
+	display: inline-block;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.popup-column p {
+	overflow-wrap: break-word;
+}
+
 #reset-link:hover {
 	background-color: #fff;
 	color: #3A8795;
@@ -232,6 +254,23 @@ input:focus {
 	background-color: #3A8795;
 	color: #fff;
 	text-decoration: none;
+}
+
+#course-container {
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+table {
+	width: 100%;
+}
+
+td {
+	vertical-align: top;
+	text-align: center;
+	width: 30%;
 }
 
 	</style>
@@ -252,164 +291,170 @@ input:focus {
 		<a id="reset-link" href="?reset_courses=true" onclick="resetForm()">Reset Course History</a>
 	{% endif %}
 
-<table>
-	<tr>
-    <td><h3>Your course history</h3></td><td></td>
-        <td><h3>Your generic credits</h3></td><td></td>
-		<td><h3 id="savetitle">Save changes</h3></td>
-        </tr>
-      <tr>
-      <td><h4>Add or remove courses</h4></td><td></td>
-        <td><h4>Add or remove general credit</h4></td>
-		  <td><button type="submit" name="Submit" id="submit">Save Changes</button><label class="homelog" id="savebutton" for="submit">SAVE</label></td>
-        </tr>
-      <tr>
-      <td>
-      <!--
-      <select class="chzn-select" multiple="true" name="faculty" style="width:200px;">
-              <option value="AC">CS 422</option>
-              <option value="AD">MATH 232</option>
-              <option value="AM">MATH 252</option>
-              <option value="AP">CS 415</option>
-      </select>
-      -->
+	<div id="course-container">
+		<table>
+			<tr>
+				<td><h3>Your course history</h3></td><td></td>
+						<td><h3>Your generic credits</h3></td><td></td>
+				<td><h3 id="savetitle">Save changes</h3></td>
+			</tr>
+			<tr>
+				<td><h4>Add or remove courses</h4></td><td></td>
+					<td><h4>Add or remove general credit</h4></td>
+				<td><button type="submit" name="Submit" id="submit">Save Changes</button><label class="homelog" id="savebutton" for="submit">SAVE</label></td>
+			</tr>
+			<tr>
+				<td>
+				<select id="course_select" class="chzn-select" multiple="true" name="major_courses">
+					{% for list_option_val, list_option_display in course_options %}
+						<option value='{{ list_option_val }}' {% if list_option_val in prev_choices %}selected="selected"{% endif %}>{{list_option_display}}
+						</option>
+					{% endfor %}
+				</select>
+				</td> 
+				<td></td>
+				<td>
+					<h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span>
+					<h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span>
+					<h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span>
+					<h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span>
+					<h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span>
+				</td>
+			<td><div class="msgs"></div></td>
+			</tr>
+				{% comment %} <td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
+				<td>	<div class="msgs">
+			</div></td>
+			</tr>
+				<tr>
+				<td></td><td></td>
+							<td><h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span></td>
+				</tr>
+				<tr>
+				<td></td><td></td>
+							<td><h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span></td>
+				
+				</tr>
+				<tr>
+				<td></td><td></td>
+							<td><h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span></td>
+				
+				</tr>
+				<tr>
+				<td></td><td></td>
+							<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span></td> {% endcomment %}
+			</table>
+		</div>
+			<br>
+			<br>
+			
+		</form>
 
-      
-      <select id="course_select" class="chzn-select" multiple="true" name="major_courses">
-          {% for list_option_val, list_option_display in course_options %}
-            <option value='{{ list_option_val }}' {% if list_option_val in prev_choices %}selected="selected"{% endif %}>{{list_option_display}}
-            </option>
-          {% endfor %}
-      </select>
-
-
-      </td> 
-	
-	
-		<td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
-		  <td>	<div class="msgs">
-	{% comment %} {% if messages %}
-        {% for message in messages %}
-            <p><b>{{ message }}</b></p>
-        {% endfor %}
-		<br>
-    {% endif %} {% endcomment %}
-	</div></td>
-		</tr>
-		<tr>
-		<td></td><td></td>
-					<td><h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span></td>
-		</tr>
-		<tr>
-		<td></td><td></td>
-					<td><h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span></td>
-		
-		</tr>
-		<tr>
-		<td></td><td></td>
-					<td><h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span></td>
-		
-		</tr>
-		<tr>
-		<td></td><td></td>
-					<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span></td>
-		
-		</tr>
-	
-
-	</table>
-  <br>
-  <br>
-  
-</form>
 
 
 <script type="text/javascript">
-$(function() {
-    $(".chzn-select").chosen();
-});
-	
-//https://codepen.io/djgrant/pen/rNMWQo
-(function() {
- 
-  window.inputNumber = function(el) {
 
-    var min = el.attr('min') || false;
-    var max = el.attr('max') || false;
-
-    var els = {};
-
-    els.dec = el.prev();
-    els.inc = el.next();
-
-    el.each(function() {
-      init($(this));
-    });
-
-    function init(el) {
-
-      els.dec.on('click', decrement);
-      els.inc.on('click', increment);
-
-      function decrement() {
-        var value = el[0].value;
-        value--;
-        if(!min || value >= min) {
-          el[0].value = value;
-        }
-      }
-
-      function increment() {
-        var value = el[0].value;
-        value++;
-        if(!max || value <= max) {
-          el[0].value = value++;
-        }
-      }
-    }
-  }
-})();
-
-inputNumber($('#arts_letters_cred'));
-inputNumber($('#social_science_cred'));
-inputNumber($('#science_cred'));
-inputNumber($('#gp_cred'));
-inputNumber($('#us_cred'));
-
-// Show the popup
-function showFullscreenPopup() {
-	$('#ChangeInfoPopup').fadeIn();
-}
-
-// Close the popup
-function hideFullscreenPopup() {
-	event.preventDefault(); // Prevent page refresh
-	$('#ChangeInfoPopup').fadeOut();
-}
-
-{% if messages %}
-	{% for message in messages %}
-			var message = "{{ message }}";
-			$('#ChangeInfoPopupInfo')
-				.append($('<p>').text(message)); // Add a paragraph for each message
-	{% endfor %}
-	
-	// After all messages added as paragraphs, add the button
-	$('#ChangeInfoPopupInfo')
-		.append($('<button>').text("OK").attr("id", "ClosePopupButton"));
-	
-	// Give it a listener to close the popup
-	$('#ClosePopupButton').on('click', function() {
-		hideFullscreenPopup();
+$(document).ready(function() {
+	$(function() {
+			$(".chzn-select").chosen();
 	});
+		
+	//https://codepen.io/djgrant/pen/rNMWQo
+	(function() {
 	
-	// Show the popup now that it's set up
-	showFullscreenPopup();
-{% endif %}
+		window.inputNumber = function(el) {
 
-function resetForm() {
-	document.getElementById("courseForm").reset();
-}
+			var min = el.attr('min') || false;
+			var max = el.attr('max') || false;
+
+			var els = {};
+
+			els.dec = el.prev();
+			els.inc = el.next();
+
+			el.each(function() {
+				init($(this));
+			});
+
+			function init(el) {
+
+				els.dec.on('click', decrement);
+				els.inc.on('click', increment);
+
+				function decrement() {
+					var value = el[0].value;
+					value--;
+					if(!min || value >= min) {
+						el[0].value = value;
+					}
+				}
+
+				function increment() {
+					var value = el[0].value;
+					value++;
+					if(!max || value <= max) {
+						el[0].value = value++;
+					}
+				}
+			}
+		}
+	})();
+
+	inputNumber($('#arts_letters_cred'));
+	inputNumber($('#social_science_cred'));
+	inputNumber($('#science_cred'));
+	inputNumber($('#gp_cred'));
+	inputNumber($('#us_cred'));
+
+	// Show the popup
+	function showFullscreenPopup() {
+		$('#ChangeInfoPopup').fadeIn();
+	}
+
+	// Close the popup
+	function hideFullscreenPopup() {
+		event.preventDefault(); // Prevent page refresh
+		$('#ChangeInfoPopup').fadeOut();
+	}
+
+	{% if messages %}
+		var messagesPerColumn = 10;
+		var messageList = [{% for message in messages %}"{{ message }}",{% endfor %}];
+		
+		var columns = Math.ceil(messageList.length / messagesPerColumn);
+		var columnDiv = $('<div>').addClass('column-div');
+
+		for (var i = 0; i < columns; i++) {
+			var column = $('<div>').addClass('popup-column');
+			var start = i * messagesPerColumn;
+			var end = start + messagesPerColumn;
+			
+			for (var j = start; j < end; j++) {
+				column.append($('<p>').text(messageList[j]));
+			}
+
+			columnDiv.append(column);
+		}
+
+		$('#ChangeInfoPopupInfo').append(columnDiv);
+		
+		// After all messages added as paragraphs, add the button
+		$('#ChangeInfoPopupInfo')
+			.append($('<button>').text("OK").attr("id", "ClosePopupButton"));
+		
+		// Give it a listener to close the popup
+		$('#ClosePopupButton').on('click', function() {
+			hideFullscreenPopup();
+		});
+		
+		// Show the popup now that it's set up
+		showFullscreenPopup();
+	{% endif %}
+
+	function resetForm() {
+		document.getElementById("courseForm").reset();
+	}
+});
 
 </script>
 
