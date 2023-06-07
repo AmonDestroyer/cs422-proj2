@@ -36,12 +36,24 @@ class Command(BaseCommand):
             CREDITS = 4
             TERM = 5
             ANNUAL = 6
+            KEYWORDS = 9
             
             courses = []
 
             # Go through each row in the excel sheet and get the necessary information to add
             # to the course object
             for row in sheet.iter_rows(min_row=2, values_only=True):
+                
+                # Check if there's a keyword associated with this course
+                if (row[KEYWORDS] != "~" and row[KEYWORDS] is not None):
+                    keywords = row[KEYWORDS].split(', ') # All keywords should be separated with ", "
+                    for keyword in keywords:
+                        # Check if this keyword has been added into the database
+                        if not Keyword.objects.filter(keyword=keyword).exists():
+                            Keyword.objects.create(keyword=keyword) # Add keyword to the database
+                            # self.stdout.write(f"Keyword [{keyword}] added to database.")
+                        else:
+                            self.stdout.write(f"Keyword [{keyword}] already exists, skipping.")
                 
                 # Check to see if the row has an ID
                 if row[ID] is not None:
@@ -71,6 +83,8 @@ class Command(BaseCommand):
                     spring = terms['S'],
                     every_year = every_year
                 )
+                
+                
               
                 courses.append(course) # Append it to a list that'll be used to bulk create
             
@@ -78,8 +92,20 @@ class Command(BaseCommand):
             
             self.stdout.write(f"Courses added, now adding prereqs.")
             
-            # Courses have now been created, now add prereqs in
+            # Courses have now been created, now add prereqs and tie keywords in
             for row in sheet.iter_rows(min_row=2, values_only=True):
+                course = Course.objects.get(id=row[ID]) # Get the course associated with this row
+
+                if row[KEYWORDS] is not None and row[KEYWORDS] != "~":
+                    keywords = row[KEYWORDS].split(', ')
+                    for keyword in keywords:
+                        if not course.has_kw.filter(keyword=keyword).exists():
+                            keyword_obj = Keyword.objects.get(keyword=keyword)
+                            course.has_kw.add(keyword_obj)
+                            # self.stdout.write(f"Keyword [{keyword}] added to the course [{course}].")
+                        else:
+                            self.stdout.write(f"Course [{course}] already has the keyword [{keyword}].")
+                
                 prereqs = row[PREREQ]
                 if prereqs is not None:
                     prereq_ids = []
@@ -90,8 +116,6 @@ class Command(BaseCommand):
                     else:
                         if (int(prereqs) != 0):
                             prereq_ids.append(int(prereqs))
-                  
-                    course = Course.objects.get(id=row[ID])
                     
                     for prereq_id in prereq_ids: 
                         try:
@@ -99,7 +123,7 @@ class Command(BaseCommand):
                                 prereq_course = Course.objects.get(id=prereq_id)
                                 course.has_prereq.add(prereq_course)
                             else:
-                                self.stdout.write(f"Course already has this prereq, skipping.")
+                                self.stdout.write(f"Course already has this prereq.")
                             
                         except Course.DoesNotExist:
                             self.stderr.write(f"Course doesn't exist: prereq_id [{prereq_id}]")
