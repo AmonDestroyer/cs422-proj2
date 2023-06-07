@@ -27,13 +27,12 @@ html {
 
 body {
 	text-align: center;
-
+	margin: 0;
 	padding-bottom: 200px;
 	font-family: AlteHaasGrotesk, sans-serif;
 	font-style: normal;
 	font-weight: 300;
 	color: green;
-
 }
 
 .center {
