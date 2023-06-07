@@ -54,12 +54,11 @@ class EditCoursesForm(forms.Form):
                'type': 'number', 'value': '0', 'min': '0'}))
     
 
-CREDIT_OPTIONS = [(16, "16 credits per term"),
+CREDIT_OPTIONS = [(20, "20 credits per term"),
+                  (16, "16 credits per term"),
                   (12, "12 credits per term"),
                   (8, "8 credits per term"),
-                  (6, "6 credits per term"),
                   (4, "4 credits per term"),
-                  (2, "2 credits per term"),
                   ]
 
 TERM_OPTIONS = [("F", "Fall"),
