@@ -350,7 +350,7 @@ def edit_interests(request):
             print(f'user_ints {user_interests}')
             
             # Check if the box has data in it or if it's empty but the user removed all interests from the list
-            if ((len(user_interests) > 0) or (len(user_interests) > 0)):
+            if ((len(saved_interests) > 0) or (len(user_interests) > 0)):
                 # Each Keyword model will have an id so need to retrieve
                 # the appropriate Keyword models, then add those to the instance of the user profile model
 

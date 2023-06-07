@@ -318,7 +318,7 @@ td {
 <body>
 
 	
-<form id="courseForm" method="post">
+<form id="interestsForm" method="post">
   {% csrf_token %}
 
 	<div id="ChangeInfoPopup">
@@ -461,7 +461,7 @@ $(document).ready(function() {
 	{% endif %}
 
 	function resetForm() {
-		document.getElementById("courseForm").reset();
+		document.getElementById("interestsForm").reset();
 	}
 });
 
