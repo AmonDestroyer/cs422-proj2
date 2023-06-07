@@ -79,6 +79,10 @@ def dshbrd_retrieve_forecast(request):
     timestamp_naive = datetime.strptime(timestamp_from_user, '%Y-%m-%d %H:%M:%S.%f')
     timestamp = make_aware(timestamp_naive, timezone=pytz.timezone('UTC'))
     print("TIMESTAMP", timestamp)
+
+    pst_timezone = pytz.timezone('US/Pacific')
+    timestamp_pst = timestamp.astimezone(pst_timezone)
+    ts_pst_str = timestamp_pst.strftime('%B %d, %Y, %I:%M %p')
     
     fcst = get_forecast_from_timestamp(request, timestamp)
     split_fcst = None
@@ -88,7 +92,7 @@ def dshbrd_retrieve_forecast(request):
         split_fcst = fcst.split_forecast()
 
     #print("PRINT SPLIT_FCST", split_fcst)
-    context = {'selected_timestamp': timestamp_from_user,
+    context = {'selected_timestamp': ts_pst_str,
             'dshbrd_retrieval': True,
             'forecast_result': split_fcst}
     #messages.info(request, "Selected timestamp: " + timestamp_from_user)
