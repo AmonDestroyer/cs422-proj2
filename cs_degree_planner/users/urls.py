@@ -22,5 +22,7 @@ urlpatterns = [
     path("logout/", views.logout_user, name="logout"),
     
     path("update-account", views.update_account_information, name='update_account'),
+    
+    path("edit_courses", views.edit_courses, name="edit_courses"),
 ]
 

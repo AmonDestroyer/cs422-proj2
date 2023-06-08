@@ -14,7 +14,6 @@ involving
 2023-05-26 - Josh Sawyer     : added update user account information (includes updating username and password)
 2023-05-29 - Adam Case       : added update user account email
 2023-06-08 - Josh Sawyer     : added login module and account management module
-
 """
 
 from django.shortcuts import render, redirect
@@ -25,7 +24,7 @@ from django.contrib.auth.decorators import login_required
 from cs_degree_planner.decorators import anonymous_required
 
 from .login import create_account, login_account
-from .account_management import update_account
+from .account_management import update_account, edit_course_history
 
 
 @anonymous_required
@@ -83,6 +82,19 @@ def update_account_information(request):
         return redirect('users:update_account')
     
     return render(request, 'users/update_account.html', context=form_wrapper[0])
+
+
+@login_required(redirect_field_name='', login_url='users:login')
+def edit_courses(request):
+    """View that allows the user to dynamically edit the courses that they have
+    taken, pulling their previous changes from the database and displaying
+    them, as well as updating the database based on the user's added changes
+    """
+    context = []
+    if (edit_course_history(request, context)):
+        return redirect('users:edit_courses')
+    
+    return render(request, "users/edit_courses.html", context[0])
 
 
 def logout_user(request):

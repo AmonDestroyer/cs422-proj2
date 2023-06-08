@@ -33,7 +33,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import EditCoursesForm, PresetForm, EditInterestsForm
+from .forms import PresetForm, EditInterestsForm
 from django.contrib import messages
 from .models import Course, Keyword
 from .forecast import remaining_requirements, categorize_courses, generate_forecast, list_forecast, split_forecast
@@ -98,179 +98,6 @@ def dshbrd_retrieve_forecast(request):
     #messages.info(request, "Selected timestamp: " + timestamp_from_user)
 
     return render(request, "forecast/forecast_display.html", context)
-
-
-@login_required(redirect_field_name='', login_url='users:login')
-def edit_courses(request):
-    """View that allows the user to dynamically edit the courses that they have
-    taken, pulling their previous changes from the database and displaying
-    them, as well as updating the database based on the user's added changes
-    """
-    user_model = request.user # user that is currently logged in
-    user_profile = user_model.profile
-    prev_choices = {}
-    course_options = []
-    courses_reset = False
-    
-    if request.method != 'POST':
-        form = EditCoursesForm()
-        
-        if 'reset_courses' not in request.GET:
-            # user is just requesting the page
-            # just display the form for them to choose options from
-            # get course selections of the user and update the list with them
-            course_selections = user_profile.courses_taken.all()
-
-            general_credits = {'sci_cred': user_profile.sci_credits,
-                            'soc_sci_cred': user_profile.ssci_credits,
-                            'arts_letters_cred': user_profile.aal_credits,
-                            'gp_cred': user_profile.gp_credits, 
-                            'us_cred': user_profile.us_credits}
-            
-            if(course_selections is not None):
-                course_options = form.fields['major_courses'].choices
-
-                for selection in course_selections:
-                    selection_id = selection.id # ex 210000
-                    for option_val, option_display in course_options:
-                        if int(option_val) == selection_id: # found a match, set as selected for that list option
-                            print('found a match for: ', selection_id)
-                            prev_choices[str(selection_id)] = True
-
-                print(prev_choices)
-            
-            for general in general_credits:
-                if general_credits[general] is not None:
-                    form.fields[general].initial = general_credits[general]
-        
-        else:
-            course_options = form.fields['major_courses'].choices
-            courses_reset = True
-
-    else:
-        form = EditCoursesForm(request.POST)
-        if form.is_valid():
-            saved_courses_taken = list(map(str, user_profile.courses_taken.values_list('id', flat=True)))
-            user_courses_taken = form.cleaned_data.get('major_courses')
-            
-            # Check if the box has data in it or if it's empty but the user removed all courses from the list
-            if ((len(saved_courses_taken) > 0) or (len(user_courses_taken) > 0)):
-                # Each course model will have an id (e.g. 210000) so need to retrieve
-                # the appropriate course models, then add those to the instance of the user profile model
-
-                un = user_model.username
-                print(un)
-
-                # Get courses to remove (if anything was removed from list)
-                courses_to_remove = [course for course in saved_courses_taken if course not in user_courses_taken]
-                user_profile.courses_taken.remove(*courses_to_remove)
-
-                for course_id in user_courses_taken:
-                    try:
-                        course_model = Course.objects.get(id=int(course_id))
-                        
-                        # Check if this course has been added yet, if it has,
-                        # no need to add it again if not course_model in
-                        # user_profile.courses_taken.all(): -- want to do
-                        # something like this, but will fix later
-                      
-                        # once have course_model save in courses_taken
-                        if (course_model not in user_profile.courses_taken.all()):
-                            user_profile.courses_taken.add(course_model)
-                            messages.info(request, "Added course: " + course_model.name)
-                            print("found course_model with the id!")
-                        
-                        ## add any courses that are a prereq to this course ##
-                        prereqs = recursive_add_prereqs(course_model) # returns a list of courses
-                        for prereq in prereqs:
-                            if (prereq not in user_profile.courses_taken.all()):
-                                user_profile.courses_taken.add(prereq) # add all the prereqs for this course to the user's courses_taken 
-                                messages.info(request, f"Added {prereq.name} as a prerequisite for {course_model.name}")
-                            else:
-                                print("prereq: ", prereq)
-                                print("courses_taken: ", user_profile.courses_taken.all())
-                        
-                        # already_added = [str(message) for message in messages.get_messages(request)]
-                        # for prereq in prereqs:
-                        #     if prereq.name not in already_added:
-                        #         messages.info(request, f"{prereq.name} added as prereq")
-                        
-                        
-                    except:
-                        print("course_model not found")
-                
-                # Add any removed courses to the messages if they were not added back (weren't a prereq for a class in course history)
-                for removed_course in courses_to_remove:
-                    removed_course = Course.objects.get(id=int(removed_course))
-                    if removed_course not in user_profile.courses_taken.all(): # If it was NOT added back (it was NOT a prereq for another course)
-                        messages.info(request, "Removed course: " + removed_course.name)
-            
-            # Add any general credits 
-            user_sci = form.cleaned_data.get('sci_cred')
-            user_soc_sci = form.cleaned_data.get('soc_sci_cred')
-            user_arts_lett = form.cleaned_data.get('arts_letters_cred')
-            user_gp = form.cleaned_data.get('gp_cred')
-            user_us = form.cleaned_data.get('us_cred')
-                        
-            # update area of inquiry credits, 
-            # which includes science credits, social science, arts and letters
-            new_aoi = int(user_sci) + int(user_soc_sci) + int(user_arts_lett)
-            current_aoi = user_profile.aoi_credits
-            updated_aoi = current_aoi + new_aoi
-            user_profile.aoi_credits = updated_aoi
-
-            # update U.S. and global perspectives credits
-            new_cultural = int(user_gp) + int(user_us)
-            current_cultural = user_profile.cultural_credits
-            updated_cultural = current_cultural + new_cultural
-            user_profile.cultural_credits = updated_cultural
-
-            # update total amount of credits
-            new_credits = new_aoi + new_cultural
-            current_total_credits = user_profile.total_credits
-            updated_total = current_total_credits + new_credits 
-            user_profile.total_credits = updated_total
-            
-            #update specific credit areas
-            if (user_profile.aal_credits != int(user_arts_lett)):
-                user_profile.aal_credits = int(user_arts_lett)
-                messages.info(request, f"Updated Arts and Letters to {user_arts_lett} credits taken")
-            if (user_profile.ssci_credits != int(user_soc_sci)):
-                user_profile.ssci_credits = int(user_soc_sci)
-                messages.info(request, f"Updated Social Science to {user_soc_sci} credits taken")
-            if (user_profile.sci_credits != int(user_sci)):
-                user_profile.sci_credits = int(user_sci)
-                messages.info(request, f"Updated Science to {user_sci} credits taken")
-            if (user_profile.gp_credits != int(user_gp)):
-                user_profile.gp_credits = int(user_gp)
-                messages.info(request, f"Updated Global Perspectives to {user_gp} credits taken")
-            if (user_profile.us_credits != int(user_us)):
-                user_profile.us_credits = int(user_us)
-                messages.info(request, f"Updated US to {user_us} credits taken")
-
-            if (len(messages.get_messages(request)) == 0):
-                messages.info(request, "No changes submitted!")
-                messages.info(request, "Please update your course history to see saved changes.")
-
-            user_profile.save()
-            print("user prof saved with new changes!")
-            
-            return redirect('forecast:edit_courses')
-        else:
-            for field in form:
-                if field.errors:
-                    print(field.errors) 
-            messages.error(request, "Error While Attempting to Save Changes")
-            
-            return redirect('forecast:edit_courses')
-
-    context = {'courseform': form,
-               'course_options': course_options,
-               'prev_choices': prev_choices,
-               'courses_reset': courses_reset,
-               }
-    
-    return render(request, "forecast/edit_courses.html", context)
 
 
 @login_required(redirect_field_name='', login_url='users:login')
@@ -568,27 +395,6 @@ def save_confirmation(request):
             messages.error(request, 'No forecast data found')
             context = {'saved_forecast': [[]]}
             return render(request, "forecast/save_confirmation.html", context)
-
-
-def recursive_add_prereqs(course):
-    """
-    Recursive function that gets all the prereqs of a course 
-    Must return a list of courses (-> List[Course])
-    """
-    if not course.has_prereq.exists():
-        return [course] # Must return a list
-    
-    else:
-        # Get all the prereqs for this course
-        prereqs = course.has_prereq.all()
-        sub_prereqs = []
-            
-        for prereq in prereqs:
-            # Find all prereqs of this prereq
-            sub_prereqs.extend(recursive_add_prereqs(prereq)) # Extend used to add each prereq item of the list returned from recurisve call     
-        
-        sub_prereqs.append(course) # Make sure to append this course as well since it's also a prereq
-        return sub_prereqs
 
 
 def get_forecast_timestamps(request):

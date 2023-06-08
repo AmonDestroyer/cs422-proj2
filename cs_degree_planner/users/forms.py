@@ -26,6 +26,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from forecast.models import Course
 
 # For reference:
 # https://stackoverflow.com/questions/48049498/django-usercreationform-custom-fields
@@ -248,3 +249,42 @@ class UserNameChangeForm(forms.ModelForm):
 
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial =  user.last_name
+
+
+# create multiple select Django form using the array of options
+class EditCoursesForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(EditCoursesForm, self).__init__(*args, **kwargs)
+        COURSE_OPTIONS = []
+        courses = Course.objects.all()
+        for course in courses:
+            list_option_display = str(course.subject) + ' ' + str(course.number) + ' ' + str(course.name)
+            list_option_val = str(course.id)
+            list_option = (list_option_val, list_option_display)
+            COURSE_OPTIONS.append(list_option)
+        
+        self.fields['major_courses'].choices = COURSE_OPTIONS
+    
+    major_courses = forms.MultipleChoiceField(
+        label='', choices=[], widget=forms.SelectMultiple(
+            attrs={'id': 'course_select','class': 'chzn-select'}), required=False)
+    
+    sci_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'science_cred', 'class': 'input-number', 
+                'type': 'number', 'value': '0', 'min': '0'}))
+    
+    soc_sci_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'social_science_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
+    
+    arts_letters_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'arts_letters_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
+
+    gp_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'gp_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
+
+    us_cred = forms.IntegerField(label='', widget=forms.NumberInput(
+        attrs={'id': 'us_cred', 'class': 'input-number', 
+               'type': 'number', 'value': '0', 'min': '0'}))
