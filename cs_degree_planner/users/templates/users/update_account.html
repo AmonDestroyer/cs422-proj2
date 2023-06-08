@@ -64,16 +64,29 @@ min-height:100%;
 			padding: 20px -50px 30px -50px;
       text-align: center;
       width: 400px;
-			color:rgba(59,167,0,1.00);
-			    -webkit-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
-    -moz-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
-    box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
 			font-size: 12pt;
-			
 			animation: fadeOutAnimation ease 10s;
 			animation-iteration-count: 1;
 			animation-fill-mode: forwards;
 		}
+
+    .success {
+      color: rgba(59,167,0,1.00);
+      border-radius: 40px;
+      padding: 20px;
+      -webkit-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+      -moz-box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+      box-shadow:inset 0px 0px 0px 3px rgba(59,167,0,1.00);
+    }
+
+    .fail {
+      color: red;
+      border-radius: 40px;
+      padding: 20px;
+      -webkit-box-shadow: inset 0px 0px 0px 3px rgba(255, 0, 0, 1.00);
+      -moz-box-shadow: inset 0px 0px 0px 3px rgba(255, 0, 0, 1.00);
+      box-shadow: inset 0px 0px 0px 3px rgba(255, 0, 0, 1.00); 
+    }
 
     @keyframes fadeOutAnimation {
     0% {
@@ -98,7 +111,7 @@ min-height:100%;
     {% if messages %}
       <br />
       {% for message in messages %}
-        <p><b>{{ message }}</b></p>
+        <p{% if message.tags %} class="{{ message.tags }}" {% endif %}><b>{{ message }}</b></p>
       {% endfor %}
       <br />
     {% endif %}
