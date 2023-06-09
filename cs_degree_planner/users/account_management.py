@@ -16,6 +16,7 @@ from django.contrib.auth import update_session_auth_hash
 from .forms import EditCoursesForm, EditInterestsForm
 from forecast.models import Course, Keyword
 
+
 def update_account(request, form_wrapper):
     """Updates a user's personal information. This includes updating the username,
     password, email, and name. In the case that the form submitted is not valid, an update
@@ -339,6 +340,8 @@ def add_generic_credits(request, user_profile, form):
 ### Helper functions for editing user interests ###
 ###################################################
 def load_user_interests(user_profile, prev_choices, interest_options_ref, form):
+    """Helper function to get a list of the user's interests. 
+    """
     int_selections = user_profile.interests.all()
     
     if(int_selections is not None):
@@ -353,6 +356,8 @@ def load_user_interests(user_profile, prev_choices, interest_options_ref, form):
 
 
 def add_interests(request, user_profile, user_model, form):
+    """Helper function to allow the user to add an interest. 
+    """
     saved_interests = list(map(str, user_profile.interests.values_list('keyword', flat=True)))
     user_interests = form.cleaned_data.get('user_interests')
     
@@ -382,115 +387,3 @@ def add_interests(request, user_profile, user_model, form):
                 
             except:
                 print("keyword_model not found")
-
-
-################################################################
-# Separated code in the case that update_user_profile has bugs #
-### Should be removed once we confirm everything is working. ###
-################################################################
-
-# def edit_course_history(request, context):
-#     """
-#     Handles the editing of a user's course history. This includes adding and removing core courses, and generic credits.
-
-#     Args:
-#         request: request that was sent to the calling view function
-#         context (dict): context is a list that is passed by reference, and is used in the calling function to render the page with the appropriate context
-
-#     Returns:
-#         bool: True or False
-#                 -True: Indicates to the view function to redirect to the same page
-#                 -False: Indicates to the view function to render the page with the appropriate context
-#     """
-#     user_model = request.user # user that is currently logged in
-#     user_profile = user_model.profile
-#     prev_choices = {}
-#     options = []
-#     reset = False
-    
-#     if request.method != 'POST':
-#         form = EditCoursesForm()
-        
-#         if 'reset_courses' not in request.GET:
-#             load_user_courses(user_profile, prev_choices, course_options, form)
-#         else: # reset courses button was pressed, load empty form
-#             course_options = form.fields['major_courses'].choices
-#             courses_reset = True
-
-#     else:
-#         form = EditCoursesForm(request.POST)
-#         if form.is_valid():
-#             add_core_courses(request, user_profile, user_model, form)
-#             add_generic_credits(request, user_profile, form)
-            
-#             if (len(messages.get_messages(request)) == 0):
-#                 messages.info(request, "No changes submitted!")
-#                 messages.info(request, "Please update your course history to see saved changes.")
-            
-#             user_profile.save()
-#             print("user prof saved with new changes!")
-            
-#             return True
-#         else:
-#             for field in form:
-#                 if field.errors:
-#                     print(field.errors) 
-#             messages.error(request, "Error While Attempting to Save Changes")
-            
-#             return True
-
-
-#     context.append({'form': form,
-#                'options': course_options,
-#                'prev_choices': prev_choices,
-#                'reset': courses_reset,
-#                })
-    
-#     return False
-    
-
-# def edit_user_interests(request, context):
-#     user_model = request.user # user that is currently logged in
-#     user_profile = user_model.profile
-#     prev_choices = {}
-#     options = []
-#     reset = False
-    
-#     if request.method != 'POST':
-#         form = EditInterestsForm()
-        
-#         if 'reset_interests' not in request.GET:
-#             load_user_interests(user_profile, prev_choices, interest_options, form) 
-#         else:
-#             interest_options = form.fields['user_interests'].choices
-#             interests_reset = True
-
-#     else:
-#         form = EditInterestsForm(request.POST)
-#         if form.is_valid():
-#             add_interests(request, user_profile, user_model, form) 
-
-#             if (len(messages.get_messages(request)) == 0):
-#                 messages.info(request, "No changes submitted!")
-#                 messages.info(request, "Please update your interests to see saved changes.")
-
-#             user_profile.save()
-#             print("user prof saved with new changes!")
-            
-#             return True
-#         else:
-#             for field in form:
-#                 if field.errors:
-#                     print(field.errors) 
-#             messages.error(request, "Error While Attempting to Save Changes")
-            
-#             return True
-
-
-#     context.append({'form': form,
-#                'options': interest_options,
-#                'prev_choices': prev_choices,
-#                'reset': interests_reset,
-#                }) 
-    
-#     return False
