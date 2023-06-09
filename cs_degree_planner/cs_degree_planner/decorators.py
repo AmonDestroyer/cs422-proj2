@@ -1,3 +1,9 @@
+"""
+Josh S : create decorator to ensure a user is anonymous when they access
+certain (public) views that we do not want authenticated users to be able to
+access.
+"""
+
 from django.shortcuts import redirect
 
 def anonymous_required(view_func):

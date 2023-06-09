@@ -1,3 +1,11 @@
+"""
+Functions for the finding the requirements that a user still has to meet to
+graduate, generating a forecast (degree plan), and helper functions for
+converting course IDs, printing forecasts, etc.
+
+Erin S : forecasting algorithm, helper functions, etc.
+"""
+
 import pandas as pd
 import os
 import re
@@ -7,8 +15,9 @@ file_path = current_dir + '/recommendcourses.xlsx'
 df = pd.read_excel(file_path, index_col="id")
 
 REQUIRED_CREDITS = 180
-ALL_REQUIRED_CS = {210000, 211000, 212000, 313000, 314000, 315000, 330000, 231001, 232001, 422000, 415000, 425000,
-                   121008, 122008, 112001, 111001, 101001}
+ALL_REQUIRED_CS = {210000, 211000, 212000, 313000, 314000, 315000, 330000,
+                   231001, 232001, 422000, 415000, 425000, 121008, 122008,
+                   112001, 111001, 101001}
 
 aal_left = "Arts and Letters"
 ssc_left = "Social Science"
@@ -38,10 +47,24 @@ def interested_in(course, interests):
     """
     return len(set((df['keywords'].loc[course]).split(", ")) & interests)
 
+
 def remaining_requirements(course_history, aal=0, ssc=0, sc=0, gp=0, us=0, misc=0, interests=set()):
+    '''Calculate the remaining requirements for a user based on their course
+    history, the number of credits they have taken for the various
+    gened requirements, and their interests
+
+    ASSUMPTIONS: user will satisfy location-specific requirements and
+    P/NP/Graded requirements on their own untested code below
+
+    :param course_history: set() course IDs 
+    :param aal: int number of arts and letters credits
+    :param ssc: int number of social science credits
+    :param sc: int number of science credits
+    :param gp: int number of global perspectives credits
+    :param us: int number of U.S. credits
+    :param misc: int number of miscellaneous general credits
+    :param interests: set() user interests
     '''
-    ASSUMPTIONS: user will satisfy location-specific requirements and P/NP/Graded requirements on their own
-    untested code below'''
 
     # initialize some useful variables
     math2_taken = {413000, 420000, 427000, 473000, 253001, 281001, 256001, 282001, 307001, 316001, 317001, 320001,
@@ -547,22 +570,23 @@ def generate_forecast(course_history, max_credits_per_term=16, target_term='F', 
         print(forecast)
     return forecast
 
+
 def generate_recommended_forecast_ba(course_history, max_credits_per_term=16, target_term='F', target_year=2023, aal=0, ssc=0,
                       sc=0, gp=0, us=0, misc=0, interests=set()):
     """
-        'recommended by UO' preset for BA in CS. Follows the degree plan provided by UO, while taking into account the user's history, interests, and other preferences.
+    'recommended by UO' preset for BA in CS. Follows the degree plan provided by UO, while taking into account the user's history, interests, and other preferences.
 
-        :param course_history: set of course ids (ex: {210000, 211000, 231001})
-        :param max_credits_per_term: int representing the number of credits the user does not want to exceed per term
-        :param target_term: char 'F' or 'W' or 'S' or 'U' representing Fall or Winter or Spring or Summer respectively, representing when the user wants the
-            first term of the degree plan to start
-        :param target_year: int year representing the year the user wants heir degree plan to start
-        :param aal: int representing the user's completed arts and letters credits
-        :param ssc: int representing the user's completed social science credits
-        :param sc: int representing the user's completed (general) science credits
-        :param gp: int representing the user's completed global perspectives credits
-        :param us: int representing the user's completed US difference/inequality/agency credits
-        :return: TODO
+    :param course_history: set of course ids (ex: {210000, 211000, 231001})
+    :param max_credits_per_term: int representing the number of credits the user does not want to exceed per term
+    :param target_term: char 'F' or 'W' or 'S' or 'U' representing Fall or Winter or Spring or Summer respectively, representing when the user wants the
+        first term of the degree plan to start
+    :param target_year: int year representing the year the user wants heir degree plan to start
+    :param aal: int representing the user's completed arts and letters credits
+    :param ssc: int representing the user's completed social science credits
+    :param sc: int representing the user's completed (general) science credits
+    :param gp: int representing the user's completed global perspectives credits
+    :param us: int representing the user's completed US difference/inequality/agency credits
+    :return: TODO
     """
     recommended_sequence = [122000, 112001, 121008, 100013,
                             210000, "calc1", "wr2", 100012,
@@ -625,17 +649,13 @@ def generate_recommended_forecast_ba(course_history, max_credits_per_term=16, ta
         if len(math1_req & course_history) > 1:
             recommended_sequence.remove("math1_2")
 
-
     print(prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)))
 
 
-    #while has_remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests):  # runs each term
-    #    term_forecast = []  # single term
-    #    for course in prioritize_requirements(remaining_requirements(course_hist, aal2, ssc2, sc2, gp2, us2, misc2, interests)):
-    #        1
-
-
 def print_forecast(start_term, start_year, forecast):
+    """Helper function for developers who want to print a forecast in a human
+    readable form. 
+    """
     terms = "FWSF"  # TODO deal with summer "FWSUF"
     this_term = start_term
     this_year = start_year
@@ -647,6 +667,9 @@ def print_forecast(start_term, start_year, forecast):
 
 
 def list_forecast(start_term, start_year, forecast):
+    """Helper function to convert a forecast to a list of lists, where each
+    list contains the classes a user should take in a term
+    """
     terms = "FWSF"  # TODO deal with summer "FWSUF"
     this_term = start_term
     this_year = start_year
@@ -693,6 +716,9 @@ def split_forecast(start_term, start_year, forecast):
 
 
 def categorize_courses(course_set):
+    """Categorize courses based on the whether they are a CS and math core
+    requirement, an elective, gened requirement, etc.
+    """
     course_set = id_to_title(course_set)
     categorized_courses = {
         'CS Core and Math Requirements': [],
@@ -728,19 +754,19 @@ def categorize_courses(course_set):
 
 
 def arrange_electives(categorized_courses):
-    # Arranges the electives so that they are in the format:
-    # [
-    #    [400+ electives left list],
-    #    [
-    #     [300-399 electives left list],
-    #     [400+ electives left list]
-    #    ],
-    #    [
-    #     [# of 300-399 credits needed]
-    #     [# of 400+ credits needed],
-    #    ],
-    # ]
-
+    """Arranges the electives so that they are in the format:
+    [
+       [400+ electives left list],
+       [
+        [300-399 electives left list],
+        [400+ electives left list]
+       ],
+       [
+        [# of 300-399 credits needed]
+        [# of 400+ credits needed],
+       ],
+    ]
+    """
     # Check if length > 0 (if not, then there are no elective requirements needed anymore)
     if (len(categorized_courses['CS Elective Requirements']) > 0):
         credit_options = [[], []]
@@ -813,6 +839,9 @@ def get_credits(course):  # get course credits ignoring Course object
 
 
 def id_to_title(course_set):
+    """Convert an set of course IDs to a set of course titles in the format
+    {"<subject> <number>", ... }
+    """
     title_set = set()
     for course in course_set:
         title = course
@@ -825,6 +854,9 @@ def id_to_title(course_set):
 
 
 def id_to_title_list(course_list):
+    """Convert an list of course IDs to a list of course titles in the format
+    ["<subject> <number>", ... ]
+    """
     title_set = []
     for course in course_list:
         title = course
@@ -837,13 +869,19 @@ def id_to_title_list(course_list):
 
 
 def total_credits(course_set):
+    """calculate the total number of credits in a set of courses
+    """
     total = 0
     for course in course_set:
         if isinstance(course, int):
             total += int(df['credits'].loc[course])
     return total
 
+
 def main():
+    """main function for testing the forecast generation algorithm by running 
+    `python3 forecast.py`
+    """
     print_forecast('F', 2023, generate_forecast({101001, 111001, 112001, 210000}, 16, 'F', 2023, interests={"Graphics", "Biology", "Teamwork", "Business", "Cybersecurity", "Cryptography", "AI"}))
     generate_recommended_forecast_ba({101001, 111001, 112001, 210000}, 16, 'F', 2023, interests={"Graphics", "Biology", "Teamwork", "Business", "Cybersecurity", "Cryptography", "AI"})
 

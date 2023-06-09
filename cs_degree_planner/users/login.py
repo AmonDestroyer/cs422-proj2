@@ -1,9 +1,7 @@
 """
-
+Functionality for the login functions, called by users/views.py 
 
 2023-06-08 - Josh Sawyer     : moved functionality from views.py to login module functions
-
-
 """
 
 from django.contrib.auth import login
@@ -31,6 +29,7 @@ def create_account(form):
             del form.errors['password2']
   
     return False # Account not created
+
 
 def login_account(request, form):
     """Logs a user into their account if the form submitted is valid. That is,
