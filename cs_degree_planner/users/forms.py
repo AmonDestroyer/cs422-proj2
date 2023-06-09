@@ -11,6 +11,10 @@ Forms for user account creation, logging in, and user management. Specifically,
       update their email,
     - `UserNameChangeForm`, part of the user management where a user can update
       their first and last name.
+    - `EditCourseForm`, part of the user management where a user can edit their
+      course history.
+    - `EditInterestsForm`, part of the user management where a user can edit their
+      interests
 
 2023-05-19 - Nathaniel mason : add JEANZUserCreationForm
 2023-05-22 - Josh Sawyer     : add JEANZUserLoginForm
@@ -18,6 +22,7 @@ Forms for user account creation, logging in, and user management. Specifically,
 2023-05-29 - Adam Case       : added email change form
 2023-05-30 - Nathaniel Mason : made it so username must be entered as lowercase (helps prevent case of Joe vs joe vs joE etc)
 2023-06-03 - Zane Globus-O'Harra : Add file header description and class docstrings
+2023-06-03 - Josh Sawyer     : Moved EditCourseForm (and added init to) and EditInterestsForm from forecast app to user app form.py
 """
 
 from django import forms
@@ -26,7 +31,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from forecast.models import Course
+from forecast.models import Course, Keyword
 
 # For reference:
 # https://stackoverflow.com/questions/48049498/django-usercreationform-custom-fields
@@ -288,3 +293,20 @@ class EditCoursesForm(forms.Form):
     us_cred = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'us_cred', 'class': 'input-number', 
                'type': 'number', 'value': '0', 'min': '0'}))
+
+
+class EditInterestsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(EditInterestsForm, self).__init__(*args, **kwargs)
+        INTEREST_OPTIONS = []
+        keyword_arr = list(Keyword.objects.all())
+
+        for option in keyword_arr:
+            list_option = (option.keyword, option.keyword)
+            INTEREST_OPTIONS.append(list_option)
+            
+        self.fields['user_interests'].choices = INTEREST_OPTIONS
+  
+    user_interests = forms.MultipleChoiceField(
+        label='', choices=[], widget=forms.SelectMultiple(
+            attrs={'id': 'interest_select','class': 'chzn-select'}), required=False)

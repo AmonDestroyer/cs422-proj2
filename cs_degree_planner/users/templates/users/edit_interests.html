@@ -325,10 +325,10 @@ td {
 		<div id="ChangeInfoPopupInfo">
 		</div>
 	</div>
-	{% if interests_reset %}
+	{% if reset %}
 		<a class="course" id="reset-link" href="/forecast/edit_interests">RESTORE INTERESTS</a> 
 	{% else %}
-		<a class="course" id="reset-link" href="?reset_interests=true" onclick="resetForm()">RESET INTERESTS</a>
+		<a class="course" id="reset-link" href="?reset=true" onclick="resetForm()">RESET INTERESTS</a>
 	{% endif %}
 
 	<div id="course-container">
@@ -344,7 +344,7 @@ td {
 			<tr>
 				<td>
 				<select id="course_select" class="chzn-select" multiple="true" name="user_interests">
-					{% for intr_option_val, intr_option_display in interest_options %}
+					{% for intr_option_val, intr_option_display in options %}
 						<option value='{{ intr_option_val }}'{% if intr_option_val in prev_choices %}selected="selected"{% endif %}>{{intr_option_display}}
 						</option>
 					{% endfor %}

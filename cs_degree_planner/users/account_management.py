@@ -11,8 +11,8 @@ from .forms import UpdateUserNameForm, UserEmailChangeForm, UserNameChangeForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from .forms import EditCoursesForm
-from forecast.models import Course
+from .forms import EditCoursesForm, EditInterestsForm
+from forecast.models import Course, Keyword
 
 def update_account(request, form_wrapper):
     """Updates a user's personal information. This includes updating the username,
@@ -78,12 +78,14 @@ def update_account(request, form_wrapper):
     return False
   
 
-def edit_course_history(request, context):
-    """
-    Handles the editing of a user's course history. This includes adding and removing core courses, and generic credits.
+def update_user_profile(request, user_section, context):
+    """Handles the editing of a user's course history or the user's interests. 
 
     Args:
         request: request that was sent to the calling view function
+        user_section (str): Either 'major_courses' or 'user_interests'
+                - 'major_courses': indicates that the user is editing their course history
+                - 'user_interests': indicates that the user is editing their interests
         context (dict): context is a list that is passed by reference, and is used in the calling function to render the page with the appropriate context
 
     Returns:
@@ -91,26 +93,44 @@ def edit_course_history(request, context):
                 -True: Indicates to the view function to redirect to the same page
                 -False: Indicates to the view function to render the page with the appropriate context
     """
+    
     user_model = request.user # user that is currently logged in
     user_profile = user_model.profile
     prev_choices = {}
-    course_options = []
-    courses_reset = False
+    options = []
+    reset = False
+    course_section = (user_section == 'major_courses')
     
     if request.method != 'POST':
-        form = EditCoursesForm()
+        if (course_section):
+            form = EditCoursesForm()
+        else:
+            form = EditInterestsForm()
+            
+        if 'reset' not in request.GET:
+            if (course_section):
+                load_user_courses(user_profile, prev_choices, options, form)
+            else:
+                load_user_interests(user_profile, prev_choices, options, form)
         
-        if 'reset_courses' not in request.GET:
-            load_user_courses(user_profile, prev_choices, course_options, form)
-        else: # reset courses button was pressed, load empty form
-            course_options = form.fields['major_courses'].choices
-            courses_reset = True
-
+        else:
+            options = form.fields[user_section].choices
+            reset = True
     else:
-        form = EditCoursesForm(request.POST)
+        if (course_section):
+            form = EditCoursesForm(request.POST)
+        else:
+            form = EditInterestsForm(request.POST)
+        
         if form.is_valid():
-            add_core_courses(request, user_profile, user_model, form)
-            add_generic_credits(request, user_profile, form)
+            if (course_section):
+                add_core_courses(request, user_profile, user_model, form)
+                add_generic_credits(request, user_profile, form)
+            else:
+                add_interests(request, user_profile, user_model, form)
+            
+            if (len(messages.get_messages(request)) == 0):
+                messages.info(request, "No changes submitted!")
             
             user_profile.save()
             print("user prof saved with new changes!")
@@ -121,25 +141,22 @@ def edit_course_history(request, context):
                 if field.errors:
                     print(field.errors) 
             messages.error(request, "Error While Attempting to Save Changes")
-            
+        
             return True
-
-
-    context.append({'courseform': form,
-               'course_options': course_options,
-               'prev_choices': prev_choices,
-               'courses_reset': courses_reset,
-               })
+    
+    context.append({
+        'form': form,
+        'options': options,
+        'prev_choices': prev_choices,
+        'reset': reset,
+    })
     
     return False
-    
+            
 
-def edit_user_interests():
-    pass
-
-#########################################
-### Helper functions for edit_courses ###
-#########################################
+#################################################
+### Helper functions for editing user courses ###
+#################################################
 def load_user_courses(user_profile, prev_choices, course_options_ref, form):
     """A helper function used for edit_course_history.
     Used to load any saved courses into the form.
@@ -314,7 +331,164 @@ def add_generic_credits(request, user_profile, form):
     if (user_profile.us_credits != int(user_us)):
         user_profile.us_credits = int(user_us)
         messages.info(request, f"Updated US to {user_us} credits taken")
+        
 
-    if (len(messages.get_messages(request)) == 0):
-        messages.info(request, "No changes submitted!")
-        messages.info(request, "Please update your course history to see saved changes.")
+###################################################
+### Helper functions for editing user interests ###
+###################################################
+def load_user_interests(user_profile, prev_choices, interest_options_ref, form):
+    int_selections = user_profile.interests.all()
+    
+    if(int_selections is not None):
+        interest_options = form.fields['user_interests'].choices
+        interest_options_ref.extend(interest_options)
+        
+        for selection in int_selections:
+            for interest_val, interest_display in interest_options:
+                if interest_val == selection.keyword: # found a match, set as selected for that list option
+                    print('found a match for: ', selection)
+                    prev_choices[str(selection)] = True
+
+
+def add_interests(request, user_profile, user_model, form):
+    saved_interests = list(map(str, user_profile.interests.values_list('keyword', flat=True)))
+    user_interests = form.cleaned_data.get('user_interests')
+    
+    # Check if the box has data in it or if it's empty but the user removed all interests from the list
+    if ((len(saved_interests) > 0) or (len(user_interests) > 0)):
+        # Each Keyword model will have an id so need to retrieve
+        # the appropriate Keyword models, then add those to the instance of the user profile model
+
+        un = user_model.username
+        print(un)
+
+        # Get interests to remove (if anything was removed from list)
+        int_strs_to_remove = [interest for interest in saved_interests if interest not in user_interests]
+        # Now this is array of strings, go through string and delete
+        for interest_str in int_strs_to_remove:
+            keyword_model = Keyword.objects.get(keyword=interest_str)
+            user_profile.interests.remove(keyword_model)
+            messages.info(request, "Removed interest: " + keyword_model.keyword)
+
+        for interest_kw in user_interests:
+            try:
+                keyword_model = Keyword.objects.get(keyword=interest_kw)
+                if (keyword_model not in user_profile.interests.all()):
+                    user_profile.interests.add(keyword_model)
+                    messages.info(request, "Added interest: " + keyword_model.keyword)
+                    print("found keyword_model with the id!")                        
+                
+            except:
+                print("keyword_model not found")
+
+
+################################################################
+# Separated code in the case that update_user_profile has bugs #
+### Should be removed once we confirm everything is working. ###
+################################################################
+
+# def edit_course_history(request, context):
+#     """
+#     Handles the editing of a user's course history. This includes adding and removing core courses, and generic credits.
+
+#     Args:
+#         request: request that was sent to the calling view function
+#         context (dict): context is a list that is passed by reference, and is used in the calling function to render the page with the appropriate context
+
+#     Returns:
+#         bool: True or False
+#                 -True: Indicates to the view function to redirect to the same page
+#                 -False: Indicates to the view function to render the page with the appropriate context
+#     """
+#     user_model = request.user # user that is currently logged in
+#     user_profile = user_model.profile
+#     prev_choices = {}
+#     options = []
+#     reset = False
+    
+#     if request.method != 'POST':
+#         form = EditCoursesForm()
+        
+#         if 'reset_courses' not in request.GET:
+#             load_user_courses(user_profile, prev_choices, course_options, form)
+#         else: # reset courses button was pressed, load empty form
+#             course_options = form.fields['major_courses'].choices
+#             courses_reset = True
+
+#     else:
+#         form = EditCoursesForm(request.POST)
+#         if form.is_valid():
+#             add_core_courses(request, user_profile, user_model, form)
+#             add_generic_credits(request, user_profile, form)
+            
+#             if (len(messages.get_messages(request)) == 0):
+#                 messages.info(request, "No changes submitted!")
+#                 messages.info(request, "Please update your course history to see saved changes.")
+            
+#             user_profile.save()
+#             print("user prof saved with new changes!")
+            
+#             return True
+#         else:
+#             for field in form:
+#                 if field.errors:
+#                     print(field.errors) 
+#             messages.error(request, "Error While Attempting to Save Changes")
+            
+#             return True
+
+
+#     context.append({'form': form,
+#                'options': course_options,
+#                'prev_choices': prev_choices,
+#                'reset': courses_reset,
+#                })
+    
+#     return False
+    
+
+# def edit_user_interests(request, context):
+#     user_model = request.user # user that is currently logged in
+#     user_profile = user_model.profile
+#     prev_choices = {}
+#     options = []
+#     reset = False
+    
+#     if request.method != 'POST':
+#         form = EditInterestsForm()
+        
+#         if 'reset_interests' not in request.GET:
+#             load_user_interests(user_profile, prev_choices, interest_options, form) 
+#         else:
+#             interest_options = form.fields['user_interests'].choices
+#             interests_reset = True
+
+#     else:
+#         form = EditInterestsForm(request.POST)
+#         if form.is_valid():
+#             add_interests(request, user_profile, user_model, form) 
+
+#             if (len(messages.get_messages(request)) == 0):
+#                 messages.info(request, "No changes submitted!")
+#                 messages.info(request, "Please update your interests to see saved changes.")
+
+#             user_profile.save()
+#             print("user prof saved with new changes!")
+            
+#             return True
+#         else:
+#             for field in form:
+#                 if field.errors:
+#                     print(field.errors) 
+#             messages.error(request, "Error While Attempting to Save Changes")
+            
+#             return True
+
+
+#     context.append({'form': form,
+#                'options': interest_options,
+#                'prev_choices': prev_choices,
+#                'reset': interests_reset,
+#                }) 
+    
+#     return False

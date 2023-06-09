@@ -307,17 +307,17 @@ td {
 <body>
 <div class="noshift">
 	
-<form id="courseForm" method="post">
+<form id="form" method="post">
   {% csrf_token %}
 
 	<div id="ChangeInfoPopup">
 		<div id="ChangeInfoPopupInfo">
 		</div>
 	</div>
-	{% if courses_reset %}
+	{% if reset %}
 		<a class="course" id="reset-link" href="/forecast/edit_courses">RESTORE COURSE HISTORY</a> 
 	{% else %}
-		<a class="course" id="reset-link" href="?reset_courses=true" onclick="resetForm()">RESET COURSE HISTORY</a>
+		<a class="course" id="reset-link" href="?reset=true" onclick="resetForm()">RESET COURSE HISTORY</a>
 	{% endif %}
 
 	<div id="course-container">
@@ -335,7 +335,7 @@ td {
 			<tr>
 				<td>
 				<select id="course_select" class="chzn-select" multiple="true" name="major_courses">
-					{% for list_option_val, list_option_display in course_options %}
+					{% for list_option_val, list_option_display in options %}
 						<option value='{{ list_option_val }}' {% if list_option_val in prev_choices %}selected="selected"{% endif %}>{{list_option_display}}
 						</option>
 					{% endfor %}
@@ -343,35 +343,35 @@ td {
 				</td> 
 				<td></td>
 				<td>
-					<h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span>
-					<h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span>
-					<h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span>
-					<h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span>
-					<h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span>
+					<h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ form.arts_letters_cred }}<span class="input-number-increment">+</span>
+					<h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ form.soc_sci_cred }}<span class="input-number-increment">+</span>
+					<h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ form.sci_cred }}<span class="input-number-increment">+</span>
+					<h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ form.gp_cred }}<span class="input-number-increment">+</span>
+					<h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ form.us_cred }}<span class="input-number-increment">+</span>
 				</td>
 			<td><div class="msgs"></div></td>
 			</tr>
-				{% comment %} <td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ courseform.arts_letters_cred }}<span class="input-number-increment">+</span></td>
+				{% comment %} <td></td><td><h5>Arts and Letters (&#62;1)</h5><span class="input-number-decrement">–</span>{{ form.arts_letters_cred }}<span class="input-number-increment">+</span></td>
 				<td>	<div class="msgs">
 			</div></td>
 			</tr>
 				<tr>
 				<td></td><td></td>
-							<td><h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ courseform.soc_sci_cred }}<span class="input-number-increment">+</span></td>
+							<td><h5>Social Science (&#62;2)</h5><span class="input-number-decrement">–</span>{{ form.soc_sci_cred }}<span class="input-number-increment">+</span></td>
 				</tr>
 				<tr>
 				<td></td><td></td>
-							<td><h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ courseform.sci_cred }}<span class="input-number-increment">+</span></td>
+							<td><h5>Science (&#62;3)</h5><span class="input-number-decrement">–</span>{{ form.sci_cred }}<span class="input-number-increment">+</span></td>
 				
 				</tr>
 				<tr>
 				<td></td><td></td>
-							<td><h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ courseform.gp_cred }}<span class="input-number-increment">+</span></td>
+							<td><h5>Global Perspectives (GP)</h5><span class="input-number-decrement">–</span>{{ form.gp_cred }}<span class="input-number-increment">+</span></td>
 				
 				</tr>
 				<tr>
 				<td></td><td></td>
-							<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ courseform.us_cred }}<span class="input-number-increment">+</span></td> {% endcomment %}
+							<td><h5>US Difference, Inequality, and Agency (US)</h5><span class="input-number-decrement">–</span>{{ form.us_cred }}<span class="input-number-increment">+</span></td> {% endcomment %}
 			</table>
 		</div>
 			<br>
@@ -481,7 +481,7 @@ $(document).ready(function() {
 	{% endif %}
 
 	function resetForm() {
-		document.getElementById("courseForm").reset();
+		document.getElementById("form").reset();
 	}
 });
 

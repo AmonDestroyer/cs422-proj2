@@ -21,8 +21,9 @@ urlpatterns = [
     # ex: /users/logout/
     path("logout/", views.logout_user, name="logout"),
     
+    # Account mangement views
     path("update-account", views.update_account_information, name='update_account'),
-    
     path("edit_courses", views.edit_courses, name="edit_courses"),
+    path("edit_interests", views.edit_interests, name="edit_interests"),
 ]
 
