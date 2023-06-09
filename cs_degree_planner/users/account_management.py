@@ -1,10 +1,12 @@
 """
-
+This file contains the views that are related to the user, specifically those
+involving 
+    - user account management 
+        - edit user's personal info
+        - edit user course history 
+        - edit user course interests
 
 2023-06-08 - Josh Sawyer     : moved functionality from views.py to login account_management functions
-
-
-
 """
 
 from .forms import UpdateUserNameForm, UserEmailChangeForm, UserNameChangeForm

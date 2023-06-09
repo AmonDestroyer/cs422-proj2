@@ -1,8 +1,18 @@
 """
-TODO: Custom django admin command to load UO courses into the database 
+Custom django admin command to load UO courses into the database. To use this
+command, first migrate: 
+
+`$ python3 manage.py migrate` 
+
+and then import the courses and keywords: 
+
+`$ python3 manage.py import_courses forecast/recommendcourses.xlsx`
+
+This imports all of the courses and keywords into the recommendcourses.xlsx
+file into the database, as well as creates the bridge table for the
+prerequisites, and the bridge table Course_Has_Keywords
 
 2023-05-25 - Josh Sawyer : Created command to add courses to the database
-
 """
 
 from django.core.management.base import BaseCommand, CommandError

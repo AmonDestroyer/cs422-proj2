@@ -1,5 +1,7 @@
 """
-TODO: file description
+Forms for modifying the inputs into the forecast generation algorithm. A user
+can modify the number of credits per term, and the year and term they want to
+forecast to start in
 
 2023-05-24 - Nathaniel mason : add EditCoursesForm and code to pull course options
 2023-05-25 - Erin Stone      : add global perspectives and US requirements
@@ -41,6 +43,8 @@ YEAR_OPTIONS = [(2023, "2023"),
 
 
 class PresetForm(forms.Form):
+    """Default choices for the forecast generation inputs
+    """
     credits_choice = forms.ChoiceField(
         label='', choices=CREDIT_OPTIONS, widget=forms.Select(
             attrs={'id': 'credits_choice', 'class': 'chzn-select'}))
@@ -54,8 +58,10 @@ class PresetForm(forms.Form):
             attrs={'id': 'year_choice', 'class': 'chzn-select'}))
 
 
-# Alternative form where user would type in field values instead of choosing presets
 class UserChoicesForm(forms.Form):
+    """ Alternative form where user would type in field values instead of
+    choosing presets
+    """
     credits_per_term = forms.IntegerField(label='', widget=forms.NumberInput(
         attrs={'id': 'cred_per_term', 'class': 'input-number', 
                'type': 'number', 'value': '16', 'min': '0'}))

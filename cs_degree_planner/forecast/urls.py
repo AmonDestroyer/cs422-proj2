@@ -1,5 +1,11 @@
 """
-TODO: file description
+The URL patterns for the forecast model, with paths to 
+    - the user's dashboard 
+    - previously generated saved forecasts
+    - a page to view the courses that a user still needs to take 
+    - a page to generate a new degree plan 
+    - a page to save a forecast 
+    - a page to confirm that a forecast has been saved 
 
 2023-05-22 - Josh Sawyer     : add dashboard url path
 2023-05-30 - Nathaniel Mason : add edit_interests url path
