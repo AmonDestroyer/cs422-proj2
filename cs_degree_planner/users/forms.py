@@ -263,10 +263,11 @@ class EditCoursesForm(forms.Form):
         COURSE_OPTIONS = []
         courses = Course.objects.all()
         for course in courses:
-            list_option_display = str(course.subject) + ' ' + str(course.number) + ' ' + str(course.name)
-            list_option_val = str(course.id)
-            list_option = (list_option_val, list_option_display)
-            COURSE_OPTIONS.append(list_option)
+            if course.number != 0:
+                list_option_display = str(course.subject) + ' ' + str(course.number) + ' ' + str(course.name)
+                list_option_val = str(course.id)
+                list_option = (list_option_val, list_option_display)
+                COURSE_OPTIONS.append(list_option)
         
         self.fields['major_courses'].choices = COURSE_OPTIONS
     
