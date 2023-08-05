@@ -1,13 +1,7 @@
 # cs422-proj2
 This project is for the University of Oregon's CS 422 class. 
 
-Below are the current deployments. Initially the deployment was done in continers, devvelopement (dev) and production (prod), as this was easy to implement. It was later found out that since containers were being spun up and down and the database was part of the web applciation then users and their courses were nto being saved. So a third instance on a VM was created that would maintain the database until a new push was made to the database.
-
-| Deployment | Description |
-| :----------: | :----------: |
-| [VM](http://34.36.192.16) | Web applicaiton deployment on virtual machine. |
-| [Dev](https://deploy-cdp-dev-mlyt65mfba-uc.a.run.app) | Initial deployment in pipeline. |
-| [Prod](https://deploy-cdp-prod-mlyt65mfba-uc.a.run.app) | Promoted deployment from Dev. |
+As of August 5th, 2023, all previous deployements have since been shut down, this project can be deployed locally or in the cloud following the instructions below.
 
 # Future Improvements
 In the future the below improvements should be made to the project.
